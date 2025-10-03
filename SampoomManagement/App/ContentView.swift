@@ -7,9 +7,14 @@
 
 import SwiftUI
 
+enum Tabs {
+    case part, inventory, profile, setting, detail
+}
+
 struct ContentView: View {
     @StateObject private var partViewModel: PartViewModel
-    @State private var selectedTab = 0
+    @State private var selectedTab: Tabs = .part
+    @State var searchString = ""
     
     init() {
         // DI Container에서 ViewModel 주입
@@ -22,67 +27,74 @@ struct ContentView: View {
     var body: some View {
         TabView(selection: $selectedTab) {
             // PartView 탭
-            NavigationView {
+            Tab("부품", systemImage: "wrench.and.screwdriver", value: .part) {
                 PartView()
                     .environmentObject(partViewModel)
             }
-            .tabItem {
-                Image(systemName: "wrench.and.screwdriver")
-                Text("부품")
-            }
-            .tag(0)
             
             // InventoryView 탭 (임시)
-            NavigationView {
-                VStack(spacing: 20) {
-                    Spacer()
-                    Text("인벤토리")
-                        .font(.largeTitle)
-                        .fontWeight(.bold)
-                    Spacer()
+            Tab("인벤토리", systemImage: "cube.box", value: .inventory) {
+                NavigationView {
+                    VStack(spacing: 20) {
+                        Spacer()
+                        Text("인벤토리")
+                            .font(.largeTitle)
+                            .fontWeight(.bold)
+                        Spacer()
+                    }
+                    .navigationTitle("인벤토리")
                 }
-                .navigationTitle("인벤토리")
             }
-            .tabItem {
-                Image(systemName: "cube.box")
-                Text("인벤토리")
-            }
-            .tag(1)
             
             // ProfileView 탭 (임시)
-            NavigationView {
-                VStack(spacing: 20) {
-                    Spacer()
-                    Text("프로필")
-                        .font(.largeTitle)
-                        .fontWeight(.bold)
-                    Spacer()
+            Tab("프로필", systemImage: "person.circle", value: .profile) {
+                NavigationView {
+                    VStack(spacing: 20) {
+                        Spacer()
+                        Text("프로필")
+                            .font(.largeTitle)
+                            .fontWeight(.bold)
+                        Spacer()
+                    }
+                    .navigationTitle("프로필")
                 }
-                .navigationTitle("프로필")
             }
-            .tabItem {
-                Image(systemName: "person.circle")
-                Text("프로필")
-            }
-            .tag(2)
             
             // SettingView 탭 (임시)
-            NavigationView {
-                VStack(spacing: 20) {
-                    Spacer()
-                    Text("설정")
-                        .font(.largeTitle)
-                        .fontWeight(.bold)
-                    Spacer()
+            Tab("설정", systemImage: "gearshape", value: .setting) {
+                NavigationStack {
+                    VStack(spacing: 20) {
+                        Spacer()
+                        Text("설정")
+                            .font(.largeTitle)
+                            .fontWeight(.bold)
+                        NavigationLink {
+                            DetailView()
+                        } label: {
+                            Text("상세 보기")
+                        }
+                        Spacer()
+                    }
+                    .navigationTitle("설정")
                 }
-                .navigationTitle("설정")
             }
-            .tabItem {
-                Image(systemName: "gearshape")
-                Text("설정")
+            
+            Tab(value: .detail, role: .search) {
+                NavigationStack {
+                    Text("검색")
+                }
+                .navigationTitle("검색")
+                .searchable(text: $searchString)
             }
-            .tag(3)
         }
         .accentColor(.blue)
+    }
+}
+
+struct DetailView: View {
+    var body: some View {
+        NavigationStack {
+            Text("상세")
+        }
     }
 }

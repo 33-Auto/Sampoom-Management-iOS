@@ -11,7 +11,7 @@ struct PartView: View {
     @EnvironmentObject var viewModel: PartViewModel
     
     var body: some View {
-        NavigationView {
+        NavigationStack {
             VStack(spacing: 0) {
                 contentView
             }
