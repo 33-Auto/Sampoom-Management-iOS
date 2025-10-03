@@ -27,63 +27,88 @@ struct ContentView: View {
     var body: some View {
         TabView(selection: $selectedTab) {
             // PartView 탭
-            Tab("부품", systemImage: "wrench.and.screwdriver", value: .part) {
+            Tab(StringResources.Tabs.parts, systemImage: "wrench.and.screwdriver", value: .part) {
                 PartView()
                     .environmentObject(partViewModel)
             }
             
             // InventoryView 탭 (임시)
-            Tab("인벤토리", systemImage: "cube.box", value: .inventory) {
+            Tab(StringResources.Tabs.inventory, systemImage: "cube.box", value: .inventory) {
                 NavigationView {
                     VStack(spacing: 20) {
                         Spacer()
-                        Text("인벤토리")
+                        Text(StringResources.Tabs.inventory)
                             .font(.largeTitle)
                             .fontWeight(.bold)
+                        Text(StringResources.Placeholders.inventoryDescription)
+                            .font(.body)
+                            .foregroundColor(.secondary)
+                            .multilineTextAlignment(.center)
+                            .padding(.horizontal, 32)
                         Spacer()
                     }
-                    .navigationTitle("인벤토리")
+                    .navigationTitle(StringResources.Tabs.inventory)
                 }
             }
             
             // ProfileView 탭 (임시)
-            Tab("프로필", systemImage: "person.circle", value: .profile) {
+            Tab(StringResources.Tabs.profile, systemImage: "person.circle", value: .profile) {
                 NavigationView {
                     VStack(spacing: 20) {
                         Spacer()
-                        Text("프로필")
+                        Text(StringResources.Tabs.profile)
                             .font(.largeTitle)
                             .fontWeight(.bold)
+                        Text(StringResources.Placeholders.profileDescription)
+                            .font(.body)
+                            .foregroundColor(.secondary)
+                            .multilineTextAlignment(.center)
+                            .padding(.horizontal, 32)
                         Spacer()
                     }
-                    .navigationTitle("프로필")
+                    .navigationTitle(StringResources.Tabs.profile)
                 }
             }
             
             // SettingView 탭 (임시)
-            Tab("설정", systemImage: "gearshape", value: .setting) {
+            Tab(StringResources.Tabs.settings, systemImage: "gearshape", value: .setting) {
                 NavigationStack {
                     VStack(spacing: 20) {
                         Spacer()
-                        Text("설정")
+                        Text(StringResources.Tabs.settings)
                             .font(.largeTitle)
                             .fontWeight(.bold)
+                        Text(StringResources.Placeholders.settingsDescription)
+                            .font(.body)
+                            .foregroundColor(.secondary)
+                            .multilineTextAlignment(.center)
+                            .padding(.horizontal, 32)
                         NavigationLink {
                             DetailView()
                         } label: {
-                            Text("상세 보기")
+                            Text(StringResources.Navigation.detail)
                         }
+                        .buttonStyle(.borderedProminent)
                         Spacer()
                     }
-                    .navigationTitle("설정")
+                    .navigationTitle(StringResources.Tabs.settings)
                 }
             }
             
             Tab(value: .detail, role: .search) {
                 NavigationStack {
-                    Text("검색")
+                    VStack {
+                        Text(StringResources.Search.title)
+                            .font(.largeTitle)
+                            .fontWeight(.bold)
+                        Text(StringResources.Placeholders.searchDescription)
+                            .font(.body)
+                            .foregroundColor(.secondary)
+                            .multilineTextAlignment(.center)
+                            .padding(.horizontal, 32)
+                    }
                 }
-                .navigationTitle("검색")
+                .navigationTitle(StringResources.Search.title)
                 .searchable(text: $searchString)
             }
         }
@@ -94,7 +119,28 @@ struct ContentView: View {
 struct DetailView: View {
     var body: some View {
         NavigationStack {
-            Text("상세")
+            VStack {
+                Text(StringResources.Detail.screenTitle)
+                    .font(.largeTitle)
+                    .fontWeight(.bold)
+                    .padding()
+                
+                Text(StringResources.Detail.description)
+                    .foregroundColor(.secondary)
+                    .multilineTextAlignment(.center)
+                    .padding()
+                
+                Spacer()
+            }
+            .navigationTitle(StringResources.Detail.title)
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button(StringResources.Navigation.close) {
+                        // 닫기 액션
+                    }
+                }
+            }
         }
     }
 }
