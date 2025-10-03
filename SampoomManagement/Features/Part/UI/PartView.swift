@@ -13,15 +13,10 @@ struct PartView: View {
     var body: some View {
         NavigationView {
             VStack(spacing: 0) {
-                headerView
                 contentView
             }
-            .navigationBarHidden(true)
+            .navigationBarTitle(Text("부품"))
         }
-    }
-    
-    private var headerView: some View {
-        AppHeader(title: "인벤토리")
     }
     
     @ViewBuilder
