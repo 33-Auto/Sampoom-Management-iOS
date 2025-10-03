@@ -8,7 +8,11 @@
 import Foundation
 
 class PartAPI {
-    private let networkManager = NetworkManager.shared
+    private let networkManager: NetworkManager
+    
+    init(networkManager: NetworkManager) {
+        self.networkManager = networkManager
+    }
     
     func getPartList() async throws -> PartList {
         return try await withCheckedThrowingContinuation { continuation in

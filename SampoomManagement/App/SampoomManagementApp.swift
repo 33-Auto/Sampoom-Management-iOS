@@ -9,6 +9,12 @@ import SwiftUI
 
 @main
 struct SampoomManagementApp: App {
+    
+    init() {
+        // DI Container 초기화
+        _ = DIContainer.shared
+    }
+    
     var body: some Scene {
         WindowGroup {
             ContentView()

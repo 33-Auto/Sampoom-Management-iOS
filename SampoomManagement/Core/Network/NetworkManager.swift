@@ -13,7 +13,7 @@ class NetworkManager {
     
     private let baseURL = "http://localhost:8080/api/"
     
-    private init() {}
+    init() {}
     
     func request<T: Codable>(
         endpoint: String,
