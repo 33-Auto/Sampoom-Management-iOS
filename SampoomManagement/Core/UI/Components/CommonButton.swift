@@ -1,0 +1,228 @@
+//
+//  CommonButton.swift
+//  SampoomManagement
+//
+//  Created by 채상윤 on 9/29/25.
+//
+
+import SwiftUI
+
+// MARK: - Button Types
+enum ButtonType {
+    case filled            // 채워진 버튼
+    case outlined          // 테두리만 있는 버튼
+}
+
+// MARK: - Button Sizes
+enum ButtonSize {
+    case small
+    case medium
+    case large
+    
+    var height: CGFloat {
+        switch self {
+        case .small: return 32
+        case .medium: return 44
+        case .large: return 52
+        }
+    }
+    
+    var font: Font {
+        switch self {
+        case .small: return .system(size: 14, weight: .medium)
+        case .medium: return .system(size: 16, weight: .medium)
+        case .large: return .system(size: 18, weight: .semibold)
+        }
+    }
+}
+
+// MARK: - CommonButton
+struct CommonButton: View {
+    let title: String
+    let type: ButtonType
+    let size: ButtonSize
+    let icon: String?
+    let iconPosition: IconPosition
+    let isEnabled: Bool
+    let backgroundColor: Color?
+    let textColor: Color?
+    let borderColor: Color?
+    let action: () -> Void
+    
+    init(
+        _ title: String,
+        type: ButtonType = .filled,
+        size: ButtonSize = .medium,
+        icon: String? = nil,
+        iconPosition: IconPosition = .leading,
+        isEnabled: Bool = true,
+        backgroundColor: Color? = nil,
+        textColor: Color? = nil,
+        borderColor: Color? = nil,
+        action: @escaping () -> Void
+    ) {
+        self.title = title
+        self.type = type
+        self.size = size
+        self.icon = icon
+        self.iconPosition = iconPosition
+        self.isEnabled = isEnabled
+        self.backgroundColor = backgroundColor
+        self.textColor = textColor
+        self.borderColor = borderColor
+        self.action = action
+    }
+    
+    var body: some View {
+        Button(action: action) {
+            HStack(spacing: 8) {
+                if let icon = icon, iconPosition == .leading {
+                    Image(systemName: icon)
+                        .font(size.font)
+                }
+                
+                Text(title)
+                    .font(size.font)
+                
+                if let icon = icon, iconPosition == .trailing {
+                    Image(systemName: icon)
+                        .font(size.font)
+                }
+            }
+            .frame(height: size.height)
+            .frame(maxWidth: .infinity)
+            .foregroundColor(buttonTextColor)
+            .background(buttonBackgroundColor)
+            .overlay(
+                RoundedRectangle(cornerRadius: 8)
+                    .stroke(buttonBorderColor, lineWidth: borderWidth)
+            )
+            .cornerRadius(8)
+        }
+        .disabled(!isEnabled)
+        .opacity(isEnabled ? 1.0 : 0.6)
+        .animation(.easeInOut(duration: 0.2), value: isEnabled)
+    }
+    
+    // MARK: - Button Styling
+    private var buttonBackgroundColor: Color {
+        if !isEnabled {
+            return .gray
+        }
+        
+        if let customColor = backgroundColor {
+            return customColor
+        }
+        
+        switch type {
+        case .filled:
+            return Color(red: 0.5, green: 0.2, blue: 0.8) // 기본 보라색
+        case .outlined:
+            return .clear
+        }
+    }
+    
+    private var buttonTextColor: Color {
+        if !isEnabled {
+            return .white
+        }
+        
+        if let customColor = textColor {
+            return customColor
+        }
+        
+        switch type {
+        case .filled:
+            return .white
+        case .outlined:
+            return borderColor ?? .blue
+        }
+    }
+    
+    private var buttonBorderColor: Color {
+        if !isEnabled {
+            return .clear
+        }
+        
+        if let customColor = borderColor {
+            return customColor
+        }
+        
+        switch type {
+        case .filled:
+            return .clear
+        case .outlined:
+            return .blue
+        }
+    }
+    
+    private var borderWidth: CGFloat {
+        switch type {
+        case .filled:
+            return 0
+        case .outlined:
+            return 1
+        }
+    }
+}
+
+// MARK: - Icon Position
+enum IconPosition {
+    case leading
+    case trailing
+}
+
+// MARK: - Preview
+#Preview {
+    VStack(spacing: 16) {
+        // Filled Button (기본 보라색)
+        CommonButton("Button", type: .filled) {
+            print("Filled button tapped")
+        }
+        
+        // Filled Button with Custom Color
+        CommonButton("Button", type: .filled, backgroundColor: .blue, textColor: .white) {
+            print("Custom filled button tapped")
+        }
+        
+        // Filled Button with Icon
+        CommonButton("Button", type: .filled, icon: "phone.fill", backgroundColor: .green, textColor: .white) {
+            print("Filled button with icon tapped")
+        }
+        
+        // Outlined Button (기본 파란색)
+        CommonButton("Button", type: .outlined) {
+            print("Outlined button tapped")
+        }
+        
+        // Outlined Button with Custom Color
+        CommonButton("Button", type: .outlined, textColor: .red, borderColor: .red) {
+            print("Custom outlined button tapped")
+        }
+        
+        // Outlined Button (Gray)
+        CommonButton("Button", type: .outlined, textColor: .gray, borderColor: .gray) {
+            print("Gray outlined button tapped")
+        }
+        
+        // Disabled Button
+        CommonButton("Button", isEnabled: false) {
+            print("Disabled button tapped")
+        }
+        
+        // Size Examples
+        HStack(spacing: 16) {
+            CommonButton("Small", size: .small, backgroundColor: .orange) { }
+            CommonButton("Medium", size: .medium, backgroundColor: .purple) { }
+            CommonButton("Large", size: .large, backgroundColor: .pink) { }
+        }
+        
+        // Icon Position Examples
+        HStack(spacing: 16) {
+            CommonButton("Leading", icon: "star.fill", iconPosition: .leading, backgroundColor: .yellow, textColor: .black) { }
+            CommonButton("Trailing", type: .outlined, icon: "arrow.right", iconPosition: .trailing, textColor: .cyan, borderColor: .cyan) { }
+        }
+    }
+    .padding()
+    .background(Color.black)
+}
