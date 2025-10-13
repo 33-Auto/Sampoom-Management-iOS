@@ -1,6 +1,7 @@
 {
-  "colors" : [
+  "images" : [
     {
+      "filename" : "search.svg",
       "idiom" : "universal"
     }
   ],
