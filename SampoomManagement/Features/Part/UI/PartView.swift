@@ -9,6 +9,7 @@ import SwiftUI
 
 struct PartView: View {
     @EnvironmentObject var viewModel: PartViewModel
+    @State var searchString = ""
     
     var body: some View {
         NavigationStack {
@@ -16,6 +17,7 @@ struct PartView: View {
                 contentView
             }
             .navigationBarTitle(Text("부품"))
+            .searchable(text: $searchString)
         }
     }
     

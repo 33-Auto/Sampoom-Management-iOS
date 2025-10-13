@@ -16,10 +16,13 @@ struct StringResources {
     
     // MARK: - Tabs
     struct Tabs {
-        static let parts = "부품"
-        static let inventory = "인벤토리"
-        static let profile = "프로필"
-        static let settings = "설정"
+        static let dashboard = "대시보드"
+        static let delivery = "출고목록"
+        static let cart = "장바구니"
+        static let orders = "주문관리"
+        static let parts = "부품조회"
+        static let employee = "직원관리"
+        static let setting = "설정"
     }
     
     // MARK: - Messages
