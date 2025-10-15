@@ -11,7 +11,7 @@ import Alamofire
 class NetworkManager {
     static let shared = NetworkManager()
     
-    private let baseURL = "http://localhost:8080/api/"
+    private let baseURL = "https://sampoom.store/api/"
     
     init() {}
     
