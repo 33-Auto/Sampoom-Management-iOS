@@ -63,4 +63,13 @@ class AuthRepositoryImpl: AuthRepository {
     func isSignedIn() -> Bool {
         return preferences.hasToken()
     }
+    
+    // 토큰 조회 (API 요청 시 사용)
+    func getAccessToken() throws -> String? {
+        return try preferences.getAccessToken()
+    }
+    
+    func getRefreshToken() throws -> String? {
+        return try preferences.getRefreshToken()
+    }
 }

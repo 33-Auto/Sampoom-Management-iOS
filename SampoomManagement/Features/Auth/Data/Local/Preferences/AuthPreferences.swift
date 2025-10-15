@@ -27,16 +27,31 @@ class AuthPreferences {
         }
     }
     
-    func getAccessToken() -> String? {
-        return try? keychain.get(Keys.accessToken)
+    func getAccessToken() throws -> String? {
+        return try keychain.get(Keys.accessToken)
     }
     
-    func getRefreshToken() -> String? {
-        return try? keychain.get(Keys.refreshToken)
+    func getRefreshToken() throws -> String? {
+        return try keychain.get(Keys.refreshToken)
     }
     
     func hasToken() -> Bool {
-        return getAccessToken() != nil && getRefreshToken() != nil
+        do {
+            let accessToken = try getAccessToken()
+            let refreshToken = try getRefreshToken()
+            return accessToken != nil && refreshToken != nil
+        } catch {
+            // 키체인 접근 오류 발생 시 로깅하고 false 반환
+            print("AuthPreferences - 키체인 접근 오류: \(error)")
+            return false
+        }
+    }
+    
+    // 에러를 전파하는 버전 (필요한 경우 사용)
+    func hasTokenSafely() throws -> Bool {
+        let accessToken = try getAccessToken()
+        let refreshToken = try getRefreshToken()
+        return accessToken != nil && refreshToken != nil
     }
     
     func clear() {
