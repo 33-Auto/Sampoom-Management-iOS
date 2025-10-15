@@ -42,10 +42,16 @@ class AuthRepositoryImpl: AuthRepository {
         let response = try await api.login(email: email, password: password)
         let dto = response.data
         
-        preferences.saveToken(
-            accessToken: dto.accessToken,
-            refreshToken: dto.refreshToken
-        )
+        do {
+            try preferences.saveToken(
+                accessToken: dto.accessToken,
+                refreshToken: dto.refreshToken
+            )
+        } catch {
+            // 키체인 저장 실패 시 로깅 및 에러 전파
+            print("AuthRepositoryImpl - 키체인 저장 실패: \(error)")
+            throw AuthError.tokenSaveFailed(error)
+        }
         
         return dto.toModel()
     }

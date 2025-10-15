@@ -126,7 +126,7 @@ struct CommonTextField: View {
                     .padding(.leading, 4)
             }
         }
-        .onChange(of: value) { oldValue, newValue in
+        .onChange(of: value) { _, newValue in
             onTextChange(newValue)
         }
     }

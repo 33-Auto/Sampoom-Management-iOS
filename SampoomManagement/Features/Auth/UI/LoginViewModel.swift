@@ -68,11 +68,16 @@ class LoginViewModel: ObservableObject {
     // MARK: - Private Methods
     
     private func validateEmail() {
-        let result = AuthValidator.validateNotEmpty(
+        let emptyResult = AuthValidator.validateNotEmpty(
             uiState.email,
             StringResources.Auth.emailLabel
         )
-        uiState = uiState.copy(emailError: result.errorMessage)
+        if !emptyResult.isSuccess {
+            uiState = uiState.copy(emailError: emptyResult.errorMessage)
+            return
+        }
+        let emailResult = AuthValidator.validateEmail(uiState.email)
+        uiState = uiState.copy(emailError: emailResult.errorMessage)
     }
     
     private func validatePassword() {
