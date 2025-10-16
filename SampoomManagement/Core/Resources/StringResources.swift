@@ -70,4 +70,43 @@ struct StringResources {
         static let edit = "편집"
         static let done = "완료"
     }
+    
+    // MARK: - Auth
+    struct Auth {
+        // Login
+        static let emailLabel = "이메일"
+        static let passwordLabel = "비밀번호"
+        static let emailPlaceholder = "이메일 입력"
+        static let passwordPlaceholder = "비밀번호 입력"
+        static let loginButton = "로그인"
+        static let loginButtonLoading = "로그인 중..."
+        static let needAccount = "계정이 없으신가요?"
+        static let signUpLink = "회원가입"
+        static let signUpDo = "하기"
+        
+        // SignUp
+        static let nameLabel = "이름"
+        static let branchLabel = "지점"
+        static let positionLabel = "직급"
+        static let passwordCheckLabel = "비밀번호 확인"
+        static let namePlaceholder = "이름 입력"
+        static let branchPlaceholder = "지점 입력"
+        static let positionPlaceholder = "직급 입력"
+        static let passwordCheckPlaceholder = "비밀번호 확인 입력"
+        static let signUpButton = "회원가입"
+        static let signUpButtonLoading = "회원가입 중..."
+        static let back = "뒤로"
+        
+        // Validation Messages
+        static func fieldRequired(_ field: String) -> String {
+            return "\(field)을(를) 입력해주세요."
+        }
+        static let emailRequired = "이메일을 입력해주세요."
+        static let emailInvalid = "올바른 이메일 형식이 아닙니다."
+        static let passwordRequired = "비밀번호를 입력해주세요."
+        static let passwordTooShort = "비밀번호는 8자 이상이어야 합니다."
+        static let passwordInvalid = "비밀번호는 영문과 숫자를 포함해야 합니다."
+        static let passwordCheckRequired = "비밀번호 확인을 입력해주세요."
+        static let passwordCheckMismatch = "비밀번호가 일치하지 않습니다."
+    }
 }

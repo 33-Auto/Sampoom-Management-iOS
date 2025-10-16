@@ -29,3 +29,20 @@ enum NetworkError: Error, LocalizedError {
         }
     }
 }
+
+enum AuthError: Error, LocalizedError {
+    case tokenSaveFailed(Error)
+    case invalidCredentials
+    case networkError(Error)
+    
+    var errorDescription: String? {
+        switch self {
+        case .tokenSaveFailed(let error):
+            return "토큰 저장 실패: \(error.localizedDescription)"
+        case .invalidCredentials:
+            return "잘못된 인증 정보입니다"
+        case .networkError(let error):
+            return "네트워크 오류: \(error.localizedDescription)"
+        }
+    }
+}

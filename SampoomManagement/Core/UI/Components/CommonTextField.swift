@@ -50,97 +50,101 @@ enum TextFieldSize {
 struct CommonTextField: View {
     @Environment(\.colorScheme) private var colorScheme
     @State private var isPasswordVisible = false
-    @State private var text = ""
+    @FocusState private var isFocused: Bool
+    @Binding var value: String
     
     let placeholder: String
     let type: TextFieldType
     let size: TextFieldSize
-    let textColor: Color?
-    let backgroundColor: Color?
-    let borderColor: Color?
+    let isError: Bool
+    let errorMessage: String?
     let onTextChange: (String) -> Void
     
     init(
+        value: Binding<String>,
         placeholder: String,
         type: TextFieldType = .text,
         size: TextFieldSize = .medium,
-        textColor: Color? = nil,
-        backgroundColor: Color? = nil,
-        borderColor: Color? = nil,
+        isError: Bool = false,
+        errorMessage: String? = nil,
         onTextChange: @escaping (String) -> Void = { _ in }
     ) {
+        self._value = value
         self.placeholder = placeholder
         self.type = type
         self.size = size
-        self.textColor = textColor
-        self.backgroundColor = backgroundColor
-        self.borderColor = borderColor
+        self.isError = isError
+        self.errorMessage = errorMessage
         self.onTextChange = onTextChange
     }
     
     var body: some View {
-        HStack {
-            // Text Field
-            Group {
-                if type == .password && !isPasswordVisible {
-                    SecureField(placeholder, text: $text)
-                        .textFieldStyle(PlainTextFieldStyle())
-                } else {
-                    TextField(placeholder, text: $text)
-                        .keyboardType(keyboardType)
-                        .textInputAutocapitalization(autocapitalization)
-                        .disableAutocorrection(disableAutocorrection)
-                        .textFieldStyle(PlainTextFieldStyle())
+        VStack(alignment: .leading, spacing: 4) {
+            HStack {
+                // Text Field
+                Group {
+                    if type == .password && !isPasswordVisible {
+                        SecureField(placeholder, text: $value)
+                            .textFieldStyle(PlainTextFieldStyle())
+                            .focused($isFocused)
+                    } else {
+                        TextField(placeholder, text: $value)
+                            .keyboardType(keyboardType)
+                            .textInputAutocapitalization(autocapitalization)
+                            .disableAutocorrection(disableAutocorrection)
+                            .textFieldStyle(PlainTextFieldStyle())
+                            .focused($isFocused)
+                    }
+                }
+                .font(.gmarketBody)
+                .foregroundColor(buttonTextColor)
+                
+                // Password Toggle Button (inside TextField)
+                if type == .password {
+                    Button(action: {
+                        isPasswordVisible.toggle()
+                    }) {
+                        Image(systemName: isPasswordVisible ? "eye.slash" : "eye")
+                            .foregroundColor(iconColor)
+                            .font(.system(size: 16, weight: .medium))
+                    }
+                    .padding(.trailing, 8)
                 }
             }
-            .font(size.font)
-            .foregroundColor(buttonTextColor)
+            .padding(size.padding)
+            .padding(4)
+            .background(
+                RoundedRectangle(cornerRadius: 16)
+                    .stroke(effectiveBorderColor, lineWidth: isFocused ? 1.5 : 1)
+            )
             
-            // Password Toggle Button (inside TextField)
-            if type == .password {
-                Button(action: {
-                    isPasswordVisible.toggle()
-                }) {
-                    Image(systemName: isPasswordVisible ? "eye.slash" : "eye")
-                        .foregroundColor(iconColor)
-                        .font(.system(size: 16, weight: .medium))
-                }
-                .padding(.trailing, 8)
+            // Error Message
+            if isError, let errorMessage = errorMessage {
+                Text(errorMessage)
+                    .font(.gmarketBody)
+                    .foregroundColor(.red)
+                    .padding(.leading, 4)
             }
         }
-        .padding(size.padding)
-        .background(buttonBackgroundColor)
-        .overlay(
-            RoundedRectangle(cornerRadius: 8)
-                .stroke(buttonBorderColor, lineWidth: 1)
-        )
-        .onChange(of: text) { oldValue, newValue in
+        .onChange(of: value) { _, newValue in
             onTextChange(newValue)
         }
     }
     
     // MARK: - Computed Properties
     private var buttonTextColor: Color {
-        if let textColor = textColor {
-            return textColor
-        }
-        
         // 다크모드 고려한 기본 색상
         switch colorScheme {
         case .dark:
-            return text.isEmpty ? .gray : .white
+            return value.isEmpty ? .gray : .white
         case .light:
-            return text.isEmpty ? .gray : .black
+            return value.isEmpty ? .gray : .black
         @unknown default:
-            return text.isEmpty ? .gray : .primary
+            return value.isEmpty ? .gray : .primary
         }
     }
     
     private var buttonBackgroundColor: Color {
-        if let backgroundColor = backgroundColor {
-            return backgroundColor
-        }
-        
         // 다크모드 고려한 기본 배경색
         switch colorScheme {
         case .dark:
@@ -153,19 +157,25 @@ struct CommonTextField: View {
     }
     
     private var buttonBorderColor: Color {
-        if let borderColor = borderColor {
-            return borderColor
-        }
-        
         // 다크모드 고려한 기본 테두리색
         switch colorScheme {
         case .dark:
-            return .gray.opacity(0.3)
+            return .gray.opacity(0.4)
         case .light:
-            return .gray.opacity(0.3)
+            return .gray.opacity(0.4)
         @unknown default:
-            return .gray.opacity(0.3)
+            return .gray.opacity(0.4)
         }
+    }
+    
+    private var effectiveBorderColor: Color {
+        if isError {
+            return .red
+        }
+        if isFocused {
+            return .accentColor
+        }
+        return buttonBorderColor
     }
     
     private var iconColor: Color {
@@ -215,17 +225,14 @@ struct CommonTextField: View {
 
 // MARK: - Preview
 #Preview {
+    @Previewable @State var email = ""
+    @Previewable @State var password = ""
+    @Previewable @State var errorText = "Error"
+    
     VStack(spacing: 16) {
         // Email Input (Placeholder)
         CommonTextField(
-            placeholder: "이메일 입력",
-            type: .email
-        ) { text in
-            print("Email: \(text)")
-        }
-        
-        // Email Input (Filled)
-        CommonTextField(
+            value: $email,
             placeholder: "이메일 입력",
             type: .email
         ) { text in
@@ -234,27 +241,29 @@ struct CommonTextField: View {
         
         // Password Input (Placeholder)
         CommonTextField(
+            value: $password,
             placeholder: "비밀번호 입력",
             type: .password
         ) { text in
             print("Password: \(text)")
         }
         
-        // Password Input (Filled)
+        // Error State
         CommonTextField(
-            placeholder: "비밀번호 입력",
-            type: .password
+            value: $errorText,
+            placeholder: "에러 상태",
+            type: .text,
+            isError: true,
+            errorMessage: "이메일 형식이 올바르지 않습니다."
         ) { text in
-            print("Password: \(text)")
+            print("Error: \(text)")
         }
         
         // Custom Colors
         CommonTextField(
+            value: $email,
             placeholder: "커스텀 색상",
             type: .text,
-            textColor: .blue,
-            backgroundColor: .yellow.opacity(0.1),
-            borderColor: .blue
         ) { text in
             print("Custom: \(text)")
         }

@@ -82,7 +82,7 @@ struct CommonButton: View {
                 }
                 
                 Text(title)
-                    .font(size.font)
+                    .font(.gmarketBody)
                 
                 if let icon = icon, iconPosition == .trailing {
                     Image(systemName: icon)
@@ -91,23 +91,23 @@ struct CommonButton: View {
             }
             .frame(height: size.height)
             .frame(maxWidth: .infinity)
+            .padding(4)
             .foregroundColor(buttonTextColor)
             .background(buttonBackgroundColor)
             .overlay(
-                RoundedRectangle(cornerRadius: 8)
+                RoundedRectangle(cornerRadius: 16)
                     .stroke(buttonBorderColor, lineWidth: borderWidth)
             )
-            .cornerRadius(8)
+            .cornerRadius(16)
         }
         .disabled(!isEnabled)
-        .opacity(isEnabled ? 1.0 : 0.6)
         .animation(.easeInOut(duration: 0.2), value: isEnabled)
     }
     
     // MARK: - Button Styling
     private var buttonBackgroundColor: Color {
         if !isEnabled {
-            return .gray
+            return .disable
         }
         
         if let customColor = backgroundColor {
@@ -116,7 +116,7 @@ struct CommonButton: View {
         
         switch type {
         case .filled:
-            return Color(red: 0.5, green: 0.2, blue: 0.8) // 기본 보라색
+            return Color(.accent) // 기본 보라색
         case .outlined:
             return .clear
         }
@@ -124,7 +124,7 @@ struct CommonButton: View {
     
     private var buttonTextColor: Color {
         if !isEnabled {
-            return .white
+            return .textSecondary
         }
         
         if let customColor = textColor {

@@ -1,0 +1,153 @@
+//
+//  SignUpViewModel.swift
+//  SampoomManagement
+//
+//  Created by 채상윤 on 10/14/25.
+//
+
+import Foundation
+import SwiftUI
+import Combine
+
+@MainActor
+class SignUpViewModel: ObservableObject {
+    @Published var uiState = SignUpUiState()
+    
+    private let signUpUseCase: SignUpUseCase
+    
+    init(signUpUseCase: SignUpUseCase) {
+        self.signUpUseCase = signUpUseCase
+    }
+    
+    // 이름 업데이트
+    func updateName(_ name: String) {
+        uiState = uiState.copy(name: name)
+        validateName()
+    }
+    
+    // 지점 업데이트
+    func updateBranch(_ branch: String) {
+        uiState = uiState.copy(branch: branch)
+        validateBranch()
+    }
+    
+    // 직급 업데이트
+    func updatePosition(_ position: String) {
+        uiState = uiState.copy(position: position)
+        validatePosition()
+    }
+    
+    // 이메일 업데이트
+    func updateEmail(_ email: String) {
+        uiState = uiState.copy(email: email)
+        validateEmail()
+    }
+    
+    // 비밀번호 업데이트
+    func updatePassword(_ password: String) {
+        uiState = uiState.copy(password: password)
+        validatePassword()
+        if !uiState.passwordCheck.isEmpty {
+            validatePasswordCheck()
+        }
+    }
+    
+    // 비밀번호 확인 업데이트
+    func updatePasswordCheck(_ passwordCheck: String) {
+        uiState = uiState.copy(passwordCheck: passwordCheck)
+        validatePasswordCheck()
+    }
+    
+    // 회원가입 제출
+    func submit() {
+        Task {
+            validateName()
+            validateBranch()
+            validatePosition()
+            validateEmail()
+            validatePassword()
+            validatePasswordCheck()
+            
+            guard uiState.isValid else { return }
+            
+            let name = uiState.name
+            let workspace = uiState.workspace
+            let branch = uiState.branch
+            let position = uiState.position
+            let email = uiState.email
+            let password = uiState.password
+            
+            uiState = uiState.copy(loading: true, error: nil)
+            
+            do {
+                _ = try await signUpUseCase.execute(
+                    userName: name,
+                    workspace: workspace,
+                    branch: branch,
+                    position: position,
+                    email: email,
+                    password: password
+                )
+                uiState = uiState.copy(loading: false, success: true)
+            } catch {
+                uiState = uiState.copy(loading: false)
+                showError(error.localizedDescription)
+            }
+        }
+    }
+    
+    // 에러 소비 (Toast 표시 후 에러 상태 제거)
+    func consumeError() {
+        uiState = uiState.copy(error: nil)
+    }
+    
+    // 에러 표시를 위한 강제 상태 변경
+    private func showError(_ message: String) {
+        // 타임스탬프를 추가하여 항상 다른 값으로 만들어 onChange 트리거 보장
+        uiState = uiState.copy(error: "\(message)_\(Date().timeIntervalSince1970)")
+    }
+    
+    // MARK: - Private Methods
+    
+    private func validateName() {
+        let result = AuthValidator.validateNotEmpty(
+            uiState.name,
+            StringResources.Auth.nameLabel
+        )
+        uiState = uiState.copy(nameError: result.errorMessage)
+    }
+    
+    private func validateBranch() {
+        let result = AuthValidator.validateNotEmpty(
+            uiState.branch,
+            StringResources.Auth.branchLabel
+        )
+        uiState = uiState.copy(branchError: result.errorMessage)
+    }
+    
+    private func validatePosition() {
+        let result = AuthValidator.validateNotEmpty(
+            uiState.position,
+            StringResources.Auth.positionLabel
+        )
+        uiState = uiState.copy(positionError: result.errorMessage)
+    }
+    
+    private func validateEmail() {
+        let result = AuthValidator.validateEmail(uiState.email)
+        uiState = uiState.copy(emailError: result.errorMessage)
+    }
+    
+    private func validatePassword() {
+        let result = AuthValidator.validatePassword(uiState.password)
+        uiState = uiState.copy(passwordError: result.errorMessage)
+    }
+    
+    private func validatePasswordCheck() {
+        let result = AuthValidator.validatePasswordCheck(
+            uiState.password,
+            uiState.passwordCheck
+        )
+        uiState = uiState.copy(passwordCheckError: result.errorMessage)
+    }
+}

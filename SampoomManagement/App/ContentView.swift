@@ -12,15 +12,13 @@ enum Tabs {
 }
 
 struct ContentView: View {
+    let dependencies: AppDependencies
     @StateObject private var partViewModel: PartViewModel
     @State private var selectedTab: Tabs = .dashboard
     
-    init() {
-        // DI Container에서 ViewModel 주입
-        guard let viewModel = DIContainer.shared.resolve(PartViewModel.self) else {
-            fatalError("PartViewModel을 DIContainer에서 찾을 수 없습니다.")
-        }
-        _partViewModel = StateObject(wrappedValue: viewModel)
+    init(dependencies: AppDependencies) {
+        self.dependencies = dependencies
+        _partViewModel = StateObject(wrappedValue: dependencies.makePartViewModel())
     }
     
     var body: some View {
