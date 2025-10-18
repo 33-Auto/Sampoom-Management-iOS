@@ -11,15 +11,12 @@ struct PartView: View {
     @ObservedObject var viewModel: PartViewModel
     @State private var searchQuery = ""
     
-    let onNavigateBack: () -> Void
     let onNavigatePartList: (PartsGroup) -> Void
     
     init(
-        onNavigateBack: @escaping () -> Void = {},
         onNavigatePartList: @escaping (PartsGroup) -> Void,
         viewModel: PartViewModel
     ) {
-        self.onNavigateBack = onNavigateBack
         self.onNavigatePartList = onNavigatePartList
         self.viewModel = viewModel
     }
@@ -32,7 +29,7 @@ struct PartView: View {
                     .font(.gmarketTitle2)
                     .fontWeight(.bold)
                     .padding(.horizontal, 16)
-                
+                 
                 // Category 섹션
                 categorySection
                 

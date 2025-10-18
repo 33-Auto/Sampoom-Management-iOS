@@ -15,6 +15,7 @@ class PartListViewModel: ObservableObject {
     
     private let getPartUseCase: GetPartUseCase
     private let groupId: Int
+    private var loadTask: Task<Void, Never>?
     
     init(
         getPartUseCase: GetPartUseCase,
@@ -23,36 +24,50 @@ class PartListViewModel: ObservableObject {
         self.getPartUseCase = getPartUseCase
         self.groupId = groupId
         
-        loadPartList(groupId: groupId)
+        loadPartList()
     }
     
     func onEvent(_ event: PartListUiEvent) {
         switch event {
-        case .loadPartList:
-            loadPartList(groupId: groupId)
-        case .retryPartList:
-            loadPartList(groupId: groupId)
+        case .loadPartList:loadPartList()
+        case .retryPartList:loadPartList()
         }
     }
     
-    private func loadPartList(groupId: Int) {
-        Task {
-            uiState = uiState.copy(partListLoading: true, partListError: nil)
-            
-            do {
-                let partList = try await getPartUseCase.execute(groupId: groupId)
-                uiState = uiState.copy(
-                    partList: partList.items,
-                    partListLoading: false,
-                    partListError: nil
-                )
-            } catch {
-                uiState = uiState.copy(
-                    partListLoading: false,
-                    partListError: error.localizedDescription
-                )
+    private func loadPartList() {
+        // 이전 작업 취소
+        loadTask?.cancel()
+        loadTask = Task { [weak self] in
+            guard let self else { return }
+            // 로딩 상태 진입은 메인에서
+            await MainActor.run {
+                self.uiState = self.uiState.copy(partListLoading: true, partListError: nil)
             }
-            print("PartListViewModel - loadPartList: \(uiState)")
+            do {
+                let partList = try await self.getPartUseCase.execute(groupId: self.groupId)
+                try Task.checkCancellation()
+                await MainActor.run {
+                    self.uiState = self.uiState.copy(
+                        partList: partList.items,
+                        partListLoading: false,
+                        partListError: nil
+                    )
+                }
+            } catch is CancellationError {
+                // 취소는 무시
+            } catch {
+                await MainActor.run {
+                    self.uiState = self.uiState.copy(
+                        partListLoading: false,
+                        partListError: error.localizedDescription
+                    )
+                }
+            }
+            #if DEBUG
+            await MainActor.run {
+                print("PartListViewModel - loadPartList: \(self.uiState)")
+            }
+            #endif
         }
     }
 }

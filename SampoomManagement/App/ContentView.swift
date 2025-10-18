@@ -140,9 +140,6 @@ struct ContentView: View {
             Tab(value: .parts, role: .search) {
                 NavigationStack(path: $navigationPath) {
                     PartView(
-                        onNavigateBack: {
-                            navigationPath.removeLast()
-                        },
                         onNavigatePartList: { group in
                             navigationPath.append(group.id)
                         },

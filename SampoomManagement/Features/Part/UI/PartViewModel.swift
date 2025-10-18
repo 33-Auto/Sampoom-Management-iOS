@@ -40,14 +40,14 @@ class PartViewModel: ObservableObject {
     
     private func loadCategory() {
         Task {
-            uiState = uiState.copy(categoryLoading: true, categoryError: nil)
+            uiState = uiState.copy(categoryLoading: true, categoryError: .some(nil))
             
             do {
                 let categoryList = try await getCategoryUseCase.execute()
                 uiState = uiState.copy(
                     categoryList: categoryList.items,
                     categoryLoading: false,
-                    categoryError: nil
+                    categoryError: .some(nil)
                 )
             } catch {
                 uiState = uiState.copy(
@@ -67,24 +67,22 @@ class PartViewModel: ObservableObject {
     }
     
     private func loadGroup(categoryId: Int) async {
-        Task {
-            uiState = uiState.copy(groupLoading: true, groupError: nil)
-            
-            do {
-                let groupList = try await getGroupUseCase.execute(categoryId: categoryId)
-                uiState = uiState.copy(
-                    groupList: groupList.items,
-                    groupLoading: false,
-                    groupError: nil
-                )
-            } catch {
-                uiState = uiState.copy(
-                    groupLoading: false,
-                    groupError: error.localizedDescription
-                )
-            }
-            print("PartViewModel - loadGroup: \(uiState)")
+        uiState = uiState.copy(groupLoading: true, groupError: .some(nil))
+        
+        do {
+            let groupList = try await getGroupUseCase.execute(categoryId: categoryId)
+            uiState = uiState.copy(
+                groupList: groupList.items,
+                groupLoading: false,
+                groupError: .some(nil)
+            )
+        } catch {
+            uiState = uiState.copy(
+                groupLoading: false,
+                groupError: error.localizedDescription
+            )
         }
+        print("PartViewModel - loadGroup: \(uiState)")
     }
     
     private func loadGroup() {

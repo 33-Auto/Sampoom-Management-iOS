@@ -43,11 +43,11 @@ struct PartUIState {
     func copy(
         groupList: [PartsGroup]? = nil,
         groupLoading: Bool? = nil,
-        groupError: String? = nil,
-        selectedCategory: Category? = nil,
+        groupError: String?? = nil,
+        selectedCategory: Category?? = nil,
         categoryList: [Category]? = nil,
         categoryLoading: Bool? = nil,
-        categoryError: String? = nil
+        categoryError: String?? = nil
     ) -> PartUIState {
         return PartUIState(
             groupList: groupList ?? self.groupList,

@@ -15,19 +15,9 @@ struct ErrorView: View {
         VStack(spacing: 16) {
             Spacer()
             
-//            Image(systemName: "exclamationmark.triangle")
-//                .font(.system(size: 48))
-//                .foregroundColor(.red)
-            
             Text("오류가 발생했습니다")
                 .font(.gmarketHeadline)
                 .foregroundColor(.red)
-            
-//            Text(error)
-//                .font(.caption)
-//                .foregroundColor(.secondary)
-//                .multilineTextAlignment(.center)
-//                .padding(.horizontal, 32)
             
             Button {
                 onRetry()
