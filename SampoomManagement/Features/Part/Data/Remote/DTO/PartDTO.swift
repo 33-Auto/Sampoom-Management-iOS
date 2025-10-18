@@ -8,7 +8,8 @@
 import Foundation
 
 struct PartDTO: Codable {
-    let id: Int
+    let partId: Int
+    let code: String
     let name: String
-    let count: Int
+    let quantity: Int
 }

@@ -14,7 +14,15 @@ class PartRepositoryImpl: PartRepository {
         self.api = api
     }
     
-    func getPartList() async throws -> PartList {
-        return try await api.getPartList()
+    func getCategoryList() async throws -> CategoryList {
+        return try await api.getCategoryList()
+    }
+    
+    func getGroupList(categoryId: Int) async throws -> PartsGroupList {
+        return try await api.getGroupList(categoryId: categoryId)
+    }
+    
+    func getPartList(groupId: Int) async throws -> PartList {
+        return try await api.getPartList(groupId: groupId)
     }
 }

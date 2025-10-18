@@ -23,6 +23,8 @@ class AppDependencies {
     // MARK: - Part
     let partAPI: PartAPI
     let partRepository: PartRepository
+    let getCategoryUseCase: GetCategoryUseCase
+    let getGroupUseCase: GetGroupUseCase
     let getPartUseCase: GetPartUseCase
     
     init() {
@@ -42,6 +44,8 @@ class AppDependencies {
         // Part
         partAPI = PartAPI(networkManager: networkManager)
         partRepository = PartRepositoryImpl(api: partAPI)
+        getCategoryUseCase = GetCategoryUseCase(repository: partRepository)
+        getGroupUseCase = GetGroupUseCase(repository: partRepository)
         getPartUseCase = GetPartUseCase(repository: partRepository)
     }
     
@@ -56,7 +60,16 @@ class AppDependencies {
     }
     
     func makePartViewModel() -> PartViewModel {
-        return PartViewModel(getPartUseCase: getPartUseCase)
+        return PartViewModel(
+            getCategoryUseCase: getCategoryUseCase,
+            getGroupUseCase: getGroupUseCase
+        )
+    }
+    
+    func makePartListViewModel(groupId: Int) -> PartListViewModel {
+        return PartListViewModel(
+            getPartUseCase: getPartUseCase, groupId: groupId
+        )
     }
 }
 
