@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct EmptyStateView: View {
+struct EmptyView: View {
     let icon: String
     let title: String
     let message: String?
@@ -45,12 +45,4 @@ struct EmptyStateView: View {
             Spacer()
         }
     }
-}
-
-#Preview {
-    EmptyStateView(
-        icon: "tray",
-        title: "인벤토리가 비어있습니다",
-        message: "새로운 부품을 추가해보세요"
-    )
 }

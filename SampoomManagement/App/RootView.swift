@@ -23,7 +23,7 @@ struct RootView: View {
     
     var body: some View {
         Group {
-            if isAuthenticated {
+            if !isAuthenticated {
                 // 로그인 되어있으면 메인 화면
                 ContentView(dependencies: dependencies)
             } else {

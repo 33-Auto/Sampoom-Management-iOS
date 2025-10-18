@@ -15,6 +15,7 @@ struct ContentView: View {
     let dependencies: AppDependencies
     @StateObject private var partViewModel: PartViewModel
     @State private var selectedTab: Tabs = .dashboard
+    @State private var navigationPath = NavigationPath()
     
     init(dependencies: AppDependencies) {
         self.dependencies = dependencies
@@ -43,6 +44,7 @@ struct ContentView: View {
             } label: {
                 Label {
                     Text(StringResources.Tabs.dashboard)
+                        .font(.gmarketSubheadline)
                 } icon: {
                     Image("dashboard")
                         .renderingMode(.template)
@@ -70,6 +72,7 @@ struct ContentView: View {
             } label: {
                 Label {
                     Text(StringResources.Tabs.delivery)
+                        .font(.gmarketSubheadline)
                 } icon: {
                     Image("delivery")
                         .renderingMode(.template)
@@ -97,6 +100,7 @@ struct ContentView: View {
             } label: {
                 Label {
                     Text(StringResources.Tabs.cart)
+                        .font(.gmarketSubheadline)
                 } icon: {
                     Image("cart")
                         .renderingMode(.template)
@@ -124,6 +128,7 @@ struct ContentView: View {
             } label: {
                 Label {
                     Text(StringResources.Tabs.orders)
+                        .font(.gmarketSubheadline)
                 } icon: {
                     Image("orders")
                         .renderingMode(.template)
@@ -133,11 +138,30 @@ struct ContentView: View {
             
             // PartView 탭
             Tab(value: .parts, role: .search) {
-                PartView()
-                    .environmentObject(partViewModel)
+                NavigationStack(path: $navigationPath) {
+                    PartView(
+                        onNavigateBack: {
+                            navigationPath.removeLast()
+                        },
+                        onNavigatePartList: { group in
+                            navigationPath.append(group.id)
+                        },
+                        viewModel: partViewModel
+                    )
+                    .navigationDestination(for: Int.self) { groupId in
+                        PartListView(
+                            viewModel: PartListViewModel(
+                                getPartUseCase: dependencies.getPartUseCase,
+                                groupId: groupId
+                            )
+                        )
+                    }
+                }
+                .environmentObject(partViewModel)
             } label: {
                 Label {
                     Text(StringResources.Tabs.parts)
+                        .font(.gmarketSubheadline)
                 } icon: {
                     Image("parts")
                         .renderingMode(.template)

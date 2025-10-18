@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct PartList: Codable, Equatable {
+struct PartList: Equatable {
     let items: [Part]
     var totalCount: Int { items.count }
     var isEmpty: Bool { items.isEmpty }
@@ -20,4 +20,3 @@ struct PartList: Codable, Equatable {
         return PartList(items: [])
     }
 }
-

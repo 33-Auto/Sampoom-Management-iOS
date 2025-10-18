@@ -7,11 +7,9 @@
 
 import Foundation
 
-struct User: Identifiable, Codable, Equatable {
+struct User: Equatable {
     let id: Int
     let name: String
     let role: String
-    let accessToken: String
-    let refreshToken: String
     let expiresIn: Int
 }
