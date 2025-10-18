@@ -20,9 +20,9 @@ struct PartListView: View {
         VStack(spacing: 0) {
             if viewModel.uiState.partListLoading {
                 // 로딩 상태
-                Spacer()
                 ProgressView()
-                Spacer()
+                    .frame(width: .infinity, height: .infinity)
+                    .background(Color.background)
             } else if let error = viewModel.uiState.partListError {
                 // 에러 상태
                 Spacer()
@@ -53,8 +53,9 @@ struct PartListView: View {
                 }
             }
         }
-        .navigationTitle("부품")
+        .navigationTitle("부품조회")
         .navigationBarTitleDisplayMode(.automatic)
+        .background(Color.background)
     }
 }
 
@@ -65,27 +66,27 @@ struct PartListItemCard: View {
         HStack {
             VStack(alignment: .leading, spacing: 4) {
                 Text(part.name)
-                    .font(.gmarketTitle2)
-                    .foregroundColor(.primary)
+                    .font(.gmarketTitle3)
+                    .foregroundColor(.text)
                 
                 Text(part.code)
                     .font(.gmarketCaption)
-                    .foregroundColor(.secondary)
+                    .foregroundColor(.textSecondary)
             }
             
             Spacer()
             
-                Text("\(part.quantity)")
-                    .font(.gmarketTitle2)
-                .foregroundColor(.primary)
+            Text("\(part.quantity)")
+                .font(.gmarketTitle3)
+                .foregroundColor(.text)
             
             Image(systemName: "chevron.right")
                 .foregroundColor(.secondary)
         }
         .padding(16)
         .background(
-            RoundedRectangle(cornerRadius: 8)
-                .fill(Color("BackgroundCard"))
+            RoundedRectangle(cornerRadius: 16)
+                .fill(.backgroundCard)
         )
     }
 }
