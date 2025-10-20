@@ -23,14 +23,14 @@ struct OutboundListView: View {
             // 메인 콘텐츠
             mainContentSection
         }
-        .navigationTitle("출고")
+        .navigationTitle(StringResources.Outbound.title)
         .navigationBarTitleDisplayMode(.automatic)
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
                 if !viewModel.uiState.outboundList.isEmpty && 
                    !viewModel.uiState.outboundLoading && 
                    viewModel.uiState.outboundError == nil {
-                    Button("출고목록 비우기") {
+                    Button(StringResources.Outbound.emptyAll) {
                         showEmptyOutboundDialog = true
                     }
                     .foregroundColor(.red)
@@ -45,37 +45,37 @@ struct OutboundListView: View {
         }
         .onChange(of: viewModel.uiState.isOrderSuccess) { oldValue, newValue in
             if newValue {
-                Toast.text("출고 주문 성공").show()
+                Toast.text(StringResources.Outbound.orderSuccess).show()
                 viewModel.clearSuccess()
             }
         }
         .onChange(of: viewModel.uiState.updateError) { oldValue, newValue in
             if let error = newValue {
-                Toast.text("수량 업데이트 에러: \(error)").show()
+                Toast.text("\(StringResources.Outbound.updateQuantityError): \(error)").show()
                 viewModel.onEvent(.clearUpdateError)
             }
         }
         .onChange(of: viewModel.uiState.deleteError) { oldValue, newValue in
             if let error = newValue {
-                Toast.text("삭제 에러: \(error)").show()
+                Toast.text("\(StringResources.Outbound.deleteError): \(error)").show()
                 viewModel.onEvent(.clearDeleteError)
             }
         }
-        .alert("전체 삭제", isPresented: $showEmptyOutboundDialog) {
-            Button("취소", role: .cancel) { }
-            Button("확인") {
+        .alert(StringResources.Outbound.confirmEmptyTitle, isPresented: $showEmptyOutboundDialog) {
+            Button(StringResources.Common.cancel, role: .cancel) { }
+            Button(StringResources.Common.ok) {
                 viewModel.onEvent(.deleteAllOutbound)
             }
         } message: {
-            Text("모든 출고 항목을 삭제하시겠습니까?")
+            Text(StringResources.Outbound.confirmEmptyMessage)
         }
-        .alert("출고 주문", isPresented: $showConfirmDialog) {
-            Button("취소", role: .cancel) { }
-            Button("확인") {
+        .alert(StringResources.Outbound.confirmProcessTitle, isPresented: $showConfirmDialog) {
+            Button(StringResources.Common.cancel, role: .cancel) { }
+            Button(StringResources.Common.ok) {
                 viewModel.onEvent(.processOutbound)
             }
         } message: {
-            Text("선택한 항목들을 출고 주문하시겠습니까?")
+            Text(StringResources.Outbound.confirmProcessMessage)
         }
     }
     
@@ -138,7 +138,7 @@ struct OutboundListView: View {
                 // 출고 주문 버튼
                 VStack {
                     Spacer()
-                    CommonButton("부품 출고처리", backgroundColor: .red, textColor: .white) {
+                    CommonButton(StringResources.Outbound.processOrder, backgroundColor: .red, textColor: .white) {
                         showConfirmDialog = true
                     }
                     .padding(.horizontal, 16)
@@ -207,7 +207,7 @@ struct OutboundPartItem: View {
             
             // 수량 조절
             HStack {
-                Text("수량")
+                Text(StringResources.Part.quantity)
                     .font(.gmarketBody)
                     .foregroundColor(.text)
                 

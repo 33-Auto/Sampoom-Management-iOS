@@ -37,7 +37,7 @@ struct CartListView: View {
             } else if viewModel.uiState.cartList.isEmpty {
                 HStack {
                     Spacer()
-                    EmptyView(title: "장바구니가 비어있습니다")
+                    EmptyView(title: StringResources.Cart.emptyMessage)
                     Spacer()
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -70,7 +70,7 @@ struct CartListView: View {
                     // 주문하기 버튼
                     VStack {
                         Spacer()
-                        CommonButton("부품 주문", backgroundColor: .accentColor, textColor: .white) {
+                        CommonButton(StringResources.Cart.processOrder, backgroundColor: .accentColor, textColor: .white) {
                             showConfirmDialog = true
                         }
                         .padding(.horizontal, 16)
@@ -79,12 +79,12 @@ struct CartListView: View {
                 }
             }
         }
-        .navigationTitle("장바구니")
+        .navigationTitle(StringResources.Cart.title)
         .navigationBarTitleDisplayMode(.automatic)
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
                 if !viewModel.uiState.cartLoading && viewModel.uiState.cartError == nil && !viewModel.uiState.cartList.isEmpty {
-                    Button("장바구니 비우기") {
+                    Button(StringResources.Cart.emptyAll) {
                         showEmptyCartDialog = true
                     }
                     .foregroundColor(.red)
@@ -92,40 +92,40 @@ struct CartListView: View {
             }
         }
         .background(Color.background)
-        .alert("장바구니 비우기", isPresented: $showEmptyCartDialog) {
-            Button("확인") {
+        .alert(StringResources.Cart.confirmEmptyTitle, isPresented: $showEmptyCartDialog) {
+            Button(StringResources.Common.ok) {
                 viewModel.onEvent(.deleteAllCart)
             }
-            Button("취소", role: .cancel) { }
+            Button(StringResources.Common.cancel, role: .cancel) { }
         } message: {
-            Text("장바구니를 비우시겠습니까?")
+            Text(StringResources.Cart.confirmEmptyMessage)
         }
-        .alert("주문 확인", isPresented: $showConfirmDialog) {
-            Button("확인") {
+        .alert(StringResources.Cart.confirmProcessTitle, isPresented: $showConfirmDialog) {
+            Button(StringResources.Common.ok) {
                 viewModel.onEvent(.processOrder)
             }
-            Button("취소", role: .cancel) { }
+            Button(StringResources.Common.cancel, role: .cancel) { }
         } message: {
-            Text("선택하신 부품을 주문하시겠습니까?")
+            Text(StringResources.Cart.confirmProcessMessage)
         }
         .onAppear {
             viewModel.onEvent(.loadCartList)
         }
         .onChange(of: viewModel.uiState.isOrderSuccess) { oldValue, newValue in
             if newValue {
-                Toast.text("주문 성공!").show()
+                Toast.text(StringResources.Cart.orderSuccess).show()
                 viewModel.clearSuccess()
             }
         }
         .onChange(of: viewModel.uiState.updateError) { oldValue, newValue in
             if let error = newValue {
-                Toast.text("수량 업데이트 에러: \(error)").show()
+                Toast.text("\(StringResources.Cart.updateQuantityError): \(error)").show()
                 viewModel.onEvent(.clearUpdateError)
             }
         }
         .onChange(of: viewModel.uiState.deleteError) { oldValue, newValue in
             if let error = newValue {
-                Toast.text("삭제 에러: \(error)").show()
+                Toast.text("\(StringResources.Cart.deleteError): \(error)").show()
                 viewModel.onEvent(.clearDeleteError)
             }
         }
@@ -189,7 +189,7 @@ struct CartPartItem: View {
             
             // 수량 조절
             HStack {
-                Text("수량")
+                Text(StringResources.Part.quantity)
                     .font(.gmarketBody)
                     .foregroundColor(.text)
                 

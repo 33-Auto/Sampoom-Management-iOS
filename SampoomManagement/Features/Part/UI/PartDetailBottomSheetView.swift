@@ -22,7 +22,7 @@ struct PartDetailBottomSheetView: View {
 
     private var partName: String { viewModel.uiState.part?.name ?? "N/A" }
     private var partCode: String { viewModel.uiState.part?.code ?? "N/A" }
-    private var quantityLabelText: String { "현재 수량: \(viewModel.uiState.part?.quantity ?? 0)EA" }
+    private var quantityLabelText: String { "\(StringResources.PartDetail.currentQuantity): \(viewModel.uiState.part?.quantity ?? 0)EA" }
 
     var body: some View {
         mainContent
@@ -45,17 +45,17 @@ struct PartDetailBottomSheetView: View {
             .onChange(of: viewModel.uiState.updateError) { _, newValue in
                 handleUpdateError(newValue)
             }
-            .alert("출고 확인", isPresented: $showOutboundDialog) {
-                Button("확인") { addToOutbound() }
-                Button("취소", role: .cancel) { }
+            .alert(StringResources.PartDetail.confirmOutboundTitle, isPresented: $showOutboundDialog) {
+                Button(StringResources.Common.ok) { addToOutbound() }
+                Button(StringResources.Common.cancel, role: .cancel) { }
             } message: {
-                Text("선택하신 부품을 출고 목록에 추가하시겠습니까?")
+                Text(StringResources.PartDetail.confirmOutboundMessage)
             }
-            .alert("장바구니 확인", isPresented: $showCartDialog) {
-                Button("확인") { addToCart() }
-                Button("취소", role: .cancel) { }
+            .alert(StringResources.PartDetail.confirmCartTitle, isPresented: $showCartDialog) {
+                Button(StringResources.Common.ok) { addToCart() }
+                Button(StringResources.Common.cancel, role: .cancel) { }
             } message: {
-                Text("선택하신 부품을 장바구니에 추가하시겠습니까?")
+                Text(StringResources.PartDetail.confirmCartMessage)
             }
     }
     
@@ -86,13 +86,13 @@ struct PartDetailBottomSheetView: View {
             }
             .padding(24)
             .background(Color.background)
-//            .navigationTitle("부품 상세")
+            .navigationTitle(StringResources.PartDetail.title)
             .navigationBarTitleDisplayMode(.inline)
-//            .toolbar {
-//                ToolbarItem(placement: .topBarTrailing) {
-//                    Button("닫기") { viewModel.onEvent(.dismiss) }
-//                }
-//            }
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button(StringResources.Navigation.close) { viewModel.onEvent(.dismiss) }
+                }
+            }
         }
     }
     
@@ -110,7 +110,7 @@ struct PartDetailBottomSheetView: View {
     
     private func handleOutboundSuccess(_ newValue: Bool) {
         if newValue {
-            Toast.text("출고 성공!").show()
+            Toast.text(StringResources.PartDetail.outboundSuccess).show()
             showOutboundDialog = false
             viewModel.clearSuccess()
         }
@@ -118,7 +118,7 @@ struct PartDetailBottomSheetView: View {
     
     private func handleCartSuccess(_ newValue: Bool) {
         if newValue {
-            Toast.text("장바구니 추가 성공!").show()
+            Toast.text(StringResources.PartDetail.cartSuccess).show()
             showCartDialog = false
             viewModel.clearSuccess()
         }
@@ -126,7 +126,7 @@ struct PartDetailBottomSheetView: View {
     
     private func handleUpdateError(_ newValue: String?) {
         if let error = newValue {
-            Toast.text("에러 발생: \(error)").show()
+            Toast.text("\(StringResources.PartDetail.errorOccurred): \(error)").show()
             viewModel.onEvent(.clearError)
         }
     }
@@ -164,7 +164,7 @@ private struct QuantityControlView: View {
 
     var body: some View {
         HStack {
-            Text("수량")
+            Text(StringResources.PartDetail.quantity)
                 .font(.gmarketBody)
                 .foregroundColor(.text)
             Spacer()
@@ -198,12 +198,12 @@ private struct ActionButtonsView: View {
 
     var body: some View {
         HStack {
-            CommonButton("출고 추가", customIcon: "outbound", backgroundColor: .red, textColor: .white) {
+            CommonButton(StringResources.PartDetail.addToOutbound, customIcon: "outbound", backgroundColor: .red, textColor: .white) {
                 addOutboundAction()
             }
             .disabled(isDisabled)
 
-            CommonButton("장바구니 추가", customIcon: "cart", backgroundColor: .blue, textColor: .white) {
+            CommonButton(StringResources.PartDetail.addToCart, customIcon: "cart", backgroundColor: .blue, textColor: .white) {
                 addCartAction()
             }
             .disabled(isDisabled)
