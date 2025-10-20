@@ -43,12 +43,12 @@ struct OutboundListUiState {
     func copy(
         outboundList: [Outbound]? = nil,
         outboundLoading: Bool? = nil,
-        outboundError: String? = nil,
+        outboundError: String?? = nil,
         selectedOutbound: Outbound? = nil,
         isUpdating: Bool? = nil,
-        updateError: String? = nil,
+        updateError: String?? = nil,
         isDeleting: Bool? = nil,
-        deleteError: String? = nil,
+        deleteError: String?? = nil,
         isOrderSuccess: Bool? = nil
     ) -> OutboundListUiState {
         return OutboundListUiState(

@@ -54,28 +54,34 @@ class OutboundListViewModel: ObservableObject {
         case .deleteAllOutbound:
             deleteAllOutbound()
         case .clearUpdateError:
-            uiState = uiState.copy(updateError: nil)
+            uiState = uiState.copy(updateError: .some(nil))
         case .clearDeleteError:
-            uiState = uiState.copy(deleteError: nil)
+            uiState = uiState.copy(deleteError: .some(nil))
         }
     }
     
     private func loadOutboundList() {
         Task {
-            uiState = uiState.copy(outboundLoading: true, outboundError: nil)
+            await MainActor.run {
+                uiState = uiState.copy(outboundLoading: true, outboundError: nil)
+            }
             
             do {
                 let outboundList = try await getOutboundUseCase.execute()
-                uiState = uiState.copy(
-                    outboundList: outboundList.items,
-                    outboundLoading: false,
-                    outboundError: nil
-                )
+                await MainActor.run {
+                    uiState = uiState.copy(
+                        outboundList: outboundList.items,
+                        outboundLoading: false,
+                        outboundError: nil
+                    )
+                }
             } catch {
-                uiState = uiState.copy(
-                    outboundLoading: false,
-                    outboundError: error.localizedDescription
-                )
+                await MainActor.run {
+                    uiState = uiState.copy(
+                        outboundLoading: false,
+                        outboundError: error.localizedDescription
+                    )
+                }
             }
             print("OutboundListViewModel - loadOutboundList: \(uiState)")
         }
@@ -83,17 +89,23 @@ class OutboundListViewModel: ObservableObject {
     
     private func processOutbound() {
         Task {
-            uiState = uiState.copy(outboundLoading: true, outboundError: nil)
+            await MainActor.run {
+                uiState = uiState.copy(outboundLoading: true, outboundError: nil)
+            }
             
             do {
                 try await processOutboundUseCase.execute()
-                uiState = uiState.copy(outboundLoading: false, isOrderSuccess: true)
+                await MainActor.run {
+                    uiState = uiState.copy(outboundLoading: false, isOrderSuccess: true)
+                }
                 loadOutboundList() // 성공 후 리스트 새로고침
             } catch {
-                uiState = uiState.copy(
-                    outboundLoading: false,
-                    outboundError: error.localizedDescription
-                )
+                await MainActor.run {
+                    uiState = uiState.copy(
+                        outboundLoading: false,
+                        outboundError: error.localizedDescription
+                    )
+                }
             }
             print("OutboundListViewModel - processOutbound: \(uiState)")
         }
@@ -105,19 +117,25 @@ class OutboundListViewModel: ObservableObject {
         
         // 2. 백그라운드에서 서버 동기화
         Task {
-            uiState = uiState.copy(isUpdating: true, updateError: nil)
+            await MainActor.run {
+                uiState = uiState.copy(isUpdating: true, updateError: nil)
+            }
             
             do {
                 try await updateOutboundQuantityUseCase.execute(outboundId: outboundId, quantity: quantity)
-                uiState = uiState.copy(isUpdating: false)
+                await MainActor.run {
+                    uiState = uiState.copy(isUpdating: false)
+                }
                 print("OutboundListViewModel - updateQuantity success: \(uiState)")
             } catch {
                 // 3. 실패 시 원래 상태로 롤백하고 에러 표시
                 loadOutboundList() // 서버에서 최신 상태 가져와서 롤백
-                uiState = uiState.copy(
-                    isUpdating: false,
-                    updateError: error.localizedDescription
-                )
+                await MainActor.run {
+                    uiState = uiState.copy(
+                        isUpdating: false,
+                        updateError: error.localizedDescription
+                    )
+                }
                 print("OutboundListViewModel - updateQuantity error: \(error)")
             }
         }
@@ -158,19 +176,25 @@ class OutboundListViewModel: ObservableObject {
         
         // 2. 백그라운드에서 서버 동기화
         Task {
-            uiState = uiState.copy(isDeleting: true, deleteError: nil)
+            await MainActor.run {
+                uiState = uiState.copy(isDeleting: true, deleteError: nil)
+            }
             
             do {
                 try await deleteOutboundUseCase.execute(outboundId: outboundId)
-                uiState = uiState.copy(isDeleting: false)
+                await MainActor.run {
+                    uiState = uiState.copy(isDeleting: false)
+                }
                 print("OutboundListViewModel - deleteOutbound success: \(uiState)")
             } catch {
                 // 3. 실패 시 원래 상태로 롤백하고 에러 표시
                 loadOutboundList() // 서버에서 최신 상태 가져와서 롤백
-                uiState = uiState.copy(
-                    isDeleting: false,
-                    deleteError: error.localizedDescription
-                )
+                await MainActor.run {
+                    uiState = uiState.copy(
+                        isDeleting: false,
+                        deleteError: error.localizedDescription
+                    )
+                }
                 print("OutboundListViewModel - deleteOutbound error: \(error)")
             }
         }
@@ -201,19 +225,25 @@ class OutboundListViewModel: ObservableObject {
         
         // 2. 백그라운드에서 서버 동기화
         Task {
-            uiState = uiState.copy(isDeleting: true, deleteError: nil)
+            await MainActor.run {
+                uiState = uiState.copy(isDeleting: true, deleteError: nil)
+            }
             
             do {
                 try await deleteAllOutboundUseCase.execute()
-                uiState = uiState.copy(isDeleting: false)
+                await MainActor.run {
+                    uiState = uiState.copy(isDeleting: false)
+                }
                 print("OutboundListViewModel - deleteAllOutbound success: \(uiState)")
             } catch {
                 // 3. 실패 시 원래 상태로 롤백하고 에러 표시
                 loadOutboundList() // 서버에서 최신 상태 가져와서 롤백
-                uiState = uiState.copy(
-                    isDeleting: false,
-                    deleteError: error.localizedDescription
-                )
+                await MainActor.run {
+                    uiState = uiState.copy(
+                        isDeleting: false,
+                        deleteError: error.localizedDescription
+                    )
+                }
                 print("OutboundListViewModel - deleteAllOutbound error: \(error)")
             }
         }

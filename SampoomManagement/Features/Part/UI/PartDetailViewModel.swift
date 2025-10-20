@@ -16,15 +16,9 @@ class PartDetailViewModel: ObservableObject {
     private let addOutboundUseCase: AddOutboundUseCase
     private let addCartUseCase: AddCartUseCase
     
-    private var errorLabel: String = ""
-    
     init(addOutboundUseCase: AddOutboundUseCase, addCartUseCase: AddCartUseCase) {
         self.addOutboundUseCase = addOutboundUseCase
         self.addCartUseCase = addCartUseCase
-    }
-    
-    func bindLabel(error: String) {
-        errorLabel = error
     }
     
     func onEvent(_ event: PartDetailUiEvent) {
@@ -59,30 +53,36 @@ class PartDetailViewModel: ObservableObject {
                 addToCart(partId: partId, quantity: quantity)
             }
         case .clearError:
-            uiState = uiState.copy(updateError: nil)
+            uiState = uiState.copy(updateError: .some(nil))
         case .dismiss:
             uiState = uiState.copy(
-                part: nil,
+                part: .some(nil),
                 quantity: 1,
-                updateError: nil
+                updateError: .some(nil)
             )
         }
     }
     
     private func addToOutbound(partId: Int, quantity: Int) {
         Task {
-            uiState = uiState.copy(isUpdating: true, updateError: nil)
+            await MainActor.run {
+                uiState = uiState.copy(isUpdating: true, updateError: nil)
+            }
             
             do {
                 try await addOutboundUseCase.execute(partId: partId, quantity: quantity)
                 
-                uiState = uiState.copy(isUpdating: false, isOutboundSuccess: true)
+                await MainActor.run {
+                    uiState = uiState.copy(isUpdating: false, isOutboundSuccess: true)
+                }
                 print("PartDetailViewModel - addToOutbound success: \(uiState)")
             } catch {
-                uiState = uiState.copy(
-                    isUpdating: false,
-                    updateError: error.localizedDescription
-                )
+                await MainActor.run {
+                    uiState = uiState.copy(
+                        isUpdating: false,
+                        updateError: error.localizedDescription
+                    )
+                }
                 print("PartDetailViewModel - addToOutbound error: \(error)")
             }
         }
@@ -90,18 +90,24 @@ class PartDetailViewModel: ObservableObject {
     
     private func addToCart(partId: Int, quantity: Int) {
         Task {
-            uiState = uiState.copy(isUpdating: true, updateError: nil)
+            await MainActor.run {
+                uiState = uiState.copy(isUpdating: true, updateError: nil)
+            }
             
             do {
                 try await addCartUseCase.execute(partId: partId, quantity: quantity)
                 
-                uiState = uiState.copy(isUpdating: false, isCartSuccess: true)
+                await MainActor.run {
+                    uiState = uiState.copy(isUpdating: false, isCartSuccess: true)
+                }
                 print("PartDetailViewModel - addToCart success: \(uiState)")
             } catch {
-                uiState = uiState.copy(
-                    isUpdating: false,
-                    updateError: error.localizedDescription
-                )
+                await MainActor.run {
+                    uiState = uiState.copy(
+                        isUpdating: false,
+                        updateError: error.localizedDescription
+                    )
+                }
                 print("PartDetailViewModel - addToCart error: \(error)")
             }
         }

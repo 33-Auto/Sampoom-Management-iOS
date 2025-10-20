@@ -82,7 +82,9 @@ struct CommonButton: View {
                 if let customIcon = customIcon, iconPosition == .leading {
                     Image(customIcon)
                         .renderingMode(.template)
-                        .font(size.font)
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: size.height * 0.5, height: size.height * 0.5)
                 } else if let icon = icon, iconPosition == .leading {
                     Image(systemName: icon)
                         .font(size.font)
@@ -94,7 +96,9 @@ struct CommonButton: View {
                 if let customIcon = customIcon, iconPosition == .trailing {
                     Image(customIcon)
                         .renderingMode(.template)
-                        .font(size.font)
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: size.height * 0.5, height: size.height * 0.5)
                 } else if let icon = icon, iconPosition == .trailing {
                     Image(systemName: icon)
                         .font(size.font)

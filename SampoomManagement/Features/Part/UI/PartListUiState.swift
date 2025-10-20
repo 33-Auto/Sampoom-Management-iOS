@@ -28,8 +28,8 @@ struct PartListUiState {
     func copy(
         partList: [Part]? = nil,
         partListLoading: Bool? = nil,
-        partListError: String? = nil,
-        selectedPart: Part? = nil
+        partListError: String?? = nil,
+        selectedPart: Part?? = nil
     ) -> PartListUiState {
         return PartListUiState(
             partList: partList ?? self.partList,

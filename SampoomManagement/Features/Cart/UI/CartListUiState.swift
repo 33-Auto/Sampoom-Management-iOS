@@ -43,12 +43,12 @@ struct CartListUiState {
     func copy(
         cartList: [Cart]? = nil,
         cartLoading: Bool? = nil,
-        cartError: String? = nil,
+        cartError: String?? = nil,
         selectedCart: Cart? = nil,
         isUpdating: Bool? = nil,
-        updateError: String? = nil,
+        updateError: String?? = nil,
         isDeleting: Bool? = nil,
-        deleteError: String? = nil,
+        deleteError: String?? = nil,
         isOrderSuccess: Bool? = nil
     ) -> CartListUiState {
         return CartListUiState(

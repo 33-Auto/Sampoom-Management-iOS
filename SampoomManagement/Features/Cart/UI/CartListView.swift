@@ -18,10 +18,13 @@ struct CartListView: View {
             VStack(spacing: 0) {
                 // Content
             if viewModel.uiState.cartLoading {
-                Spacer()
-                ProgressView()
-                    .scaleEffect(1.5)
-                Spacer()
+                HStack {
+                    Spacer()
+                    ProgressView()
+                        .scaleEffect(1.5)
+                    Spacer()
+                }
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
             } else if let error = viewModel.uiState.cartError {
                 HStack {
                     Spacer()

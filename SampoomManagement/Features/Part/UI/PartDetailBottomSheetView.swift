@@ -10,12 +10,12 @@ struct PartDetailBottomSheetView: View {
     private func decreaseQuantity() { viewModel.onEvent(.decreaseQuantity) }
     private func increaseQuantity() { viewModel.onEvent(.increaseQuantity) }
     private func addToOutbound() {
-        let id = viewModel.uiState.part?.id ?? 0
+        guard let id = viewModel.uiState.part?.id else { return }
         let qty = viewModel.uiState.quantity
         viewModel.onEvent(.addToOutbound(partId: id, quantity: qty))
     }
     private func addToCart() {
-        let id = viewModel.uiState.part?.id ?? 0
+        guard let id = viewModel.uiState.part?.id else { return }
         let qty = viewModel.uiState.quantity
         viewModel.onEvent(.addToCart(partId: id, quantity: qty))
     }
@@ -46,13 +46,13 @@ struct PartDetailBottomSheetView: View {
                 handleUpdateError(newValue)
             }
             .alert(StringResources.PartDetail.confirmOutboundTitle, isPresented: $showOutboundDialog) {
-                Button(StringResources.Common.ok) { addToOutbound() }
+                Button(StringResources.Common.ok) { showOutboundDialog = false; addToOutbound() }
                 Button(StringResources.Common.cancel, role: .cancel) { }
             } message: {
                 Text(StringResources.PartDetail.confirmOutboundMessage)
             }
             .alert(StringResources.PartDetail.confirmCartTitle, isPresented: $showCartDialog) {
-                Button(StringResources.Common.ok) { addToCart() }
+                Button(StringResources.Common.ok) { showCartDialog = false; addToCart() }
                 Button(StringResources.Common.cancel, role: .cancel) { }
             } message: {
                 Text(StringResources.PartDetail.confirmCartMessage)

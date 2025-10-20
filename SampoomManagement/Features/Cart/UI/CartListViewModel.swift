@@ -52,29 +52,35 @@ class CartListViewModel: ObservableObject {
         case .deleteAllCart:
             deleteAllCart()
         case .clearUpdateError:
-            uiState = uiState.copy(updateError: nil)
+            uiState = uiState.copy(updateError: .some(nil))
         case .clearDeleteError:
-            uiState = uiState.copy(deleteError: nil)
+            uiState = uiState.copy(deleteError: .some(nil))
         }
     }
     
     private func loadCartList() {
         Task {
-            uiState = uiState.copy(cartLoading: true, cartError: nil)
+            await MainActor.run {
+                uiState = uiState.copy(cartLoading: true, cartError: nil)
+            }
             
             do {
                 let cartList = try await getCartUseCase.execute()
                 
-                uiState = uiState.copy(
-                    cartList: cartList.items,
-                    cartLoading: false,
-                    cartError: nil
-                )
+                await MainActor.run {
+                    uiState = uiState.copy(
+                        cartList: cartList.items,
+                        cartLoading: false,
+                        cartError: nil
+                    )
+                }
             } catch {
-                uiState = uiState.copy(
-                    cartLoading: false,
-                    cartError: error.localizedDescription
-                )
+                await MainActor.run {
+                    uiState = uiState.copy(
+                        cartLoading: false,
+                        cartError: error.localizedDescription
+                    )
+                }
             }
             print("CartListViewModel - loadCartList: \(uiState)")
         }
@@ -95,19 +101,25 @@ class CartListViewModel: ObservableObject {
         
         // 2. 백그라운드에서 서버 동기화
         Task {
-            uiState = uiState.copy(isUpdating: true, updateError: nil)
+            await MainActor.run {
+                uiState = uiState.copy(isUpdating: true, updateError: nil)
+            }
             
             do {
                 try await updateCartQuantityUseCase.execute(cartItemId: cartItemId, quantity: quantity)
-                uiState = uiState.copy(isUpdating: false)
+                await MainActor.run {
+                    uiState = uiState.copy(isUpdating: false)
+                }
                 print("CartListViewModel - updateQuantity success: \(uiState)")
             } catch {
                 // 3. 실패 시 원래 상태로 롤백하고 에러 표시
                 loadCartList() // 서버에서 최신 상태 가져와서 롤백
-                uiState = uiState.copy(
-                    isUpdating: false,
-                    updateError: error.localizedDescription
-                )
+                await MainActor.run {
+                    uiState = uiState.copy(
+                        isUpdating: false,
+                        updateError: error.localizedDescription
+                    )
+                }
                 print("CartListViewModel - updateQuantity error: \(error)")
             }
         }
@@ -148,19 +160,25 @@ class CartListViewModel: ObservableObject {
         
         // 2. 백그라운드에서 서버 동기화
         Task {
-            uiState = uiState.copy(isDeleting: true, deleteError: nil)
+            await MainActor.run {
+                uiState = uiState.copy(isDeleting: true, deleteError: nil)
+            }
             
             do {
                 try await deleteCartUseCase.execute(cartItemId: cartItemId)
-                uiState = uiState.copy(isDeleting: false)
+                await MainActor.run {
+                    uiState = uiState.copy(isDeleting: false)
+                }
                 print("CartListViewModel - deleteCart success: \(uiState)")
             } catch {
                 // 3. 실패 시 원래 상태로 롤백하고 에러 표시
                 loadCartList() // 서버에서 최신 상태 가져와서 롤백
-                uiState = uiState.copy(
-                    isDeleting: false,
-                    deleteError: error.localizedDescription
-                )
+                await MainActor.run {
+                    uiState = uiState.copy(
+                        isDeleting: false,
+                        deleteError: error.localizedDescription
+                    )
+                }
                 print("CartListViewModel - deleteCart error: \(error)")
             }
         }
@@ -191,19 +209,25 @@ class CartListViewModel: ObservableObject {
         
         // 2. 백그라운드에서 서버 동기화
         Task {
-            uiState = uiState.copy(isDeleting: true, deleteError: nil)
+            await MainActor.run {
+                uiState = uiState.copy(isDeleting: true, deleteError: nil)
+            }
             
             do {
                 try await deleteAllCartUseCase.execute()
-                uiState = uiState.copy(isDeleting: false)
+                await MainActor.run {
+                    uiState = uiState.copy(isDeleting: false)
+                }
                 print("CartListViewModel - deleteAllCart success: \(uiState)")
             } catch {
                 // 3. 실패 시 원래 상태로 롤백하고 에러 표시
                 loadCartList() // 서버에서 최신 상태 가져와서 롤백
-                uiState = uiState.copy(
-                    isDeleting: false,
-                    deleteError: error.localizedDescription
-                )
+                await MainActor.run {
+                    uiState = uiState.copy(
+                        isDeleting: false,
+                        deleteError: error.localizedDescription
+                    )
+                }
                 print("CartListViewModel - deleteAllCart error: \(error)")
             }
         }

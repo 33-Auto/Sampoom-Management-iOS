@@ -32,10 +32,10 @@ struct PartDetailUiState {
     }
     
     func copy(
-        part: Part? = nil,
+        part: Part?? = nil,
         quantity: Int? = nil,
         isUpdating: Bool? = nil,
-        updateError: String? = nil,
+        updateError: String?? = nil,
         isOutboundSuccess: Bool? = nil,
         isCartSuccess: Bool? = nil
     ) -> PartDetailUiState {
