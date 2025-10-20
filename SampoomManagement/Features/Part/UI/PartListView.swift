@@ -81,7 +81,7 @@ struct PartListView: View {
                         viewModel.onEvent(.dismissBottomSheet)
                     }
                     .presentationDetents([.fraction(0.3)])
-                    .presentationDragIndicator(.automatic)
+                    .presentationDragIndicator(.visible)
                     .presentationBackground(.clear)
             }
         }

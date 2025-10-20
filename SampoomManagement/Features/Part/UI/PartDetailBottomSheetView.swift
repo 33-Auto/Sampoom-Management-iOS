@@ -62,6 +62,8 @@ struct PartDetailBottomSheetView: View {
     private var mainContent: some View {
         NavigationView {
             VStack(alignment: .leading, spacing: 16) {
+                Spacer()
+                
                 PartInfoHeaderView(
                     name: partName,
                     code: partCode,
@@ -86,13 +88,6 @@ struct PartDetailBottomSheetView: View {
             }
             .padding(24)
             .background(Color.background)
-            .navigationTitle(StringResources.PartDetail.title)
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .topBarTrailing) {
-                    Button(StringResources.Navigation.close) { viewModel.onEvent(.dismiss) }
-                }
-            }
         }
     }
     
