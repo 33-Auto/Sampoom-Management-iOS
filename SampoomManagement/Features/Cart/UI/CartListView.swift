@@ -48,10 +48,8 @@ struct CartListView: View {
                 ZStack(alignment: .bottom) {
                     ScrollView {
                         LazyVStack(spacing: 16) {
-                            ForEach(viewModel.uiState.cartList.indices, id: \.self) { categoryIndex in
-                                let category = viewModel.uiState.cartList[categoryIndex]
-                                ForEach(category.groups.indices, id: \.self) { groupIndex in
-                                    let group = category.groups[groupIndex]
+                            ForEach(viewModel.uiState.cartList, id: \.categoryId) { category in
+                                ForEach(category.groups, id: \.groupId) { group in
                                     CartSection(
                                         categoryName: category.categoryName,
                                         groupName: group.groupName,
@@ -114,19 +112,19 @@ struct CartListView: View {
         .onAppear {
             viewModel.onEvent(.loadCartList)
         }
-        .onChange(of: viewModel.uiState.isOrderSuccess) { oldValue, newValue in
+        .onChange(of: viewModel.uiState.isOrderSuccess) { _, newValue in
             if newValue {
                 Toast.text(StringResources.Cart.orderSuccess).show()
                 viewModel.clearSuccess()
             }
         }
-        .onChange(of: viewModel.uiState.updateError) { oldValue, newValue in
+        .onChange(of: viewModel.uiState.updateError) { _, newValue in
             if let error = newValue {
                 Toast.text("\(StringResources.Cart.updateQuantityError): \(error)").show()
                 viewModel.onEvent(.clearUpdateError)
             }
         }
-        .onChange(of: viewModel.uiState.deleteError) { oldValue, newValue in
+        .onChange(of: viewModel.uiState.deleteError) { _, newValue in
             if let error = newValue {
                 Toast.text("\(StringResources.Cart.deleteError): \(error)").show()
                 viewModel.onEvent(.clearDeleteError)
@@ -187,6 +185,9 @@ struct CartPartItem: View {
                 }
                 .frame(width: 44, height: 44)
                 .disabled(isDeleting)
+                .accessibilityLabel(StringResources.Common.delete)
+                .accessibilityHint(StringResources.Cart.deleteItemHint)
+                .accessibilityIdentifier("cart_item_delete_\(part.cartItemId)")
             }
             .padding(16)
             

@@ -19,8 +19,6 @@ class CartListViewModel: ObservableObject {
     private let deleteAllCartUseCase: DeleteAllCartUseCase
     // TODO: ProcessOrderUseCase 구현 후 주입
     
-    private var errorLabel: String = ""
-    
     init(
         getCartUseCase: GetCartUseCase,
         updateCartQuantityUseCase: UpdateCartQuantityUseCase,
@@ -31,10 +29,6 @@ class CartListViewModel: ObservableObject {
         self.updateCartQuantityUseCase = updateCartQuantityUseCase
         self.deleteCartUseCase = deleteCartUseCase
         self.deleteAllCartUseCase = deleteAllCartUseCase
-    }
-    
-    func bindLabel(error: String) {
-        errorLabel = error
     }
     
     func onEvent(_ event: CartListUiEvent) {
@@ -112,14 +106,14 @@ class CartListViewModel: ObservableObject {
                 }
                 print("CartListViewModel - updateQuantity success: \(uiState)")
             } catch {
-                // 3. 실패 시 원래 상태로 롤백하고 에러 표시
-                loadCartList() // 서버에서 최신 상태 가져와서 롤백
+                // 3. 실패 시 에러 표시 후 롤백
                 await MainActor.run {
                     uiState = uiState.copy(
                         isUpdating: false,
                         updateError: error.localizedDescription
                     )
                 }
+                loadCartList() // 에러 표시 후 백그라운드에서 롤백
                 print("CartListViewModel - updateQuantity error: \(error)")
             }
         }
@@ -171,14 +165,14 @@ class CartListViewModel: ObservableObject {
                 }
                 print("CartListViewModel - deleteCart success: \(uiState)")
             } catch {
-                // 3. 실패 시 원래 상태로 롤백하고 에러 표시
-                loadCartList() // 서버에서 최신 상태 가져와서 롤백
+                // 3. 실패 시 에러 표시 후 롤백
                 await MainActor.run {
                     uiState = uiState.copy(
                         isDeleting: false,
                         deleteError: error.localizedDescription
                     )
                 }
+                loadCartList() // 에러 표시 후 백그라운드에서 롤백
                 print("CartListViewModel - deleteCart error: \(error)")
             }
         }
@@ -220,14 +214,14 @@ class CartListViewModel: ObservableObject {
                 }
                 print("CartListViewModel - deleteAllCart success: \(uiState)")
             } catch {
-                // 3. 실패 시 원래 상태로 롤백하고 에러 표시
-                loadCartList() // 서버에서 최신 상태 가져와서 롤백
+                // 3. 실패 시 에러 표시 후 롤백
                 await MainActor.run {
                     uiState = uiState.copy(
                         isDeleting: false,
                         deleteError: error.localizedDescription
                     )
                 }
+                loadCartList() // 에러 표시 후 백그라운드에서 롤백
                 print("CartListViewModel - deleteAllCart error: \(error)")
             }
         }

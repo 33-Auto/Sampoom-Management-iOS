@@ -83,6 +83,7 @@ struct StringResources {
         static let confirmProcessMessage = "선택하신 부품들을 출고 처리하시겠습니까?"
         static let confirmEmptyTitle = "전체 삭제"
         static let confirmEmptyMessage = "출고 목록을 모두 삭제하시겠습니까?"
+        static let deleteItemHint = "이 항목을 출고 목록에서 삭제합니다"
     }
     
     // MARK: - Cart
@@ -98,6 +99,7 @@ struct StringResources {
         static let confirmEmptyTitle = "장바구니 비우기"
         static let confirmEmptyMessage = "장바구니를 비우시겠습니까?"
         static let emptyMessage = "장바구니가 비어있습니다"
+        static let deleteItemHint = "이 항목을 장바구니에서 삭제합니다"
     }
     
     // MARK: - PartDetail

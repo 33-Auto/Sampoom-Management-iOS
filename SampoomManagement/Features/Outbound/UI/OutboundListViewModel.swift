@@ -19,8 +19,6 @@ class OutboundListViewModel: ObservableObject {
     private let deleteOutboundUseCase: DeleteOutboundUseCase
     private let deleteAllOutboundUseCase: DeleteAllOutboundUseCase
     
-    private var errorLabel: String = ""
-    
     init(
         getOutboundUseCase: GetOutboundUseCase,
         processOutboundUseCase: ProcessOutboundUseCase,
@@ -33,10 +31,6 @@ class OutboundListViewModel: ObservableObject {
         self.updateOutboundQuantityUseCase = updateOutboundQuantityUseCase
         self.deleteOutboundUseCase = deleteOutboundUseCase
         self.deleteAllOutboundUseCase = deleteAllOutboundUseCase
-    }
-    
-    func bindLabel(error: String) {
-        errorLabel = error
     }
     
     func onEvent(_ event: OutboundListUiEvent) {
@@ -128,14 +122,14 @@ class OutboundListViewModel: ObservableObject {
                 }
                 print("OutboundListViewModel - updateQuantity success: \(uiState)")
             } catch {
-                // 3. 실패 시 원래 상태로 롤백하고 에러 표시
-                loadOutboundList() // 서버에서 최신 상태 가져와서 롤백
+                // 3. 실패 시 에러 표시 후 롤백
                 await MainActor.run {
                     uiState = uiState.copy(
                         isUpdating: false,
                         updateError: error.localizedDescription
                     )
                 }
+                loadOutboundList() // 에러 표시 후 백그라운드에서 롤백
                 print("OutboundListViewModel - updateQuantity error: \(error)")
             }
         }
@@ -187,14 +181,14 @@ class OutboundListViewModel: ObservableObject {
                 }
                 print("OutboundListViewModel - deleteOutbound success: \(uiState)")
             } catch {
-                // 3. 실패 시 원래 상태로 롤백하고 에러 표시
-                loadOutboundList() // 서버에서 최신 상태 가져와서 롤백
+                // 3. 실패 시 에러 표시 후 롤백
                 await MainActor.run {
                     uiState = uiState.copy(
                         isDeleting: false,
                         deleteError: error.localizedDescription
                     )
                 }
+                loadOutboundList() // 에러 표시 후 백그라운드에서 롤백
                 print("OutboundListViewModel - deleteOutbound error: \(error)")
             }
         }
@@ -236,14 +230,14 @@ class OutboundListViewModel: ObservableObject {
                 }
                 print("OutboundListViewModel - deleteAllOutbound success: \(uiState)")
             } catch {
-                // 3. 실패 시 원래 상태로 롤백하고 에러 표시
-                loadOutboundList() // 서버에서 최신 상태 가져와서 롤백
+                // 3. 실패 시 에러 표시 후 롤백
                 await MainActor.run {
                     uiState = uiState.copy(
                         isDeleting: false,
                         deleteError: error.localizedDescription
                     )
                 }
+                loadOutboundList() // 에러 표시 후 백그라운드에서 롤백
                 print("OutboundListViewModel - deleteAllOutbound error: \(error)")
             }
         }

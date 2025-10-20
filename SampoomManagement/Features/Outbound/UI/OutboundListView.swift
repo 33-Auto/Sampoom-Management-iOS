@@ -40,22 +40,21 @@ struct OutboundListView: View {
         .background(Color.background)
         .onAppear {
             viewModel.clearSuccess()
-            viewModel.bindLabel(error: "오류가 발생했습니다")
             viewModel.onEvent(.loadOutboundList)
         }
-        .onChange(of: viewModel.uiState.isOrderSuccess) { oldValue, newValue in
+        .onChange(of: viewModel.uiState.isOrderSuccess) { _, newValue in
             if newValue {
                 Toast.text(StringResources.Outbound.orderSuccess).show()
                 viewModel.clearSuccess()
             }
         }
-        .onChange(of: viewModel.uiState.updateError) { oldValue, newValue in
+        .onChange(of: viewModel.uiState.updateError) { _, newValue in
             if let error = newValue {
                 Toast.text("\(StringResources.Outbound.updateQuantityError): \(error)").show()
                 viewModel.onEvent(.clearUpdateError)
             }
         }
-        .onChange(of: viewModel.uiState.deleteError) { oldValue, newValue in
+        .onChange(of: viewModel.uiState.deleteError) { _, newValue in
             if let error = newValue {
                 Toast.text("\(StringResources.Outbound.deleteError): \(error)").show()
                 viewModel.onEvent(.clearDeleteError)
@@ -202,6 +201,9 @@ struct OutboundPartItem: View {
                 }
                 .frame(width: 44, height: 44)
                 .disabled(isDeleting)
+                .accessibilityLabel(StringResources.Common.delete)
+                .accessibilityHint(StringResources.Outbound.deleteItemHint)
+                .accessibilityIdentifier("outbound_item_delete_\(part.outboundId)")
             }
             .padding(16)
             
@@ -244,25 +246,3 @@ struct OutboundPartItem: View {
     }
 }
 
-#Preview {
-    OutboundListView(viewModel: OutboundListViewModel(
-        getOutboundUseCase: GetOutboundUseCase(repository: MockOutboundRepository()),
-        processOutboundUseCase: ProcessOutboundUseCase(repository: MockOutboundRepository()),
-        updateOutboundQuantityUseCase: UpdateOutboundQuantityUseCase(repository: MockOutboundRepository()),
-        deleteOutboundUseCase: DeleteOutboundUseCase(repository: MockOutboundRepository()),
-        deleteAllOutboundUseCase: DeleteAllOutboundUseCase(repository: MockOutboundRepository())
-    ))
-}
-
-// Preview용 Mock Repository
-class MockOutboundRepository: OutboundRepository {
-    func getOutboundList() async throws -> OutboundList {
-        return OutboundList.empty()
-    }
-    
-    func processOutbound() async throws {}
-    func addOutbound(partId: Int, quantity: Int) async throws {}
-    func deleteOutbound(outboundId: Int) async throws {}
-    func deleteAllOutbound() async throws {}
-    func updateOutboundQuantity(outboundId: Int, quantity: Int) async throws {}
-}
