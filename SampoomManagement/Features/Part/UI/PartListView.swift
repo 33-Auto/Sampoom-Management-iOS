@@ -9,20 +9,27 @@ import SwiftUI
 
 struct PartListView: View {
     @ObservedObject var viewModel: PartListViewModel
+    @State private var showBottomSheet = false
+    let dependencies: AppDependencies
     
     init(
-        viewModel: PartListViewModel
+        viewModel: PartListViewModel,
+        dependencies: AppDependencies
     ) {
         self.viewModel = viewModel
+        self.dependencies = dependencies
     }
     
     var body: some View {
         VStack(spacing: 0) {
             if viewModel.uiState.partListLoading {
                 // 로딩 상태
-                ProgressView()
-                    .frame(width: .infinity, height: .infinity)
-                    .background(Color.background)
+                HStack {
+                    Spacer()
+                    ProgressView()
+                    Spacer()
+                }
+                .background(Color.background)
             } else if let error = viewModel.uiState.partListError {
                 // 에러 상태
                 Spacer()
@@ -46,7 +53,13 @@ struct PartListView: View {
                 ScrollView {
                     LazyVStack(spacing: 8) {
                         ForEach(viewModel.uiState.partList, id: \.id) { part in
-                            PartListItemCard(part: part)
+                            PartListItemCard(
+                                part: part,
+                                onClick: {
+                                    viewModel.onEvent(.showBottomSheet(part))
+                                    showBottomSheet = true
+                                }
+                            )
                         }
                     }
                     .padding(16)
@@ -56,39 +69,60 @@ struct PartListView: View {
         .navigationTitle("부품조회")
         .navigationBarTitleDisplayMode(.automatic)
         .background(Color.background)
+        .sheet(isPresented: $showBottomSheet) {
+            if let selectedPart = viewModel.uiState.selectedPart {
+                let detailViewModel = dependencies.makePartDetailViewModel()
+                PartDetailBottomSheetView(viewModel: detailViewModel)
+                    .onAppear {
+                        detailViewModel.onEvent(.initialize(selectedPart))
+                    }
+                    .onDisappear {
+                        showBottomSheet = false
+                        viewModel.onEvent(.dismissBottomSheet)
+                    }
+                    .presentationDetents([.fraction(0.3)])
+                    .presentationDragIndicator(.visible)
+                    .presentationBackground(.clear)
+            }
+        }
     }
 }
 
 struct PartListItemCard: View {
     let part: Part
+    let onClick: () -> Void
     
     var body: some View {
-        HStack {
-            VStack(alignment: .leading, spacing: 4) {
-                Text(part.name)
+        Button(action: onClick) {
+            HStack {
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(part.name)
+                        .font(.gmarketTitle3)
+                        .foregroundColor(.text)
+                    
+                    Text(part.code)
+                        .font(.gmarketCaption)
+                        .foregroundColor(.textSecondary)
+                }
+                
+                Spacer()
+                
+                Text("\(part.quantity)")
                     .font(.gmarketTitle3)
                     .foregroundColor(.text)
                 
-                Text(part.code)
-                    .font(.gmarketCaption)
+                Image(systemName: "chevron.right")
                     .foregroundColor(.textSecondary)
             }
-            
-            Spacer()
-            
-            Text("\(part.quantity)")
-                .font(.gmarketTitle3)
-                .foregroundColor(.text)
-            
-            Image(systemName: "chevron.right")
-                .foregroundColor(.secondary)
+            .padding(16)
+            .background(
+                RoundedRectangle(cornerRadius: 16)
+                    .fill(.backgroundCard)
+            )
         }
-        .padding(16)
-        .background(
-            RoundedRectangle(cornerRadius: 16)
-                .fill(.backgroundCard)
-        )
+        .buttonStyle(PlainButtonStyle())
     }
 }
+
 
 

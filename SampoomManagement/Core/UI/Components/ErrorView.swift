@@ -32,8 +32,3 @@ struct ErrorView: View {
     }
 }
 
-#Preview {
-    ErrorView(error: "네트워크 연결을 확인해주세요") {
-        print("Retry tapped")
-    }
-}

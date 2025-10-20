@@ -17,28 +17,19 @@ class AuthAPI {
     
     // 로그인
     func login(email: String, password: String) async throws -> APIResponse<LoginResponseDTO> {
-        return try await withCheckedThrowingContinuation { continuation in
-            let requestDTO = LoginRequestDTO(email: email, password: password)
-            
-            let parameters: [String: Any] = [
-                "email": requestDTO.email,
-                "password": requestDTO.password
-            ]
-            
-            networkManager.request(
-                endpoint: "auth/login",
-                method: .post,
-                parameters: parameters,
-                responseType: LoginResponseDTO.self
-            ) { result in
-                switch result {
-                case .success(let response):
-                    continuation.resume(returning: response)
-                case .failure(let error):
-                    continuation.resume(throwing: error)
-                }
-            }
-        }
+        let requestDTO = LoginRequestDTO(email: email, password: password)
+        
+        let parameters: [String: Any] = [
+            "email": requestDTO.email,
+            "password": requestDTO.password
+        ]
+        
+        return try await networkManager.request(
+            endpoint: "auth/login",
+            method: .post,
+            parameters: parameters,
+            responseType: LoginResponseDTO.self
+        )
     }
     
     // 회원가입
@@ -50,39 +41,30 @@ class AuthAPI {
         userName: String,
         position: String
     ) async throws -> APIResponse<SignupResponseDTO> {
-        return try await withCheckedThrowingContinuation { continuation in
-            let requestDTO = SignupRequestDTO(
-                userName: userName,
-                workspace: workspace,
-                branch: branch,
-                position: position,
-                email: email,
-                password: password
-            )
-            
-            let parameters: [String: Any] = [
-                "email": requestDTO.email,
-                "password": requestDTO.password,
-                "workspace": requestDTO.workspace,
-                "branch": requestDTO.branch,
-                "userName": requestDTO.userName,
-                "position": requestDTO.position
-            ]
-            
-            networkManager.request(
-                endpoint: "auth/signup",
-                method: .post,
-                parameters: parameters,
-                responseType: SignupResponseDTO.self
-            ) { result in
-                switch result {
-                case .success(let response):
-                    continuation.resume(returning: response)
-                case .failure(let error):
-                    continuation.resume(throwing: error)
-                }
-            }
-        }
+        let requestDTO = SignupRequestDTO(
+            userName: userName,
+            workspace: workspace,
+            branch: branch,
+            position: position,
+            email: email,
+            password: password
+        )
+        
+        let parameters: [String: Any] = [
+            "email": requestDTO.email,
+            "password": requestDTO.password,
+            "workspace": requestDTO.workspace,
+            "branch": requestDTO.branch,
+            "userName": requestDTO.userName,
+            "position": requestDTO.position
+        ]
+        
+        return try await networkManager.request(
+            endpoint: "auth/signup",
+            method: .post,
+            parameters: parameters,
+            responseType: SignupResponseDTO.self
+        )
     }
 }
 

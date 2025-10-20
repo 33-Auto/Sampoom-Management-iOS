@@ -17,7 +17,7 @@ struct StringResources {
     // MARK: - Tabs
     struct Tabs {
         static let dashboard = "대시보드"
-        static let delivery = "출고목록"
+        static let outbound = "출고목록"
         static let cart = "장바구니"
         static let orders = "주문관리"
         static let parts = "부품조회"
@@ -69,6 +69,58 @@ struct StringResources {
         static let delete = "삭제"
         static let edit = "편집"
         static let done = "완료"
+    }
+    
+    // MARK: - Outbound
+    struct Outbound {
+        static let title = "출고"
+        static let emptyAll = "출고목록 비우기"
+        static let processOrder = "부품 출고처리"
+        static let orderSuccess = "출고 주문 성공"
+        static let updateQuantityError = "수량 업데이트 에러"
+        static let deleteError = "삭제 에러"
+        static let confirmProcessTitle = "출고 확인"
+        static let confirmProcessMessage = "선택하신 부품들을 출고 처리하시겠습니까?"
+        static let confirmEmptyTitle = "전체 삭제"
+        static let confirmEmptyMessage = "출고 목록을 모두 삭제하시겠습니까?"
+        static let deleteItemHint = "이 항목을 출고 목록에서 삭제합니다"
+    }
+    
+    // MARK: - Cart
+    struct Cart {
+        static let title = "장바구니"
+        static let emptyAll = "장바구니 비우기"
+        static let processOrder = "부품 주문"
+        static let orderSuccess = "주문 성공!"
+        static let updateQuantityError = "수량 업데이트 에러"
+        static let deleteError = "삭제 에러"
+        static let confirmProcessTitle = "주문 확인"
+        static let confirmProcessMessage = "선택하신 부품을 주문하시겠습니까?"
+        static let confirmEmptyTitle = "장바구니 비우기"
+        static let confirmEmptyMessage = "장바구니를 비우시겠습니까?"
+        static let emptyMessage = "장바구니가 비어있습니다"
+        static let deleteItemHint = "이 항목을 장바구니에서 삭제합니다"
+    }
+    
+    // MARK: - PartDetail
+    struct PartDetail {
+        static let title = "부품 상세"
+        static let currentQuantity = "현재 수량"
+        static let quantity = "수량"
+        static let addToOutbound = "출고 추가"
+        static let addToCart = "장바구니 추가"
+        static let outboundSuccess = "출고 성공!"
+        static let cartSuccess = "장바구니 추가 성공!"
+        static let errorOccurred = "에러 발생"
+        static let confirmOutboundTitle = "출고 확인"
+        static let confirmOutboundMessage = "선택하신 부품을 출고 목록에 추가하시겠습니까?"
+        static let confirmCartTitle = "장바구니 확인"
+        static let confirmCartMessage = "선택하신 부품을 장바구니에 추가하시겠습니까?"
+    }
+    
+    // MARK: - Part
+    struct Part {
+        static let quantity = "수량"
     }
     
     // MARK: - Auth

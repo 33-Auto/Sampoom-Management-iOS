@@ -29,8 +29,14 @@ class PartListViewModel: ObservableObject {
     
     func onEvent(_ event: PartListUiEvent) {
         switch event {
-        case .loadPartList:loadPartList()
-        case .retryPartList:loadPartList()
+        case .loadPartList:
+            loadPartList()
+        case .retryPartList:
+            loadPartList()
+        case .showBottomSheet(let part):
+            uiState = uiState.copy(selectedPart: part)
+        case .dismissBottomSheet:
+            uiState = uiState.copy(selectedPart: .some(nil))
         }
     }
     
@@ -41,7 +47,7 @@ class PartListViewModel: ObservableObject {
             guard let self else { return }
             // 로딩 상태 진입은 메인에서
             await MainActor.run {
-                self.uiState = self.uiState.copy(partListLoading: true, partListError: nil)
+                self.uiState = self.uiState.copy(partListLoading: true, partListError: .some(nil))
             }
             do {
                 let partList = try await self.getPartUseCase.execute(groupId: self.groupId)
@@ -50,7 +56,7 @@ class PartListViewModel: ObservableObject {
                     self.uiState = self.uiState.copy(
                         partList: partList.items,
                         partListLoading: false,
-                        partListError: nil
+                        partListError: .some(nil)
                     )
                 }
             } catch is CancellationError {
@@ -63,11 +69,7 @@ class PartListViewModel: ObservableObject {
                     )
                 }
             }
-            #if DEBUG
-            await MainActor.run {
-                print("PartListViewModel - loadPartList: \(self.uiState)")
-            }
-            #endif
+            print("PartListViewModel - loadPartList: \(self.uiState)")
         }
     }
 }

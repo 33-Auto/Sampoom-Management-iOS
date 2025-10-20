@@ -27,6 +27,25 @@ class AppDependencies {
     let getGroupUseCase: GetGroupUseCase
     let getPartUseCase: GetPartUseCase
     
+    // MARK: - Outbound
+    let outboundAPI: OutboundAPI
+    let outboundRepository: OutboundRepository
+    let getOutboundUseCase: GetOutboundUseCase
+    let addOutboundUseCase: AddOutboundUseCase
+    let deleteOutboundUseCase: DeleteOutboundUseCase
+    let deleteAllOutboundUseCase: DeleteAllOutboundUseCase
+    let processOutboundUseCase: ProcessOutboundUseCase
+    let updateOutboundQuantityUseCase: UpdateOutboundQuantityUseCase
+    
+    // MARK: - Cart
+    let cartAPI: CartAPI
+    let cartRepository: CartRepository
+    let getCartUseCase: GetCartUseCase
+    let addCartUseCase: AddCartUseCase
+    let deleteCartUseCase: DeleteCartUseCase
+    let deleteAllCartUseCase: DeleteAllCartUseCase
+    let updateCartQuantityUseCase: UpdateCartQuantityUseCase
+    
     init() {
         // Core
         networkManager = NetworkManager()
@@ -47,6 +66,25 @@ class AppDependencies {
         getCategoryUseCase = GetCategoryUseCase(repository: partRepository)
         getGroupUseCase = GetGroupUseCase(repository: partRepository)
         getPartUseCase = GetPartUseCase(repository: partRepository)
+        
+        // Outbound
+        outboundAPI = OutboundAPI(networkManager: networkManager)
+        outboundRepository = OutboundRepositoryImpl(api: outboundAPI)
+        getOutboundUseCase = GetOutboundUseCase(repository: outboundRepository)
+        addOutboundUseCase = AddOutboundUseCase(repository: outboundRepository)
+        deleteOutboundUseCase = DeleteOutboundUseCase(repository: outboundRepository)
+        deleteAllOutboundUseCase = DeleteAllOutboundUseCase(repository: outboundRepository)
+        processOutboundUseCase = ProcessOutboundUseCase(repository: outboundRepository)
+        updateOutboundQuantityUseCase = UpdateOutboundQuantityUseCase(repository: outboundRepository)
+        
+        // Cart
+        cartAPI = CartAPI(networkManager: networkManager)
+        cartRepository = CartRepositoryImpl(api: cartAPI)
+        getCartUseCase = GetCartUseCase(repository: cartRepository)
+        addCartUseCase = AddCartUseCase(repository: cartRepository)
+        deleteCartUseCase = DeleteCartUseCase(repository: cartRepository)
+        deleteAllCartUseCase = DeleteAllCartUseCase(repository: cartRepository)
+        updateCartQuantityUseCase = UpdateCartQuantityUseCase(repository: cartRepository)
     }
     
     // MARK: - ViewModel Factories
@@ -69,6 +107,29 @@ class AppDependencies {
     func makePartListViewModel(groupId: Int) -> PartListViewModel {
         return PartListViewModel(
             getPartUseCase: getPartUseCase, groupId: groupId
+        )
+    }
+    
+    func makePartDetailViewModel() -> PartDetailViewModel {
+        return PartDetailViewModel(addOutboundUseCase: addOutboundUseCase, addCartUseCase: addCartUseCase)
+    }
+    
+    func makeOutboundListViewModel() -> OutboundListViewModel {
+        return OutboundListViewModel(
+            getOutboundUseCase: getOutboundUseCase,
+            processOutboundUseCase: processOutboundUseCase,
+            updateOutboundQuantityUseCase: updateOutboundQuantityUseCase,
+            deleteOutboundUseCase: deleteOutboundUseCase,
+            deleteAllOutboundUseCase: deleteAllOutboundUseCase
+        )
+    }
+    
+    func makeCartListViewModel() -> CartListViewModel {
+        return CartListViewModel(
+            getCartUseCase: getCartUseCase,
+            updateCartQuantityUseCase: updateCartQuantityUseCase,
+            deleteCartUseCase: deleteCartUseCase,
+            deleteAllCartUseCase: deleteAllCartUseCase
         )
     }
 }

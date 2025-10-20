@@ -46,12 +46,3 @@ struct AppHeader: View {
     }
 }
 
-#Preview {
-    VStack {
-        AppHeader(title: "인벤토리")
-        AppHeader(title: "상세보기", showBackButton: true) {
-            print("Back pressed")
-        }
-        Spacer()
-    }
-}
