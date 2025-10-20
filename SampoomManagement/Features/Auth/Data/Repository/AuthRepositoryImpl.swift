@@ -40,7 +40,9 @@ class AuthRepositoryImpl: AuthRepository {
     
     func signIn(email: String, password: String) async throws -> User {
         let response = try await api.login(email: email, password: password)
-        let dto = response.data
+        guard let dto = response.data else {
+            throw AuthError.invalidResponse
+        }
         
         do {
             try preferences.saveToken(

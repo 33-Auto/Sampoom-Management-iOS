@@ -11,5 +11,8 @@ struct APIResponse<T: Codable>: Codable {
     let status: Int
     let success: Bool
     let message: String
-    let data: T
+    let data: T?
+}
+
+struct EmptyResponse: Codable {
 }

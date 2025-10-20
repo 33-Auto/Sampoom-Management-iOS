@@ -8,7 +8,7 @@
 import SwiftUI
 
 enum Tabs {
-    case dashboard, delivery, cart, orders, parts
+    case dashboard, outbound, cart, orders, parts
 }
 
 struct ContentView: View {
@@ -52,50 +52,26 @@ struct ContentView: View {
                 }
             }
             
-            // Delivery 탭 (임시)
-            Tab(value: .delivery) {
+            // Outbound 탭
+            Tab(value: .outbound) {
                 NavigationStack {
-                    VStack(spacing: 20) {
-                        Spacer()
-                        Text(StringResources.Tabs.delivery)
-                            .font(.largeTitle)
-                            .fontWeight(.bold)
-                        Text(StringResources.Placeholders.inventoryDescription)
-                            .font(.body)
-                            .foregroundColor(.secondary)
-                            .multilineTextAlignment(.center)
-                            .padding(.horizontal, 32)
-                        Spacer()
-                    }
-                    .navigationTitle(StringResources.Tabs.delivery)
+                    OutboundListView(viewModel: dependencies.makeOutboundListViewModel())
                 }
             } label: {
                 Label {
-                    Text(StringResources.Tabs.delivery)
+                    Text(StringResources.Tabs.outbound)
                         .font(.gmarketSubheadline)
                 } icon: {
-                    Image("delivery")
+                    Image("outbound")
                         .renderingMode(.template)
                         .foregroundStyle(Color.text)
                 }
             }
             
-            // Cart 탭 (임시)
+            // Cart 탭
             Tab(value: .cart) {
                 NavigationStack {
-                    VStack(spacing: 20) {
-                        Spacer()
-                        Text(StringResources.Tabs.cart)
-                            .font(.largeTitle)
-                            .fontWeight(.bold)
-                        Text(StringResources.Placeholders.inventoryDescription)
-                            .font(.body)
-                            .foregroundColor(.secondary)
-                            .multilineTextAlignment(.center)
-                            .padding(.horizontal, 32)
-                        Spacer()
-                    }
-                    .navigationTitle(StringResources.Tabs.cart)
+                    CartListView(viewModel: dependencies.makeCartListViewModel())
                 }
             } label: {
                 Label {
@@ -150,7 +126,8 @@ struct ContentView: View {
                             viewModel: PartListViewModel(
                                 getPartUseCase: dependencies.getPartUseCase,
                                 groupId: groupId
-                            )
+                            ),
+                            dependencies: dependencies
                         )
                     }
                 }

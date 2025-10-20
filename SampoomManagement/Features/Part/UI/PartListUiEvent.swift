@@ -10,4 +10,6 @@ import Foundation
 enum PartListUiEvent {
     case loadPartList
     case retryPartList
+    case showBottomSheet(Part)
+    case dismissBottomSheet
 }

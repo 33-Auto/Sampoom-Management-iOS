@@ -29,8 +29,14 @@ class PartListViewModel: ObservableObject {
     
     func onEvent(_ event: PartListUiEvent) {
         switch event {
-        case .loadPartList:loadPartList()
-        case .retryPartList:loadPartList()
+        case .loadPartList:
+            loadPartList()
+        case .retryPartList:
+            loadPartList()
+        case .showBottomSheet(let part):
+            uiState = uiState.copy(selectedPart: part)
+        case .dismissBottomSheet:
+            uiState = uiState.copy(selectedPart: nil)
         }
     }
     
@@ -63,11 +69,7 @@ class PartListViewModel: ObservableObject {
                     )
                 }
             }
-            #if DEBUG
-            await MainActor.run {
-                print("PartListViewModel - loadPartList: \(self.uiState)")
-            }
-            #endif
+            print("PartListViewModel - loadPartList: \(self.uiState)")
         }
     }
 }

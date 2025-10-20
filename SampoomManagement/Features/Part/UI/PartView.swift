@@ -59,17 +59,25 @@ struct PartView: View {
             .frame(height: 200)
         } else if let error = viewModel.uiState.categoryError {
             // 에러 상태
-            ErrorView(
-                error: error,
-                onRetry: { viewModel.onEvent(.retryCategories) }
-            )
+            HStack {
+                Spacer()
+                ErrorView(
+                    error: error,
+                    onRetry: { viewModel.onEvent(.retryCategories) }
+                )
+                Spacer()
+            }
             .frame(height: 200)
         } else if viewModel.uiState.categoryList.isEmpty {
             // 빈 상태
-            EmptyView(
-                icon: "tray",
-                title: "카테고리가 없습니다"
-            )
+            HStack {
+                Spacer()
+                EmptyView(
+                    icon: "tray",
+                    title: "카테고리가 없습니다"
+                )
+                Spacer()
+            }
             .frame(height: 200)
         } else {
             // 카테고리 그리드

@@ -17,7 +17,7 @@ struct StringResources {
     // MARK: - Tabs
     struct Tabs {
         static let dashboard = "대시보드"
-        static let delivery = "출고목록"
+        static let outbound = "출고목록"
         static let cart = "장바구니"
         static let orders = "주문관리"
         static let parts = "부품조회"

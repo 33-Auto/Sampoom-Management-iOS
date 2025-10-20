@@ -42,6 +42,7 @@ struct CommonButton: View {
     let type: ButtonType
     let size: ButtonSize
     let icon: String?
+    let customIcon: String?
     let iconPosition: IconPosition
     let isEnabled: Bool
     let backgroundColor: Color?
@@ -54,6 +55,7 @@ struct CommonButton: View {
         type: ButtonType = .filled,
         size: ButtonSize = .medium,
         icon: String? = nil,
+        customIcon: String? = nil,
         iconPosition: IconPosition = .leading,
         isEnabled: Bool = true,
         backgroundColor: Color? = nil,
@@ -65,6 +67,7 @@ struct CommonButton: View {
         self.type = type
         self.size = size
         self.icon = icon
+        self.customIcon = customIcon
         self.iconPosition = iconPosition
         self.isEnabled = isEnabled
         self.backgroundColor = backgroundColor
@@ -76,7 +79,11 @@ struct CommonButton: View {
     var body: some View {
         Button(action: action) {
             HStack(spacing: 8) {
-                if let icon = icon, iconPosition == .leading {
+                if let customIcon = customIcon, iconPosition == .leading {
+                    Image(customIcon)
+                        .renderingMode(.template)
+                        .font(size.font)
+                } else if let icon = icon, iconPosition == .leading {
                     Image(systemName: icon)
                         .font(size.font)
                 }
@@ -84,7 +91,11 @@ struct CommonButton: View {
                 Text(title)
                     .font(.gmarketBody)
                 
-                if let icon = icon, iconPosition == .trailing {
+                if let customIcon = customIcon, iconPosition == .trailing {
+                    Image(customIcon)
+                        .renderingMode(.template)
+                        .font(size.font)
+                } else if let icon = icon, iconPosition == .trailing {
                     Image(systemName: icon)
                         .font(size.font)
                 }

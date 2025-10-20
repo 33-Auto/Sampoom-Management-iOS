@@ -15,56 +15,29 @@ class PartAPI {
     }
     
     func getCategoryList() async throws -> CategoryList {
-        return try await withCheckedThrowingContinuation { continuation in
-            networkManager.request(
-                endpoint: "agency/category",
-                responseType: [CategoryDTO].self
-            ) { result in
-                switch result {
-                case .success(let response):
-                    let categories = response.data.map { $0.toModel() }
-                    let categoryList = CategoryList(items: categories)
-                    continuation.resume(returning: categoryList)
-                case .failure(let error):
-                    continuation.resume(throwing: error)
-                }
-            }
-        }
+        let response = try await networkManager.request(
+            endpoint: "agency/category",
+            responseType: [CategoryDTO].self
+        )
+        let categories = (response.data ?? []).map { $0.toModel() }
+        return CategoryList(items: categories)
     }
     
     func getGroupList(categoryId: Int) async throws -> PartsGroupList {
-        return try await withCheckedThrowingContinuation { continuation in
-            networkManager.request(
-                endpoint: "agency/category/\(categoryId)",
-                responseType: [GroupDTO].self
-            ) { result in
-                switch result {
-                case .success(let response):
-                    let groups = response.data.map { $0.toModel() }
-                    let groupList = PartsGroupList(items: groups)
-                    continuation.resume(returning: groupList)
-                case .failure(let error):
-                    continuation.resume(throwing: error)
-                }
-            }
-        }
+        let response = try await networkManager.request(
+            endpoint: "agency/category/\(categoryId)",
+            responseType: [GroupDTO].self
+        )
+        let groups = (response.data ?? []).map { $0.toModel() }
+        return PartsGroupList(items: groups)
     }
     
     func getPartList(groupId: Int) async throws -> PartList {
-        return try await withCheckedThrowingContinuation { continuation in
-            networkManager.request(
-                endpoint: "agency/1/group/\(groupId)",
-                responseType: [PartDTO].self
-            ) { result in
-                switch result {
-                case .success(let response):
-                    let parts = response.data.map { $0.toModel() }
-                    let partList = PartList(items: parts)
-                    continuation.resume(returning: partList)
-                case .failure(let error):
-                    continuation.resume(throwing: error)
-                }
-            }
-        }
+        let response = try await networkManager.request(
+            endpoint: "agency/1/group/\(groupId)",
+            responseType: [PartDTO].self
+        )
+        let parts = (response.data ?? []).map { $0.toModel() }
+        return PartList(items: parts)
     }
 }

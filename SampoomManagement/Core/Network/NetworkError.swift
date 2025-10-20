@@ -34,6 +34,7 @@ enum AuthError: Error, LocalizedError {
     case tokenSaveFailed(Error)
     case invalidCredentials
     case networkError(Error)
+    case invalidResponse
     
     var errorDescription: String? {
         switch self {
@@ -43,6 +44,8 @@ enum AuthError: Error, LocalizedError {
             return "잘못된 인증 정보입니다"
         case .networkError(let error):
             return "네트워크 오류: \(error.localizedDescription)"
+        case .invalidResponse:
+            return "잘못된 응답입니다"
         }
     }
 }
