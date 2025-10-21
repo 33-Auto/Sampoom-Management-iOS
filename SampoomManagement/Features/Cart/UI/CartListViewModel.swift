@@ -2,7 +2,7 @@
 //  CartListViewModel.swift
 //  SampoomManagement
 //
-//  Created by AI Assistant on 10/20/25.
+//  Created by 채상윤 on 10/20/25.
 //
 
 import Foundation
@@ -17,18 +17,20 @@ class CartListViewModel: ObservableObject {
     private let updateCartQuantityUseCase: UpdateCartQuantityUseCase
     private let deleteCartUseCase: DeleteCartUseCase
     private let deleteAllCartUseCase: DeleteAllCartUseCase
-    // TODO: ProcessOrderUseCase 구현 후 주입
+    private let createOrderUseCase: CreateOrderUseCase
     
     init(
         getCartUseCase: GetCartUseCase,
         updateCartQuantityUseCase: UpdateCartQuantityUseCase,
         deleteCartUseCase: DeleteCartUseCase,
-        deleteAllCartUseCase: DeleteAllCartUseCase
+        deleteAllCartUseCase: DeleteAllCartUseCase,
+        createOrderUseCase: CreateOrderUseCase
     ) {
         self.getCartUseCase = getCartUseCase
         self.updateCartQuantityUseCase = updateCartQuantityUseCase
         self.deleteCartUseCase = deleteCartUseCase
         self.deleteAllCartUseCase = deleteAllCartUseCase
+        self.createOrderUseCase = createOrderUseCase
     }
     
     func onEvent(_ event: CartListUiEvent) {
@@ -49,6 +51,8 @@ class CartListViewModel: ObservableObject {
             uiState = uiState.copy(updateError: .some(nil))
         case .clearDeleteError:
             uiState = uiState.copy(deleteError: .some(nil))
+        case .dismissOrderResult:
+            uiState = uiState.copy(isOrderSuccess: false, processedOrder: nil)
         }
     }
     
@@ -80,12 +84,25 @@ class CartListViewModel: ObservableObject {
         }
     }
     
-    // TODO: 주문 생성 UseCase 구현 후 수정
     private func processOrder() {
         Task {
-            // Placeholder implementation
-            print("CartListViewModel - processOrder called")
-            // TODO: ProcessOrderUseCase 구현 후 사용
+            uiState = uiState.copy(isProcessing: true, processError: nil)
+            
+            do {
+                let orderList = try await createOrderUseCase.execute()
+                uiState = uiState.copy(
+                    isOrderSuccess: true,
+                    isProcessing: false,
+                    processedOrder: orderList.items
+                )
+                loadCartList() // 주문 후 장바구니 새로고침
+            } catch {
+                uiState = uiState.copy(
+                    isProcessing: false,
+                    processError: error.localizedDescription
+                )
+            }
+            print("CartListViewModel - processOrder: \(uiState)")
         }
     }
     

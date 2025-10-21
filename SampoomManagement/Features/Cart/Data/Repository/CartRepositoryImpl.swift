@@ -2,7 +2,7 @@
 //  CartRepositoryImpl.swift
 //  SampoomManagement
 //
-//  Created by AI Assistant on 10/20/25.
+//  Created by 채상윤 on 10/20/25.
 //
 
 import Foundation

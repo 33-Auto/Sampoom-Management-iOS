@@ -2,11 +2,11 @@
 //  CartListView.swift
 //  SampoomManagement
 //
-//  Created by AI Assistant on 10/20/25.
+//  Created by 채상윤 on 10/20/25.
 //
 
 import SwiftUI
-import Toast
+import Combine
 
 struct CartListView: View {
     @ObservedObject var viewModel: CartListViewModel
@@ -14,120 +14,242 @@ struct CartListView: View {
     @State private var showConfirmDialog = false
     
     var body: some View {
-        NavigationStack {
-            VStack(spacing: 0) {
-                // Content
-            if viewModel.uiState.cartLoading {
-                HStack {
-                    Spacer()
-                    ProgressView()
-                        .scaleEffect(1.5)
-                    Spacer()
+        // Precompute simple bindings to reduce type-checking load
+        let isOrderSuccess = Binding<Bool>(
+            get: { viewModel.uiState.isOrderSuccess },
+            set: { _ in }
+        )
+        let updateError = Binding<Bool>(
+            get: { viewModel.uiState.updateError != nil },
+            set: { _ in }
+        )
+        let deleteError = Binding<Bool>(
+            get: { viewModel.uiState.deleteError != nil },
+            set: { _ in }
+        )
+
+        MainNavigationContent(
+            shouldShowEmptyButton: shouldShowEmptyButton,
+            showEmptyCartDialog: $showEmptyCartDialog,
+            showConfirmDialog: $showConfirmDialog,
+            isOrderSuccessBinding: isOrderSuccess,
+            hasUpdateError: updateError,
+            hasDeleteError: deleteError,
+            onEmptyAll: { viewModel.onEvent(.deleteAllCart) },
+            onProcessOrder: { viewModel.onEvent(.processOrder) },
+            onAppear: { viewModel.onEvent(.loadCartList) },
+            onClearUpdateError: { viewModel.onEvent(.clearUpdateError) },
+            onClearDeleteError: { viewModel.onEvent(.clearDeleteError) },
+            cartContent: { AnyView(cartContent) },
+            orderResultSheet: { 
+                AnyView(
+                    Group {
+                        if let processedOrder = viewModel.uiState.processedOrder {
+                            OrderResultBottomSheet(
+                                order: processedOrder,
+                                onDismiss: {
+                                    viewModel.onEvent(.dismissOrderResult)
+                                },
+                                viewModel: OrderDetailViewModel(
+                                    getOrderDetailUseCase: GetOrderDetailUseCase(repository: OrderRepositoryImpl(api: OrderAPI(networkManager: NetworkManager()))),
+                                    cancelOrderUseCase: CancelOrderUseCase(repository: OrderRepositoryImpl(api: OrderAPI(networkManager: NetworkManager()))),
+                                    receiveOrderUseCase: ReceiveOrderUseCase(repository: OrderRepositoryImpl(api: OrderAPI(networkManager: NetworkManager())))
+                                )
+                            )
+                        } else {
+                            EmptyView()
+                        }
+                    }
+                )
+            },
+            viewModel: viewModel
+        )
+    }
+    
+    @ViewBuilder
+    private var cartContent: some View {
+        if viewModel.uiState.cartLoading {
+            loadingView
+        } else if let error = viewModel.uiState.cartError {
+            errorView(error: error)
+        } else if viewModel.uiState.cartList.isEmpty {
+            emptyView
+        } else {
+            cartListView
+        }
+    }
+    
+    private var loadingView: some View {
+        HStack {
+            Spacer()
+            ProgressView()
+                .scaleEffect(1.5)
+            Spacer()
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+    }
+    
+    private func errorView(error: String) -> some View {
+        HStack {
+            Spacer()
+            ErrorView(
+                error: error,
+                onRetry: {
+                    viewModel.onEvent(.retryCartList)
                 }
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-            } else if let error = viewModel.uiState.cartError {
-                HStack {
-                    Spacer()
-                    ErrorView(
-                        error: error,
-                        onRetry: {
-                            viewModel.onEvent(.retryCartList)
+            )
+            Spacer()
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+    }
+    
+    private var emptyView: some View {
+        HStack {
+            Spacer()
+            EmptyView(title: StringResources.Cart.emptyMessage)
+            Spacer()
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+    }
+    
+    private var cartListView: some View {
+        ZStack(alignment: .bottom) {
+            ScrollView {
+                LazyVStack(spacing: 16) {
+                    CartListContent(
+                        categories: viewModel.uiState.cartList,
+                        isUpdating: viewModel.uiState.isUpdating,
+                        isDeleting: viewModel.uiState.isDeleting,
+                        onEvent: { event in
+                            viewModel.onEvent(event)
                         }
                     )
                     Spacer()
+                        .frame(height: 100)
                 }
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-            } else if viewModel.uiState.cartList.isEmpty {
-                HStack {
-                    Spacer()
-                    EmptyView(title: StringResources.Cart.emptyMessage)
-                    Spacer()
-                }
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-            } else {
-                ZStack(alignment: .bottom) {
-                    ScrollView {
-                        LazyVStack(spacing: 16) {
-                            ForEach(viewModel.uiState.cartList, id: \.categoryId) { category in
-                                ForEach(category.groups, id: \.groupId) { group in
-                                    CartSection(
-                                        categoryName: category.categoryName,
-                                        groupName: group.groupName,
-                                        parts: group.parts,
-                                        isUpdating: viewModel.uiState.isUpdating,
-                                        isDeleting: viewModel.uiState.isDeleting,
-                                        onEvent: { event in
-                                            viewModel.onEvent(event)
-                                        }
-                                    )
-                                }
-                            }
-                            Spacer()
-                                .frame(height: 100)
+                .padding(.horizontal, 16)
+            }
+
+            orderButton
+        }
+    }
+    
+    private var orderButton: some View {
+        VStack {
+            Spacer()
+            CommonButton(StringResources.Cart.processOrder, backgroundColor: .accent, textColor: .white) {
+                showConfirmDialog = true
+            }
+            .padding(.horizontal, 16)
+            .padding(.bottom, 16)
+        }
+    }
+    
+    private var shouldShowEmptyButton: Bool {
+        !viewModel.uiState.cartLoading && 
+        viewModel.uiState.cartError == nil && 
+        !viewModel.uiState.cartList.isEmpty
+    }
+    
+}
+
+private struct MainNavigationContent: View {
+    let shouldShowEmptyButton: Bool
+    @Binding var showEmptyCartDialog: Bool
+    @Binding var showConfirmDialog: Bool
+    let isOrderSuccessBinding: Binding<Bool>
+    let hasUpdateError: Binding<Bool>
+    let hasDeleteError: Binding<Bool>
+    let onEmptyAll: () -> Void
+    let onProcessOrder: () -> Void
+    let onAppear: () -> Void
+    let onClearUpdateError: () -> Void
+    let onClearDeleteError: () -> Void
+    let cartContent: () -> AnyView
+    let orderResultSheet: () -> AnyView
+    @ObservedObject var viewModel: CartListViewModel
+
+    var body: some View {
+        NavigationStack {
+            VStack(spacing: 0) {
+                cartContent()
+            }
+            .navigationTitle(StringResources.Cart.title)
+            .navigationBarTitleDisplayMode(.automatic)
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    if shouldShowEmptyButton {
+                        Button(StringResources.Cart.emptyAll) {
+                            showEmptyCartDialog = true
                         }
-                        .padding(.horizontal, 16)
-                    }
-                    
-                    // 주문하기 버튼
-                    VStack {
-                        Spacer()
-                        CommonButton(StringResources.Cart.processOrder, backgroundColor: .accentColor, textColor: .white) {
-                            showConfirmDialog = true
-                        }
-                        .padding(.horizontal, 16)
-                        .padding(.bottom, 16)
+                        .foregroundColor(.red)
                     }
                 }
             }
-        }
-        .navigationTitle(StringResources.Cart.title)
-        .navigationBarTitleDisplayMode(.automatic)
-        .toolbar {
-            ToolbarItem(placement: .topBarTrailing) {
-                if !viewModel.uiState.cartLoading && viewModel.uiState.cartError == nil && !viewModel.uiState.cartList.isEmpty {
-                    Button(StringResources.Cart.emptyAll) {
-                        showEmptyCartDialog = true
-                    }
-                    .foregroundColor(.red)
+            .background(Color.background)
+            .alert(StringResources.Cart.confirmEmptyTitle, isPresented: $showEmptyCartDialog) {
+                Button(StringResources.Common.ok) {
+                    onEmptyAll()
+                }
+                Button(StringResources.Common.cancel, role: .cancel) { }
+            } message: {
+                Text(StringResources.Cart.confirmEmptyMessage)
+            }
+            .alert(StringResources.Cart.confirmProcessTitle, isPresented: $showConfirmDialog) {
+                Button(StringResources.Common.ok) {
+                    onProcessOrder()
+                }
+                Button(StringResources.Common.cancel, role: .cancel) { }
+            } message: {
+                Text(StringResources.Cart.confirmProcessMessage)
+            }
+            .onAppear {
+                onAppear()
+            }
+            .onChange(of: isOrderSuccessBinding.wrappedValue) { _, newValue in
+                if newValue {
+                    // handled by parent
                 }
             }
-        }
-        .background(Color.background)
-        .alert(StringResources.Cart.confirmEmptyTitle, isPresented: $showEmptyCartDialog) {
-            Button(StringResources.Common.ok) {
-                viewModel.onEvent(.deleteAllCart)
+            .onChange(of: hasUpdateError.wrappedValue) { _, newValue in
+                if newValue {
+                    onClearUpdateError()
+                }
             }
-            Button(StringResources.Common.cancel, role: .cancel) { }
-        } message: {
-            Text(StringResources.Cart.confirmEmptyMessage)
-        }
-        .alert(StringResources.Cart.confirmProcessTitle, isPresented: $showConfirmDialog) {
-            Button(StringResources.Common.ok) {
-                viewModel.onEvent(.processOrder)
+            .onChange(of: hasDeleteError.wrappedValue) { _, newValue in
+                if newValue {
+                    onClearDeleteError()
+                }
             }
-            Button(StringResources.Common.cancel, role: .cancel) { }
-        } message: {
-            Text(StringResources.Cart.confirmProcessMessage)
-        }
-        .onAppear {
-            viewModel.onEvent(.loadCartList)
-        }
-        .onChange(of: viewModel.uiState.isOrderSuccess) { _, newValue in
-            if newValue {
-                Toast.text(StringResources.Cart.orderSuccess).show()
-                viewModel.clearSuccess()
+            .sheet(isPresented: Binding<Bool>(
+                get: { viewModel.uiState.processedOrder != nil && viewModel.uiState.isOrderSuccess },
+                set: { _ in }
+            ), onDismiss: {
+                viewModel.onEvent(.dismissOrderResult)
+            }) {
+                orderResultSheet()
             }
         }
-        .onChange(of: viewModel.uiState.updateError) { _, newValue in
-            if let error = newValue {
-                Toast.text("\(StringResources.Cart.updateQuantityError): \(error)").show()
-                viewModel.onEvent(.clearUpdateError)
-            }
-        }
-        .onChange(of: viewModel.uiState.deleteError) { _, newValue in
-            if let error = newValue {
-                Toast.text("\(StringResources.Cart.deleteError): \(error)").show()
-                viewModel.onEvent(.clearDeleteError)
+    }
+}
+
+private struct CartListContent: View {
+    let categories: [Cart]
+    let isUpdating: Bool
+    let isDeleting: Bool
+    let onEvent: (CartListUiEvent) -> Void
+
+    var body: some View {
+        ForEach(categories, id: \.categoryId) { category in
+            ForEach(category.groups, id: \.groupId) { group in
+                CartSection(
+                    categoryName: category.categoryName,
+                    groupName: group.groupName,
+                    parts: group.parts,
+                    isUpdating: isUpdating,
+                    isDeleting: isDeleting,
+                    onEvent: onEvent
+                )
             }
         }
     }
@@ -226,5 +348,4 @@ struct CartPartItem: View {
         .background(Color.backgroundCard)
         .cornerRadius(12)
     }
-}
 }

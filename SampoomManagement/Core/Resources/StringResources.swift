@@ -123,6 +123,29 @@ struct StringResources {
         static let quantity = "수량"
     }
     
+    // MARK: - Order
+    struct Order {
+        static let title = "주문관리"
+        static let emptyList = "주문관리 목록이 없습니다."
+        static let detailTitle = "주문정보"
+        static let detailOrderNumber = "주문번호"
+        static let detailOrderDate = "주문일자"
+        static let detailOrderAgency = "대리점"
+        static let detailOrderStatus = "주문상태"
+        static let detailOrderItemsTitle = "주문상품"
+        static let detailOrderCancel = "주문취소"
+        static let detailDialogOrderCancel = "주문 취소처리하시겠습니까?"
+        static let detailToastOrderCancel = "주문 취소처리되었습니다"
+        static let detailOrderReceive = "입고처리"
+        static let detailDialogOrderReceive = "입고 처리하시겠습니까 ??"
+        static let detailToastOrderReceive = "입고 처리되었습니다"
+        
+        // Order Status
+        static let statusPending = "승인대기"
+        static let statusCompleted = "입고완료"
+        static let statusCanceled = "주문취소"
+    }
+    
     // MARK: - Auth
     struct Auth {
         // Login
