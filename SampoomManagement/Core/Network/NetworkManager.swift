@@ -52,7 +52,6 @@ class NetworkManager {
                 }
             }
         }, onCancel: {
-            // Task cancellation handled by Alamofire automatically
         })
     }
 }
