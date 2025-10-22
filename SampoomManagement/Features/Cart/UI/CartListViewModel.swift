@@ -85,22 +85,30 @@ class CartListViewModel: ObservableObject {
     }
     
     private func processOrder() {
+        guard !uiState.isProcessing else { return }
         Task {
-            uiState = uiState.copy(isProcessing: true, processError: nil)
-            
+            await MainActor.run {
+                uiState = uiState.copy(isProcessing: true, processError: nil)
+            }
             do {
                 let orderList = try await createOrderUseCase.execute()
-                uiState = uiState.copy(
-                    isOrderSuccess: true,
-                    isProcessing: false,
-                    processedOrder: orderList.items
-                )
-                loadCartList() // 주문 후 장바구니 새로고침
+                await MainActor.run {
+                    uiState = uiState.copy(
+                        isOrderSuccess: true,
+                        isProcessing: false,
+                        processedOrder: orderList.items
+                    )
+                }
+                await MainActor.run {
+                    loadCartList() // 주문 후 장바구니 새로고침
+                }
             } catch {
-                uiState = uiState.copy(
-                    isProcessing: false,
-                    processError: error.localizedDescription
-                )
+                await MainActor.run {
+                    uiState = uiState.copy(
+                        isProcessing: false,
+                        processError: error.localizedDescription
+                    )
+                }
             }
             print("CartListViewModel - processOrder: \(uiState)")
         }

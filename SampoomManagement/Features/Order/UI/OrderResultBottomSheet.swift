@@ -67,6 +67,7 @@ struct OrderResultBottomSheet: View {
                 // Toast 대신 Alert 사용하거나 다른 방법으로 처리
                 viewModel.clearSuccess()
                 viewModel.onEvent(.loadOrder)
+                onDismiss()
             }
         }
         .onChange(of: viewModel.uiState.isProcessingError) { _, newValue in

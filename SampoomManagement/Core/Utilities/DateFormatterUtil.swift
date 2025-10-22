@@ -1,5 +1,5 @@
 //
-//  DateFormatter.swift
+//  DateFormatterUtil.swift
 //  SampoomManagement
 //
 //  Created by 채상윤 on 10/20/25.
@@ -16,7 +16,7 @@ struct DateFormatterUtil {
     static func formatDate(_ dateString: String) -> String {
         // ISO 8601 형식 파싱
         let isoFormatter = ISO8601DateFormatter()
-        isoFormatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+        isoFormatter.formatOptions = [.withInternetDateTime]
         
         // 로컬 날짜 형식
         let outputFormatter = Foundation.DateFormatter()
