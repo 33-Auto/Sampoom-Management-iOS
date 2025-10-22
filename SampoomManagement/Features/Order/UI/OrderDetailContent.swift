@@ -58,7 +58,7 @@ struct OrderInfoCard: View {
             
             OrderInfoRow(
                 label: StringResources.Order.detailOrderDate,
-                value: order.createdAt.map { DateFormatter.formatDate($0) } ?? "-"
+                value: order.createdAt.map { DateFormatterUtil.formatDate($0) } ?? "-"
             )
             
             Divider()

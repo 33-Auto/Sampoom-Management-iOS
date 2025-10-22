@@ -137,7 +137,7 @@ struct StringResources {
         static let detailDialogOrderCancel = "주문 취소처리하시겠습니까?"
         static let detailToastOrderCancel = "주문 취소처리되었습니다"
         static let detailOrderReceive = "입고처리"
-        static let detailDialogOrderReceive = "입고 처리하시겠습니까 ??"
+        static let detailDialogOrderReceive = "입고 처리하시겠습니까?"
         static let detailToastOrderReceive = "입고 처리되었습니다"
         
         // Order Status

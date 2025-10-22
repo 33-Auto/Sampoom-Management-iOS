@@ -8,7 +8,7 @@
 import Foundation
 
 /// 날짜 포맷팅 유틸리티
-struct DateFormatter {
+struct DateFormatterUtil {
     
     /// ISO 8601 날짜 문자열을 로컬 날짜 형식으로 변환
     /// - Parameter dateString: ISO 8601 형식의 날짜 문자열

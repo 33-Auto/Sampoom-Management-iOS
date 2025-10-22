@@ -22,6 +22,7 @@ class OrderAPI {
             method: .get,
             responseType: [OrderDto].self
         )
+        guard response.success else { throw NetworkError.serverError(response.status) }
         return response.data ?? []
     }
     
@@ -32,16 +33,18 @@ class OrderAPI {
             method: .post,
             responseType: [OrderDto].self
         )
+        guard response.success else { throw NetworkError.serverError(response.status) }
         return response.data ?? []
     }
     
     /// 주문 입고 처리
     func receiveOrder(orderId: Int) async throws {
-        let _: APIResponse<EmptyResponse> = try await networkManager.request(
+        let response: APIResponse<EmptyResponse> = try await networkManager.request(
             endpoint: "/agency/1/orders/\(orderId)/receive",
             method: .patch,
             responseType: EmptyResponse.self
         )
+        if !response.success { throw NetworkError.serverError(response.status) }
     }
     
     /// 주문 상세 조회
@@ -56,10 +59,11 @@ class OrderAPI {
     
     /// 주문 취소
     func cancelOrder(orderId: Int) async throws {
-        let _: APIResponse<EmptyResponse> = try await networkManager.request(
+        let response: APIResponse<EmptyResponse> = try await networkManager.request(
             endpoint: "/agency/1/orders/\(orderId)",
             method: .delete,
             responseType: EmptyResponse.self
         )
+        if !response.success { throw NetworkError.serverError(response.status) }
     }
 }

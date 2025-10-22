@@ -28,20 +28,26 @@ class OrderListViewModel: ObservableObject {
     
     private func loadOrderList() {
         Task {
-            uiState = uiState.copy(orderLoading: true, orderError: nil)
+            await MainActor.run {
+                uiState = uiState.copy(orderLoading: true, orderError: nil)
+            }
             
             do {
                 let orderList = try await getOrderUseCase.execute()
-                uiState = uiState.copy(
-                    orderList: orderList.items,
-                    orderLoading: false,
-                    orderError: nil
-                )
+                await MainActor.run {
+                    uiState = uiState.copy(
+                        orderList: orderList.items,
+                        orderLoading: false,
+                        orderError: nil
+                    )
+                }
             } catch {
-                uiState = uiState.copy(
-                    orderLoading: false,
-                    orderError: error.localizedDescription
-                )
+                await MainActor.run {
+                    uiState = uiState.copy(
+                        orderLoading: false,
+                        orderError: error.localizedDescription
+                    )
+                }
             }
             print("OrderListViewModel - loadOrderList: \(uiState)")
         }

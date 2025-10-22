@@ -36,7 +36,7 @@ struct OrderResultBottomSheet: View {
             // Bottom Button
             CommonButton(
                 StringResources.Order.detailOrderCancel,
-                isEnabled: !cannotPerformAction,
+                isEnabled: isCancelEnabled,
                 backgroundColor: Color(.failRed),
                 textColor: .white
             ) {
@@ -77,9 +77,12 @@ struct OrderResultBottomSheet: View {
         }
     }
     
-    private var cannotPerformAction: Bool {
-        guard let orderItem = viewModel.uiState.orderDetail.first else { return false }
-        return orderItem.status == .completed || orderItem.status == .canceled
+    private var isCancelEnabled: Bool {
+        guard order.first?.orderId != nil else { return false }
+        if viewModel.uiState.isProcessing { return false }
+        let item = viewModel.uiState.orderDetail.first ?? order.first
+        guard let status = item?.status else { return false }
+        return status != .completed && status != .canceled
     }
 }
 
@@ -89,9 +92,9 @@ struct OrderCompleteHeader: View {
             Spacer()
             
             HStack(spacing: 8) {
-                Image(systemName: "checkmark.circle.fill")
-                    .foregroundColor(Color("successGreen"))
-                    .font(.title2)
+                    Image(systemName: "checkmark.circle.fill")
+                    .foregroundColor(.successGreen)
+                        .font(.title2)
                 
                 Text(StringResources.Cart.orderSuccess)
                     .font(.gmarketTitle2)

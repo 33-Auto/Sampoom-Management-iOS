@@ -49,7 +49,6 @@ struct OrderListView: View {
                             OrderItemCard(
                                 order: order,
                                 onClick: {
-                                    print("📱 OrderItemCard clicked: orderId = \(order.orderId)")
                                     onNavigateOrderDetail(order.orderId)
                                 }
                             )
@@ -93,7 +92,7 @@ struct OrderItemCard: View {
                 Spacer()
                 
                 VStack(alignment: .trailing, spacing: 6) {
-                    Text(order.createdAt.map { DateFormatter.formatDate($0) } ?? "-")
+                    Text(order.createdAt.map { DateFormatterUtil.formatDate($0) } ?? "-")
                         .font(.gmarketCaption)
                         .foregroundColor(Color("TextSecondary"))
                     

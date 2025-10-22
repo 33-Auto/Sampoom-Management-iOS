@@ -61,7 +61,7 @@ struct CartListUiState {
         isOrderSuccess: Bool? = nil,
         isProcessing: Bool? = nil,
         processError: String?? = nil,
-        processedOrder: [Order]? = nil
+        processedOrder: [Order]?? = nil
     ) -> CartListUiState {
         return CartListUiState(
             cartList: cartList ?? self.cartList,

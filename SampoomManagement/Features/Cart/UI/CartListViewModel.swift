@@ -52,7 +52,7 @@ class CartListViewModel: ObservableObject {
         case .clearDeleteError:
             uiState = uiState.copy(deleteError: .some(nil))
         case .dismissOrderResult:
-            uiState = uiState.copy(isOrderSuccess: false, processedOrder: nil)
+            uiState = uiState.copy(isOrderSuccess: false, processedOrder: .some(nil))
         }
     }
     

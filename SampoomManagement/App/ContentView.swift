@@ -91,15 +91,10 @@ struct ContentView: View {
                     OrderListView(
                         viewModel: dependencies.makeOrderListViewModel(),
                         onNavigateOrderDetail: { orderId in
-                            print("🚀 Orders Navigation: Navigating to orderId: \(orderId)")
-                            print("🚀 Orders Navigation Path before: \(ordersNavigationPath)")
-                            // Parts 탭과 동일한 방식으로 단순히 append
                             ordersNavigationPath.append(orderId)
-                            print("🚀 Orders Navigation Path after: \(ordersNavigationPath)")
                         }
                     )
                     .navigationDestination(for: Int.self) { orderId in
-//                        print("🎯 Orders Navigation Destination: Creating OrderDetailView for orderId: \(orderId)")
                         OrderDetailView(
                             orderId: orderId,
                             viewModel: dependencies.makeOrderDetailViewModel(orderId: orderId)
