@@ -15,7 +15,8 @@ struct ContentView: View {
     let dependencies: AppDependencies
     @StateObject private var partViewModel: PartViewModel
     @State private var selectedTab: Tabs = .dashboard
-    @State private var navigationPath = NavigationPath()
+    @State private var ordersNavigationPath = NavigationPath()
+    @State private var partsNavigationPath = NavigationPath()
     
     init(dependencies: AppDependencies) {
         self.dependencies = dependencies
@@ -48,7 +49,7 @@ struct ContentView: View {
                 } icon: {
                     Image("dashboard")
                         .renderingMode(.template)
-                        .foregroundStyle(Color.text)
+                        .foregroundStyle(.text)
                 }
             }
             
@@ -84,22 +85,21 @@ struct ContentView: View {
                 }
             }
             
-            // Orders 탭 (임시)
+            // Orders 탭
             Tab(value: .orders) {
-                NavigationStack {
-                    VStack(spacing: 20) {
-                        Spacer()
-                        Text(StringResources.Tabs.orders)
-                            .font(.largeTitle)
-                            .fontWeight(.bold)
-                        Text(StringResources.Placeholders.inventoryDescription)
-                            .font(.body)
-                            .foregroundColor(.secondary)
-                            .multilineTextAlignment(.center)
-                            .padding(.horizontal, 32)
-                        Spacer()
+                NavigationStack(path: $ordersNavigationPath) {
+                    OrderListView(
+                        viewModel: dependencies.makeOrderListViewModel(),
+                        onNavigateOrderDetail: { orderId in
+                            ordersNavigationPath.append(orderId)
+                        }
+                    )
+                    .navigationDestination(for: Int.self) { orderId in
+                        OrderDetailView(
+                            orderId: orderId,
+                            viewModel: dependencies.makeOrderDetailViewModel(orderId: orderId)
+                        )
                     }
-                    .navigationTitle(StringResources.Tabs.orders)
                 }
             } label: {
                 Label {
@@ -114,10 +114,10 @@ struct ContentView: View {
             
             // PartView 탭
             Tab(value: .parts, role: .search) {
-                NavigationStack(path: $navigationPath) {
+                NavigationStack(path: $partsNavigationPath) {
                     PartView(
                         onNavigatePartList: { group in
-                            navigationPath.append(group.id)
+                            partsNavigationPath.append(group.id)
                         },
                         viewModel: partViewModel
                     )

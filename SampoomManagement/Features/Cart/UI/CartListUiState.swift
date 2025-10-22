@@ -2,7 +2,7 @@
 //  CartListUiState.swift
 //  SampoomManagement
 //
-//  Created by AI Assistant on 10/20/25.
+//  Created by 채상윤 on 10/20/25.
 //
 
 import Foundation
@@ -17,6 +17,9 @@ struct CartListUiState {
     let isDeleting: Bool
     let deleteError: String?
     let isOrderSuccess: Bool
+    let isProcessing: Bool
+    let processError: String?
+    let processedOrder: [Order]?
     
     init(
         cartList: [Cart] = [],
@@ -27,7 +30,10 @@ struct CartListUiState {
         updateError: String? = nil,
         isDeleting: Bool = false,
         deleteError: String? = nil,
-        isOrderSuccess: Bool = false
+        isOrderSuccess: Bool = false,
+        isProcessing: Bool = false,
+        processError: String? = nil,
+        processedOrder: [Order]? = nil
     ) {
         self.cartList = cartList
         self.cartLoading = cartLoading
@@ -38,6 +44,9 @@ struct CartListUiState {
         self.isDeleting = isDeleting
         self.deleteError = deleteError
         self.isOrderSuccess = isOrderSuccess
+        self.isProcessing = isProcessing
+        self.processError = processError
+        self.processedOrder = processedOrder
     }
     
     func copy(
@@ -49,7 +58,10 @@ struct CartListUiState {
         updateError: String?? = nil,
         isDeleting: Bool? = nil,
         deleteError: String?? = nil,
-        isOrderSuccess: Bool? = nil
+        isOrderSuccess: Bool? = nil,
+        isProcessing: Bool? = nil,
+        processError: String?? = nil,
+        processedOrder: [Order]?? = nil
     ) -> CartListUiState {
         return CartListUiState(
             cartList: cartList ?? self.cartList,
@@ -60,7 +72,10 @@ struct CartListUiState {
             updateError: updateError ?? self.updateError,
             isDeleting: isDeleting ?? self.isDeleting,
             deleteError: deleteError ?? self.deleteError,
-            isOrderSuccess: isOrderSuccess ?? self.isOrderSuccess
+            isOrderSuccess: isOrderSuccess ?? self.isOrderSuccess,
+            isProcessing: isProcessing ?? self.isProcessing,
+            processError: processError ?? self.processError,
+            processedOrder: processedOrder ?? self.processedOrder
         )
     }
 }

@@ -198,7 +198,7 @@ private struct ActionButtonsView: View {
             }
             .disabled(isDisabled)
 
-            CommonButton(StringResources.PartDetail.addToCart, customIcon: "cart", backgroundColor: .blue, textColor: .white) {
+            CommonButton(StringResources.PartDetail.addToCart, customIcon: "cart", backgroundColor: .accent, textColor: .white) {
                 addCartAction()
             }
             .disabled(isDisabled)

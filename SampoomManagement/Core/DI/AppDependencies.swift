@@ -46,6 +46,15 @@ class AppDependencies {
     let deleteAllCartUseCase: DeleteAllCartUseCase
     let updateCartQuantityUseCase: UpdateCartQuantityUseCase
     
+    // MARK: - Order
+    let orderAPI: OrderAPI
+    let orderRepository: OrderRepository
+    let getOrderUseCase: GetOrderUseCase
+    let createOrderUseCase: CreateOrderUseCase
+    let getOrderDetailUseCase: GetOrderDetailUseCase
+    let receiveOrderUseCase: ReceiveOrderUseCase
+    let cancelOrderUseCase: CancelOrderUseCase
+    
     init() {
         // Core
         networkManager = NetworkManager()
@@ -85,6 +94,15 @@ class AppDependencies {
         deleteCartUseCase = DeleteCartUseCase(repository: cartRepository)
         deleteAllCartUseCase = DeleteAllCartUseCase(repository: cartRepository)
         updateCartQuantityUseCase = UpdateCartQuantityUseCase(repository: cartRepository)
+        
+        // Order
+        orderAPI = OrderAPI(networkManager: networkManager)
+        orderRepository = OrderRepositoryImpl(api: orderAPI)
+        getOrderUseCase = GetOrderUseCase(repository: orderRepository)
+        createOrderUseCase = CreateOrderUseCase(repository: orderRepository)
+        getOrderDetailUseCase = GetOrderDetailUseCase(repository: orderRepository)
+        receiveOrderUseCase = ReceiveOrderUseCase(repository: orderRepository)
+        cancelOrderUseCase = CancelOrderUseCase(repository: orderRepository)
     }
     
     // MARK: - ViewModel Factories
@@ -129,7 +147,21 @@ class AppDependencies {
             getCartUseCase: getCartUseCase,
             updateCartQuantityUseCase: updateCartQuantityUseCase,
             deleteCartUseCase: deleteCartUseCase,
-            deleteAllCartUseCase: deleteAllCartUseCase
+            deleteAllCartUseCase: deleteAllCartUseCase,
+            createOrderUseCase: createOrderUseCase
+        )
+    }
+    
+    func makeOrderListViewModel() -> OrderListViewModel {
+        return OrderListViewModel(getOrderUseCase: getOrderUseCase)
+    }
+    
+    func makeOrderDetailViewModel(orderId: Int) -> OrderDetailViewModel {
+        return OrderDetailViewModel(
+            getOrderDetailUseCase: getOrderDetailUseCase,
+            cancelOrderUseCase: cancelOrderUseCase,
+            receiveOrderUseCase: receiveOrderUseCase,
+            orderId: orderId
         )
     }
 }
