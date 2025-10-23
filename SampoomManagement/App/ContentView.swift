@@ -41,6 +41,7 @@ struct ContentView: View {
                         Spacer()
                     }
                     .navigationTitle(StringResources.Tabs.dashboard)
+                    .background(Color.background)
                 }
             } label: {
                 Label {
@@ -146,5 +147,6 @@ struct ContentView: View {
         }
         .accentColor(.blue)
         .tabViewStyle(.automatic)
+        .background(Color.background)
     }
 }

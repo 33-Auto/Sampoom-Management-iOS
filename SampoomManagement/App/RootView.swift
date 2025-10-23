@@ -64,6 +64,7 @@ struct RootView: View {
                 }
             }
         }
+        .background(Color.background)
         .onAppear {
             // 앱 시작 시 로그인 상태 확인
             checkAuthenticationStatus()
