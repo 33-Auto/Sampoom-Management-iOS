@@ -69,6 +69,16 @@ struct StringResources {
         static let delete = "삭제"
         static let edit = "편집"
         static let done = "완료"
+        static let error = "오류"
+        static let retry = "다시 시도"
+    }
+    
+    // MARK: - Search
+    struct SearchParts {
+        static let title = "검색"
+        static let placeholder = "부품 검색"
+        static let emptyMessage = "검색 결과가 없습니다"
+        static let loadingMessage = "검색 중..."
     }
     
     // MARK: - Outbound

@@ -119,7 +119,8 @@ struct ContentView: View {
                         onNavigatePartList: { group in
                             partsNavigationPath.append(group.id)
                         },
-                        viewModel: partViewModel
+                        viewModel: partViewModel,
+                        searchViewModel: dependencies.makeSearchViewModel()
                     )
                     .navigationDestination(for: Int.self) { groupId in
                         PartListView(
@@ -144,5 +145,6 @@ struct ContentView: View {
             }
         }
         .accentColor(.blue)
+        .tabViewStyle(.automatic)
     }
 }

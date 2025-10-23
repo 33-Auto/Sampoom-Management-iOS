@@ -25,4 +25,8 @@ class PartRepositoryImpl: PartRepository {
     func getPartList(groupId: Int) async throws -> PartList {
         return try await api.getPartList(groupId: groupId)
     }
+    
+    func searchParts(keyword: String, page: Int) async throws -> (results: [SearchResult], hasMore: Bool) {
+        return try await api.searchParts(keyword: keyword, page: page)
+    }
 }

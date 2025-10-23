@@ -9,41 +9,62 @@ import SwiftUI
 
 struct PartView: View {
     @ObservedObject var viewModel: PartViewModel
+    @ObservedObject var searchViewModel: SearchViewModel
     @State private var searchQuery = ""
     
     let onNavigatePartList: (PartsGroup) -> Void
     
     init(
         onNavigatePartList: @escaping (PartsGroup) -> Void,
-        viewModel: PartViewModel
+        viewModel: PartViewModel,
+        searchViewModel: SearchViewModel
     ) {
         self.onNavigatePartList = onNavigatePartList
         self.viewModel = viewModel
+        self.searchViewModel = searchViewModel
     }
     
     var body: some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: 16) {
-                // Category 선택 제목
-                Text("카테고리 선택")
-                    .font(.gmarketTitle2)
-                    .fontWeight(.bold)
-                    .padding(.horizontal, 16)
-                 
-                // Category 섹션
-                categorySection
-                
-                Spacer()
-                    .frame(height: 24)
-                
-                // 그룹 리스트 섹션
-                groupSection
+        ZStack {
+            ScrollView {
+                VStack(alignment: .leading, spacing: 16) {
+                    // Category 선택 제목
+                    Text("카테고리 선택")
+                        .font(.gmarketTitle2)
+                        .fontWeight(.bold)
+                        .padding(.horizontal, 16)
+                     
+                    // Category 섹션
+                    categorySection
+                    
+                    Spacer()
+                        .frame(height: 24)
+                    
+                    // 그룹 리스트 섹션
+                    groupSection
+                }
+                .padding(.vertical, 16)
             }
-            .padding(.vertical, 16)
+            
+            // 검색 결과 오버레이
+            if !searchQuery.isEmpty {
+                SearchResultView(
+                    viewModel: searchViewModel,
+                    partDetailViewModel: searchViewModel.partDetailViewModel
+                )
+                .background(Color.background)
+            }
         }
         .navigationTitle("부품조회")
         .navigationBarTitleDisplayMode(.automatic)
-        .searchable(text: $searchQuery, prompt: "search")
+        .searchable(text: $searchQuery, prompt: "부품 검색")
+        .onChange(of: searchQuery) { _, newValue in
+            if newValue.isEmpty {
+                searchViewModel.onEvent(.clearSearch)
+            } else {
+                searchViewModel.onEvent(.search(newValue))
+            }
+        }
         .background(Color.background)
     }
     
