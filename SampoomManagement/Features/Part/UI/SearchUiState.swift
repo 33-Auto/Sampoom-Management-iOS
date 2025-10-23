@@ -46,8 +46,8 @@ struct SearchUiState {
         return SearchUiState(
             searchResults: searchResults ?? self.searchResults,
             isSearching: isSearching ?? self.isSearching,
-            searchError: searchError ?? self.searchError,
-            selectedPart: selectedPart ?? self.selectedPart,
+            searchError: searchError.flatMap { $0 } ?? self.searchError,
+            selectedPart: selectedPart.flatMap { $0 } ?? self.selectedPart,
             currentPage: currentPage ?? self.currentPage,
             hasMorePages: hasMorePages ?? self.hasMorePages,
             isLoadingMore: isLoadingMore ?? self.isLoadingMore
