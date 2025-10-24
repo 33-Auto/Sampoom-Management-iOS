@@ -38,3 +38,25 @@ extension PartDTO {
         )
     }
 }
+
+extension SearchCategoryDTO {
+    func toModel() -> [SearchResult] {
+        return groups.flatMap { group in
+            group.parts.map { part in
+                SearchResult(
+                    part: part.toModel(),
+                    categoryName: categoryName,
+                    groupName: group.groupName
+                )
+            }
+        }
+    }
+}
+
+extension SearchDataDTO {
+    func toModel() -> [SearchResult] {
+        return content.flatMap { category in
+            category.toModel()
+        }
+    }
+}

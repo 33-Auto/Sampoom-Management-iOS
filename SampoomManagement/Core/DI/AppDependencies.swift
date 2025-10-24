@@ -26,6 +26,7 @@ class AppDependencies {
     let getCategoryUseCase: GetCategoryUseCase
     let getGroupUseCase: GetGroupUseCase
     let getPartUseCase: GetPartUseCase
+    let searchPartsUseCase: SearchPartsUseCase
     
     // MARK: - Outbound
     let outboundAPI: OutboundAPI
@@ -75,6 +76,7 @@ class AppDependencies {
         getCategoryUseCase = GetCategoryUseCase(repository: partRepository)
         getGroupUseCase = GetGroupUseCase(repository: partRepository)
         getPartUseCase = GetPartUseCase(repository: partRepository)
+        searchPartsUseCase = SearchPartsUseCase(repository: partRepository)
         
         // Outbound
         outboundAPI = OutboundAPI(networkManager: networkManager)
@@ -130,6 +132,11 @@ class AppDependencies {
     
     func makePartDetailViewModel() -> PartDetailViewModel {
         return PartDetailViewModel(addOutboundUseCase: addOutboundUseCase, addCartUseCase: addCartUseCase)
+    }
+    
+    func makeSearchViewModel() -> SearchViewModel {
+        let partDetailViewModel = makePartDetailViewModel()
+        return SearchViewModel(searchPartsUseCase: searchPartsUseCase, partDetailViewModel: partDetailViewModel)
     }
     
     func makeOutboundListViewModel() -> OutboundListViewModel {

@@ -29,7 +29,6 @@ struct PartListView: View {
                     ProgressView()
                     Spacer()
                 }
-                .background(Color.background)
             } else if let error = viewModel.uiState.partListError {
                 // 에러 상태
                 Spacer()

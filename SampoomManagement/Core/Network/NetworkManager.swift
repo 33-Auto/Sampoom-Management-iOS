@@ -29,7 +29,7 @@ class NetworkManager {
                     url,
                     method: method,
                     parameters: parameters,
-                    encoding: JSONEncoding.default
+                    encoding: method == .get ? URLEncoding.default : JSONEncoding.default
                 )
                 
                 dataRequest.responseData { response in
