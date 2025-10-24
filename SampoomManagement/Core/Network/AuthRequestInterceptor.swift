@@ -8,10 +8,27 @@
 import Foundation
 import Alamofire
 
-class AuthRequestInterceptor: RequestInterceptor {
+// 비동기-세이프 토큰 갱신 조정자
+actor RefreshCoordinator {
+    private var inFlight: Task<User, Error>?
+    
+    func refresh(using service: TokenRefreshService) async throws -> User {
+        if let t = inFlight { 
+            return try await t.value 
+        }
+        let t = Task { 
+            try await service.refreshToken() 
+        }
+        inFlight = t
+        defer { inFlight = nil }
+        return try await t.value
+    }
+}
+
+final class AuthRequestInterceptor: RequestInterceptor, @unchecked Sendable {
     private let authPreferences: AuthPreferences
     private let tokenRefreshService: TokenRefreshService
-    private let refreshMutex = NSLock()
+    private let refreshCoordinator = RefreshCoordinator()
     
     init(authPreferences: AuthPreferences, tokenRefreshService: TokenRefreshService) {
         self.authPreferences = authPreferences
@@ -22,15 +39,14 @@ class AuthRequestInterceptor: RequestInterceptor {
     func adapt(_ urlRequest: URLRequest, for session: Session, completion: @escaping (Result<URLRequest, Error>) -> Void) {
         var adaptedRequest = urlRequest
         
-        // 이미 Authorization 헤더가 있으면 그대로 사용
-        if adaptedRequest.value(forHTTPHeaderField: "Authorization") == nil {
-            do {
-                if let accessToken = try authPreferences.getAccessToken() {
-                    adaptedRequest.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
-                }
-            } catch {
-                print("AuthRequestInterceptor - 토큰 조회 실패: \(error)")
+        do {
+            if let accessToken = try authPreferences.getAccessToken() {
+                adaptedRequest.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
+            } else {
+                adaptedRequest.setValue(nil, forHTTPHeaderField: "Authorization")
             }
+        } catch {
+            print("AuthRequestInterceptor - 토큰 조회 실패: \(error)")
         }
         
         completion(.success(adaptedRequest))
@@ -38,8 +54,8 @@ class AuthRequestInterceptor: RequestInterceptor {
     
     // 401 응답 시 토큰 재발급 및 재시도
     func retry(_ request: Request, for session: Session, dueTo error: Error, completion: @escaping (RetryResult) -> Void) {
-        // 이미 재시도된 요청인지 확인
-        if request.request?.value(forHTTPHeaderField: "X-Retry-Count") != nil {
+        // 재시도 한도 (예: 1회)
+        if request.retryCount >= 1 {
             completion(.doNotRetry)
             return
         }
@@ -50,25 +66,9 @@ class AuthRequestInterceptor: RequestInterceptor {
             return
         }
         
-        refreshMutex.lock()
-        defer { refreshMutex.unlock() }
-        
         Task {
             do {
-                _ = try await tokenRefreshService.refreshToken()
-                
-                // 새로운 토큰으로 요청 재시도
-                var retryRequest = request.request
-                retryRequest?.setValue("1", forHTTPHeaderField: "X-Retry-Count")
-                
-                do {
-                    if let accessToken = try await authPreferences.getAccessToken() {
-                        retryRequest?.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
-                    }
-                } catch {
-                    print("AuthRequestInterceptor - 재시도 시 토큰 조회 실패: \(error)")
-                }
-                
+                _ = try await refreshCoordinator.refresh(using: tokenRefreshService)
                 completion(.retryWithDelay(0.1))
             } catch {
                 print("AuthRequestInterceptor - 토큰 재발급 실패: \(error)")

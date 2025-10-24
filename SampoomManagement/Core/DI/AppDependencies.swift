@@ -25,8 +25,8 @@ class AppDependencies {
     let authViewModel: AuthViewModel
     
     // MARK: - Network Auth
-    let tokenRefreshService: TokenRefreshService
-    let authRequestInterceptor: AuthRequestInterceptor
+    private let tokenRefreshService: TokenRefreshService
+    private let authRequestInterceptor: AuthRequestInterceptor
     
     // MARK: - Part
     let partAPI: PartAPI
