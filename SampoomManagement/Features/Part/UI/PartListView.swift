@@ -65,7 +65,7 @@ struct PartListView: View {
                 }
             }
         }
-        .navigationTitle("부품조회")
+        .navigationTitle(StringResources.Tabs.parts)
         .navigationBarTitleDisplayMode(.automatic)
         .background(Color.background)
         .sheet(isPresented: $showBottomSheet) {

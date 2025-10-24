@@ -131,6 +131,9 @@ struct StringResources {
     // MARK: - Part
     struct Part {
         static let quantity = "수량"
+        static let selectCategory = "카테고리 선택"
+        static let selectCategoryPrompt = "카테고리를 선택해주세요"
+        static let selectGroup = "그룹 선택"
     }
     
     // MARK: - Order
@@ -168,6 +171,7 @@ struct StringResources {
         static let needAccount = "계정이 없으신가요?"
         static let signUpLink = "회원가입"
         static let signUpDo = "하기"
+        static let logoutButton = "로그아웃"
         
         // SignUp
         static let nameLabel = "이름"

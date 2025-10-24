@@ -17,6 +17,15 @@ struct LoginView: View {
     let onSuccess: () -> Void
     let onNavigateSignUp: () -> Void
     
+    init(viewModel: LoginViewModel, onSuccess: @escaping () -> Void, onNavigateSignUp: @escaping () -> Void) {
+        self.viewModel = viewModel
+        self.onSuccess = onSuccess
+        self.onNavigateSignUp = onNavigateSignUp
+        
+        // 로그인 성공 콜백 설정
+        self.viewModel.onLoginSuccess = onSuccess
+    }
+    
     var body: some View {
         VStack {
             Spacer()
@@ -94,11 +103,6 @@ struct LoginView: View {
         .contentShape(Rectangle())
         .onTapGesture {
             hideKeyboard()
-        }
-        .onChange(of: viewModel.uiState.success) { _, success in
-            if success {
-                onSuccess()
-            }
         }
         .onChange(of: viewModel.uiState.error) { _, error in
             if let message = error, !message.isEmpty {

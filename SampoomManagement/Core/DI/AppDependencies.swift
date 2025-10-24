@@ -19,6 +19,14 @@ class AppDependencies {
     let authRepository: AuthRepository
     let loginUseCase: LoginUseCase
     let signUpUseCase: SignUpUseCase
+    let checkLoginStateUseCase: CheckLoginStateUseCase
+    let signOutUseCase: SignOutUseCase
+    let clearTokensUseCase: ClearTokensUseCase
+    let authViewModel: AuthViewModel
+    
+    // MARK: - Network Auth
+    let tokenRefreshService: TokenRefreshService
+    let authRequestInterceptor: AuthRequestInterceptor
     
     // MARK: - Part
     let partAPI: PartAPI
@@ -57,11 +65,20 @@ class AppDependencies {
     let cancelOrderUseCase: CancelOrderUseCase
     
     init() {
-        // Core
-        networkManager = NetworkManager()
+        // Auth Preferences
+        authPreferences = AuthPreferences()
+        
+        // Network Auth Services
+        tokenRefreshService = TokenRefreshService(authPreferences: authPreferences)
+        authRequestInterceptor = AuthRequestInterceptor(
+            authPreferences: authPreferences,
+            tokenRefreshService: tokenRefreshService
+        )
+        
+        // Core Network
+        networkManager = NetworkManager(authRequestInterceptor: authRequestInterceptor)
         
         // Auth
-        authPreferences = AuthPreferences()
         authAPI = AuthAPI(networkManager: networkManager)
         authRepository = AuthRepositoryImpl(
             api: authAPI,
@@ -69,6 +86,16 @@ class AppDependencies {
         )
         loginUseCase = LoginUseCase(repository: authRepository)
         signUpUseCase = SignUpUseCase(repository: authRepository)
+        checkLoginStateUseCase = CheckLoginStateUseCase(repository: authRepository)
+        signOutUseCase = SignOutUseCase(repository: authRepository)
+        clearTokensUseCase = ClearTokensUseCase(repository: authRepository)
+        
+        // Auth ViewModel
+        authViewModel = AuthViewModel(
+            checkLoginStateUseCase: checkLoginStateUseCase,
+            signOutUseCase: signOutUseCase,
+            clearTokensUseCase: clearTokensUseCase
+        )
         
         // Part
         partAPI = PartAPI(networkManager: networkManager)

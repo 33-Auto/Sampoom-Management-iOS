@@ -15,6 +15,8 @@ struct SampoomManagementApp: App {
     init() {
         // 앱 전체 폰트 설정
         setupGlobalFont()
+        // 앱 전체 백그라운드 설정
+        setupGlobalBackground()
     }
     
     var body: some Scene {
@@ -31,6 +33,20 @@ struct SampoomManagementApp: App {
             UILabel.appearance().font = font
             UITextField.appearance().font = font
             UITextView.appearance().font = font
+        }
+    }
+    
+    private func setupGlobalBackground() {
+        // UIKit 컴포넌트에 대한 기본 백그라운드 설정
+        UITableView.appearance().backgroundColor = UIColor.clear
+        UICollectionView.appearance().backgroundColor = UIColor.clear
+        UINavigationBar.appearance().backgroundColor = UIColor.clear
+        UITabBar.appearance().backgroundColor = UIColor.clear
+        
+        // 시스템 배경색 설정
+        if let backgroundColor = UIColor(named: "Background") {
+            UINavigationBar.appearance().barTintColor = backgroundColor
+            UITabBar.appearance().barTintColor = backgroundColor
         }
     }
 }

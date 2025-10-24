@@ -29,7 +29,7 @@ struct PartView: View {
             ScrollView {
                 VStack(alignment: .leading, spacing: 16) {
                     // Category 선택 제목
-                    Text("카테고리 선택")
+                    Text(StringResources.Part.selectCategory)
                         .font(.gmarketTitle2)
                         .fontWeight(.bold)
                         .padding(.horizontal, 16)
@@ -55,9 +55,9 @@ struct PartView: View {
                 .background(Color.background)
             }
         }
-        .navigationTitle("부품조회")
+        .navigationTitle(StringResources.Tabs.parts)
         .navigationBarTitleDisplayMode(.automatic)
-        .searchable(text: $searchQuery, prompt: "부품 검색")
+        .searchable(text: $searchQuery, prompt: StringResources.SearchParts.placeholder)
         .onChange(of: searchQuery) { _, newValue in
             if newValue.isEmpty {
                 searchViewModel.onEvent(.clearSearch)
@@ -126,7 +126,7 @@ struct PartView: View {
                     .font(.system(size: 32))
                     .foregroundColor(.gray)
                 
-                Text("카테고리를 선택해주세요")
+                Text(StringResources.Part.selectCategoryPrompt)
                     .font(.gmarketBody)
                     .foregroundColor(.gray)
             }
@@ -134,7 +134,7 @@ struct PartView: View {
             .padding(.vertical, 32)
         } else {
             // 그룹 선택 제목
-            Text("그룹 선택")
+            Text(StringResources.Part.selectGroup)
                 .font(.gmarketTitle2)
                 .fontWeight(.bold)
                 .padding(.horizontal, 16)

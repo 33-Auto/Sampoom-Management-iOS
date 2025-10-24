@@ -24,7 +24,12 @@ struct ContentView: View {
     }
     
     var body: some View {
-        TabView(selection: $selectedTab) {
+        ZStack {
+            // 전체 백그라운드
+            Color.background
+                .ignoresSafeArea(.all)
+            
+            TabView(selection: $selectedTab) {
             // Dashboard 탭 (임시)
             Tab(value: .dashboard) {
                 NavigationStack {
@@ -33,11 +38,23 @@ struct ContentView: View {
                         Text(StringResources.Tabs.dashboard)
                             .font(.largeTitle)
                             .fontWeight(.bold)
+                        
                         Text(StringResources.Placeholders.inventoryDescription)
                             .font(.body)
                             .foregroundColor(.secondary)
                             .multilineTextAlignment(.center)
                             .padding(.horizontal, 32)
+                        
+                        // 로그아웃 버튼
+                        Spacer()
+                        CommonButton(StringResources.Auth.logoutButton, backgroundColor: .red, textColor: .white) {
+                            Task {
+                                await dependencies.authViewModel.signOut()
+                            }
+                        }
+                        .padding(.horizontal, 16)
+                        .padding(.bottom, 16)
+                        
                         Spacer()
                     }
                     .navigationTitle(StringResources.Tabs.dashboard)
@@ -145,8 +162,8 @@ struct ContentView: View {
                 }
             }
         }
-        .accentColor(.blue)
+        .accentColor(.accentColor)
         .tabViewStyle(.automatic)
-        .background(Color.background)
+        }
     }
 }

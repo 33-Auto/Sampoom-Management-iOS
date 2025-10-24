@@ -51,9 +51,9 @@ struct CartListView: View {
                                     viewModel.onEvent(.dismissOrderResult)
                                 },
                                 viewModel: OrderDetailViewModel(
-                                    getOrderDetailUseCase: GetOrderDetailUseCase(repository: OrderRepositoryImpl(api: OrderAPI(networkManager: NetworkManager()))),
-                                    cancelOrderUseCase: CancelOrderUseCase(repository: OrderRepositoryImpl(api: OrderAPI(networkManager: NetworkManager()))),
-                                    receiveOrderUseCase: ReceiveOrderUseCase(repository: OrderRepositoryImpl(api: OrderAPI(networkManager: NetworkManager())))
+                                    getOrderDetailUseCase: GetOrderDetailUseCase(repository: OrderRepositoryImpl(api: OrderAPI(networkManager: NetworkManager(authRequestInterceptor: AuthRequestInterceptor(authPreferences: AuthPreferences(), tokenRefreshService: TokenRefreshService(authPreferences: AuthPreferences())))))),
+                                    cancelOrderUseCase: CancelOrderUseCase(repository: OrderRepositoryImpl(api: OrderAPI(networkManager: NetworkManager(authRequestInterceptor: AuthRequestInterceptor(authPreferences: AuthPreferences(), tokenRefreshService: TokenRefreshService(authPreferences: AuthPreferences())))))),
+                                    receiveOrderUseCase: ReceiveOrderUseCase(repository: OrderRepositoryImpl(api: OrderAPI(networkManager: NetworkManager(authRequestInterceptor: AuthRequestInterceptor(authPreferences: AuthPreferences(), tokenRefreshService: TokenRefreshService(authPreferences: AuthPreferences()))))))
                                 )
                             )
                         } else {

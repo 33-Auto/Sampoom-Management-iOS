@@ -9,11 +9,14 @@ import Foundation
 import Alamofire
 
 class NetworkManager {
-    static let shared = NetworkManager()
-    
     private let baseURL = "https://sampoom.store/api/"
+    private let session: Session
     
-    init() {}
+    init(authRequestInterceptor: AuthRequestInterceptor) {
+        // Alamofire Session 설정 with interceptor
+        let configuration = URLSessionConfiguration.default
+        self.session = Session(configuration: configuration, interceptor: authRequestInterceptor)
+    }
     
     func request<T: Codable>(
         endpoint: String,
@@ -25,7 +28,7 @@ class NetworkManager {
         
         return try await withTaskCancellationHandler(operation: {
             try await withCheckedThrowingContinuation { continuation in
-                let dataRequest = AF.request(
+                let dataRequest = session.request(
                     url,
                     method: method,
                     parameters: parameters,
