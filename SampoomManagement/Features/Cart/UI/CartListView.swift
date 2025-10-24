@@ -10,6 +10,7 @@ import Combine
 
 struct CartListView: View {
     @ObservedObject var viewModel: CartListViewModel
+    let dependencies: AppDependencies
     @State private var showEmptyCartDialog = false
     @State private var showConfirmDialog = false
     
@@ -50,11 +51,7 @@ struct CartListView: View {
                                 onDismiss: {
                                     viewModel.onEvent(.dismissOrderResult)
                                 },
-                                viewModel: OrderDetailViewModel(
-                                    getOrderDetailUseCase: GetOrderDetailUseCase(repository: OrderRepositoryImpl(api: OrderAPI(networkManager: NetworkManager(authRequestInterceptor: AuthRequestInterceptor(authPreferences: AuthPreferences(), tokenRefreshService: TokenRefreshService(authPreferences: AuthPreferences())))))),
-                                    cancelOrderUseCase: CancelOrderUseCase(repository: OrderRepositoryImpl(api: OrderAPI(networkManager: NetworkManager(authRequestInterceptor: AuthRequestInterceptor(authPreferences: AuthPreferences(), tokenRefreshService: TokenRefreshService(authPreferences: AuthPreferences())))))),
-                                    receiveOrderUseCase: ReceiveOrderUseCase(repository: OrderRepositoryImpl(api: OrderAPI(networkManager: NetworkManager(authRequestInterceptor: AuthRequestInterceptor(authPreferences: AuthPreferences(), tokenRefreshService: TokenRefreshService(authPreferences: AuthPreferences()))))))
-                                )
+                                viewModel: dependencies.makeOrderDetailViewModel(orderId: processedOrder.first?.orderId ?? 0)
                             )
                         } else {
                             EmptyView()

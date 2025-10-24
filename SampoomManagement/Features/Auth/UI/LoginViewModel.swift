@@ -14,7 +14,6 @@ class LoginViewModel: ObservableObject {
     @Published var uiState = LoginUiState()
     
     private let loginUseCase: LoginUseCase
-    var onLoginSuccess: (() -> Void)?
     
     init(loginUseCase: LoginUseCase) {
         self.loginUseCase = loginUseCase
@@ -47,8 +46,7 @@ class LoginViewModel: ObservableObject {
             
             do {
                 _ = try await loginUseCase.execute(email: email, password: password)
-                uiState = uiState.copy(loading: false)
-                onLoginSuccess?()
+                uiState = uiState.copy(loading: false, success: true)
             } catch {
                 uiState = uiState.copy(loading: false)
                 showError(error.localizedDescription)

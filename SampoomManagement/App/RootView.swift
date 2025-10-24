@@ -71,12 +71,6 @@ struct RootView: View {
                 }
             }
         }
-        .onAppear {
-            // 로그아웃 성공 콜백 설정
-            authViewModel.onSignOutSuccess = {
-                showSignUp = false
-            }
-        }
         .onChange(of: authViewModel.shouldNavigateToLogin) { _, shouldNavigate in
             if shouldNavigate {
                 showSignUp = false

@@ -21,9 +21,6 @@ struct LoginView: View {
         self.viewModel = viewModel
         self.onSuccess = onSuccess
         self.onNavigateSignUp = onNavigateSignUp
-        
-        // 로그인 성공 콜백 설정
-        self.viewModel.onLoginSuccess = onSuccess
     }
     
     var body: some View {
@@ -110,6 +107,11 @@ struct LoginView: View {
                 let cleanMessage = message.components(separatedBy: "_").first ?? message
                 Toast.text(cleanMessage).show()
                 viewModel.consumeError()
+            }
+        }
+        .onChange(of: viewModel.uiState.success) { _, success in
+            if success {
+                onSuccess()
             }
         }
     }

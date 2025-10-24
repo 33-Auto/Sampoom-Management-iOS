@@ -12,17 +12,20 @@ enum Tabs {
 }
 
 struct ContentView: View {
+    // MARK: - Properties
     let dependencies: AppDependencies
     @StateObject private var partViewModel: PartViewModel
     @State private var selectedTab: Tabs = .dashboard
     @State private var ordersNavigationPath = NavigationPath()
     @State private var partsNavigationPath = NavigationPath()
     
+    // MARK: - Initialization
     init(dependencies: AppDependencies) {
         self.dependencies = dependencies
         _partViewModel = StateObject(wrappedValue: dependencies.makePartViewModel())
     }
     
+    // MARK: - Body
     var body: some View {
         ZStack {
             // 전체 백그라운드
@@ -30,140 +33,113 @@ struct ContentView: View {
                 .ignoresSafeArea(.all)
             
             TabView(selection: $selectedTab) {
-            // Dashboard 탭 (임시)
-            Tab(value: .dashboard) {
-                NavigationStack {
-                    VStack(spacing: 20) {
-                        Spacer()
+                // Dashboard 탭 (임시)
+                Tab(value: .dashboard) {
+                    DashboardScreen(dependencies: dependencies)
+                } label: {
+                    Label {
                         Text(StringResources.Tabs.dashboard)
-                            .font(.largeTitle)
-                            .fontWeight(.bold)
-                        
-                        Text(StringResources.Placeholders.inventoryDescription)
-                            .font(.body)
-                            .foregroundColor(.secondary)
-                            .multilineTextAlignment(.center)
-                            .padding(.horizontal, 32)
-                        
-                        // 로그아웃 버튼
-                        Spacer()
-                        CommonButton(StringResources.Auth.logoutButton, backgroundColor: .red, textColor: .white) {
-                            Task {
-                                await dependencies.authViewModel.signOut()
-                            }
-                        }
-                        .padding(.horizontal, 16)
-                        .padding(.bottom, 16)
-                        
-                        Spacer()
-                    }
-                    .navigationTitle(StringResources.Tabs.dashboard)
-                    .background(Color.background)
-                }
-            } label: {
-                Label {
-                    Text(StringResources.Tabs.dashboard)
-                        .font(.gmarketSubheadline)
-                } icon: {
-                    Image("dashboard")
-                        .renderingMode(.template)
-                        .foregroundStyle(.text)
-                }
-            }
-            
-            // Outbound 탭
-            Tab(value: .outbound) {
-                NavigationStack {
-                    OutboundListView(viewModel: dependencies.makeOutboundListViewModel())
-                }
-            } label: {
-                Label {
-                    Text(StringResources.Tabs.outbound)
-                        .font(.gmarketSubheadline)
-                } icon: {
-                    Image("outbound")
-                        .renderingMode(.template)
-                        .foregroundStyle(Color.text)
-                }
-            }
-            
-            // Cart 탭
-            Tab(value: .cart) {
-                NavigationStack {
-                    CartListView(viewModel: dependencies.makeCartListViewModel())
-                }
-            } label: {
-                Label {
-                    Text(StringResources.Tabs.cart)
-                        .font(.gmarketSubheadline)
-                } icon: {
-                    Image("cart")
-                        .renderingMode(.template)
-                        .foregroundStyle(Color.text)
-                }
-            }
-            
-            // Orders 탭
-            Tab(value: .orders) {
-                NavigationStack(path: $ordersNavigationPath) {
-                    OrderListView(
-                        viewModel: dependencies.makeOrderListViewModel(),
-                        onNavigateOrderDetail: { orderId in
-                            ordersNavigationPath.append(orderId)
-                        }
-                    )
-                    .navigationDestination(for: Int.self) { orderId in
-                        OrderDetailView(
-                            orderId: orderId,
-                            viewModel: dependencies.makeOrderDetailViewModel(orderId: orderId)
-                        )
+                            .font(.gmarketSubheadline)
+                    } icon: {
+                        Image("dashboard")
+                            .renderingMode(.template)
+                            .foregroundStyle(.text)
                     }
                 }
-            } label: {
-                Label {
-                    Text(StringResources.Tabs.orders)
-                        .font(.gmarketSubheadline)
-                } icon: {
-                    Image("orders")
-                        .renderingMode(.template)
-                        .foregroundStyle(Color.text)
+                
+                // Outbound 탭
+                Tab(value: .outbound) {
+                    NavigationStack {
+                        OutboundListView(viewModel: dependencies.makeOutboundListViewModel())
+                    }
+                } label: {
+                    Label {
+                        Text(StringResources.Tabs.outbound)
+                            .font(.gmarketSubheadline)
+                    } icon: {
+                        Image("outbound")
+                            .renderingMode(.template)
+                            .foregroundStyle(Color.text)
+                    }
                 }
-            }
-            
-            // PartView 탭
-            Tab(value: .parts, role: .search) {
-                NavigationStack(path: $partsNavigationPath) {
-                    PartView(
-                        onNavigatePartList: { group in
-                            partsNavigationPath.append(group.id)
-                        },
-                        viewModel: partViewModel,
-                        searchViewModel: dependencies.makeSearchViewModel()
-                    )
-                    .navigationDestination(for: Int.self) { groupId in
-                        PartListView(
-                            viewModel: PartListViewModel(
-                                getPartUseCase: dependencies.getPartUseCase,
-                                groupId: groupId
-                            ),
+                
+                // Cart 탭
+                Tab(value: .cart) {
+                    NavigationStack {
+                        CartListView(
+                            viewModel: dependencies.makeCartListViewModel(),
                             dependencies: dependencies
                         )
                     }
+                } label: {
+                    Label {
+                        Text(StringResources.Tabs.cart)
+                            .font(.gmarketSubheadline)
+                    } icon: {
+                        Image("cart")
+                            .renderingMode(.template)
+                            .foregroundStyle(Color.text)
+                    }
                 }
-                .environmentObject(partViewModel)
-            } label: {
-                Label {
-                    Text(StringResources.Tabs.parts)
-                        .font(.gmarketSubheadline)
-                } icon: {
-                    Image("parts")
-                        .renderingMode(.template)
-                        .foregroundStyle(Color.text)
+                
+                // Orders 탭
+                Tab(value: .orders) {
+                    NavigationStack(path: $ordersNavigationPath) {
+                        OrderListView(
+                            viewModel: dependencies.makeOrderListViewModel(),
+                            onNavigateOrderDetail: { orderId in
+                                ordersNavigationPath.append(orderId)
+                            }
+                        )
+                        .navigationDestination(for: Int.self) { orderId in
+                            OrderDetailView(
+                                orderId: orderId,
+                                viewModel: dependencies.makeOrderDetailViewModel(orderId: orderId)
+                            )
+                        }
+                    }
+                } label: {
+                    Label {
+                        Text(StringResources.Tabs.orders)
+                            .font(.gmarketSubheadline)
+                    } icon: {
+                        Image("orders")
+                            .renderingMode(.template)
+                            .foregroundStyle(Color.text)
+                    }
+                }
+                
+                // PartView 탭
+                Tab(value: .parts, role: .search) {
+                    NavigationStack(path: $partsNavigationPath) {
+                        PartView(
+                            onNavigatePartList: { group in
+                                partsNavigationPath.append(group.id)
+                            },
+                            viewModel: partViewModel,
+                            searchViewModel: dependencies.makeSearchViewModel()
+                        )
+                        .navigationDestination(for: Int.self) { groupId in
+                            PartListView(
+                                viewModel: dependencies.makePartListViewModel(groupId: groupId),
+                                dependencies: dependencies
+                            )
+                        }
+                    }
+                    .environmentObject(partViewModel)
+                } label: {
+                    Label {
+                        Text(StringResources.Tabs.parts)
+                            .font(.gmarketSubheadline)
+                    } icon: {
+                        Image("parts")
+                            .renderingMode(.template)
+                            .foregroundStyle(Color.text)
+                    }
                 }
             }
-        }
-        .accentColor(.accentColor)
-        .tabViewStyle(.automatic)
+            .accentColor(.accentColor)
+            .tabViewStyle(.automatic)
         }
     }
 }

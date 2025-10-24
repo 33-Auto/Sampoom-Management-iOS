@@ -11,6 +11,7 @@ import Combine
 
 @MainActor
 class AuthViewModel: ObservableObject {
+    // MARK: - Properties
     @Published var isLoggedIn: Bool = false
     @Published var shouldNavigateToLogin: Bool = false
     
@@ -18,8 +19,7 @@ class AuthViewModel: ObservableObject {
     private let signOutUseCase: SignOutUseCase
     private let clearTokensUseCase: ClearTokensUseCase
     
-    var onSignOutSuccess: (() -> Void)?
-    
+    // MARK: - Initialization
     init(
         checkLoginStateUseCase: CheckLoginStateUseCase,
         signOutUseCase: SignOutUseCase,
@@ -29,10 +29,10 @@ class AuthViewModel: ObservableObject {
         self.signOutUseCase = signOutUseCase
         self.clearTokensUseCase = clearTokensUseCase
         
-        // 초기 로그인 상태 확인
         updateLoginState()
     }
     
+    // MARK: - Actions
     func updateLoginState() {
         isLoggedIn = checkLoginStateUseCase.execute()
     }
@@ -46,7 +46,7 @@ class AuthViewModel: ObservableObject {
         
         // 로그아웃 성공/실패 관계없이 로컬 상태 업데이트
         isLoggedIn = false
-        onSignOutSuccess?()
+        shouldNavigateToLogin = true
     }
     
     func handleTokenExpired() async {
