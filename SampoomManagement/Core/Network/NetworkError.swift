@@ -14,6 +14,7 @@ enum NetworkError: Error, LocalizedError {
     case noData
     case serverError(Int)
     case invalidParameters
+    case unauthorized
     
     var errorDescription: String? {
         switch self {
@@ -29,6 +30,8 @@ enum NetworkError: Error, LocalizedError {
             return "서버 오류: \(code)"
         case .invalidParameters:
             return "잘못된 매개변수입니다"
+        case .unauthorized:
+            return "인증이 필요합니다"
         }
     }
 }
@@ -38,6 +41,8 @@ enum AuthError: Error, LocalizedError {
     case invalidCredentials
     case networkError(Error)
     case invalidResponse
+    case tokenRefreshFailed
+    case unauthorized
     
     var errorDescription: String? {
         switch self {
@@ -49,6 +54,10 @@ enum AuthError: Error, LocalizedError {
             return "네트워크 오류: \(error.localizedDescription)"
         case .invalidResponse:
             return "잘못된 응답입니다"
+        case .tokenRefreshFailed:
+            return "토큰 재발급에 실패했습니다"
+        case .unauthorized:
+            return "인증이 필요합니다"
         }
     }
 }

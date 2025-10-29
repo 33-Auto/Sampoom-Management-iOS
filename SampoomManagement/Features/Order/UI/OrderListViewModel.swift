@@ -11,14 +11,17 @@ import Combine
 
 @MainActor
 class OrderListViewModel: ObservableObject {
+    // MARK: - Properties
     @Published var uiState = OrderListUiState()
     
     private let getOrderUseCase: GetOrderUseCase
     
+    // MARK: - Initialization
     init(getOrderUseCase: GetOrderUseCase) {
         self.getOrderUseCase = getOrderUseCase
     }
     
+    // MARK: - Actions
     func onEvent(_ event: OrderListUiEvent) {
         switch event {
         case .loadOrderList, .retryOrderList:
@@ -26,28 +29,23 @@ class OrderListViewModel: ObservableObject {
         }
     }
     
+    // MARK: - Private Methods
     private func loadOrderList() {
         Task {
-            await MainActor.run {
-                uiState = uiState.copy(orderLoading: true, orderError: nil)
-            }
+            uiState = uiState.copy(orderLoading: true, orderError: nil)
             
             do {
                 let orderList = try await getOrderUseCase.execute()
-                await MainActor.run {
-                    uiState = uiState.copy(
-                        orderList: orderList.items,
-                        orderLoading: false,
-                        orderError: nil
-                    )
-                }
+                uiState = uiState.copy(
+                    orderList: orderList.items,
+                    orderLoading: false,
+                    orderError: nil
+                )
             } catch {
-                await MainActor.run {
-                    uiState = uiState.copy(
-                        orderLoading: false,
-                        orderError: error.localizedDescription
-                    )
-                }
+                uiState = uiState.copy(
+                    orderLoading: false,
+                    orderError: error.localizedDescription
+                )
             }
             print("OrderListViewModel - loadOrderList: \(uiState)")
         }

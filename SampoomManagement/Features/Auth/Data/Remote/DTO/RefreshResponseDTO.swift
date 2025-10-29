@@ -1,5 +1,5 @@
 //
-//  User.swift
+//  RefreshResponseDTO.swift
 //  SampoomManagement
 //
 //  Created by 채상윤 on 10/15/25.
@@ -7,11 +7,8 @@
 
 import Foundation
 
-struct User: Equatable {
-    let id: Int
-    let name: String
-    let role: String
+struct RefreshResponseDTO: Codable {
     let accessToken: String
-    let refreshToken: String
     let expiresIn: Int
+    let refreshToken: String
 }

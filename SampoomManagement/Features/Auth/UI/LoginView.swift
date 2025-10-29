@@ -17,6 +17,12 @@ struct LoginView: View {
     let onSuccess: () -> Void
     let onNavigateSignUp: () -> Void
     
+    init(viewModel: LoginViewModel, onSuccess: @escaping () -> Void, onNavigateSignUp: @escaping () -> Void) {
+        self.viewModel = viewModel
+        self.onSuccess = onSuccess
+        self.onNavigateSignUp = onNavigateSignUp
+    }
+    
     var body: some View {
         VStack {
             Spacer()
@@ -95,17 +101,17 @@ struct LoginView: View {
         .onTapGesture {
             hideKeyboard()
         }
-        .onChange(of: viewModel.uiState.success) { _, success in
-            if success {
-                onSuccess()
-            }
-        }
         .onChange(of: viewModel.uiState.error) { _, error in
             if let message = error, !message.isEmpty {
                 // 타임스탬프 제거하여 순수한 에러 메시지만 표시
                 let cleanMessage = message.components(separatedBy: "_").first ?? message
                 Toast.text(cleanMessage).show()
                 viewModel.consumeError()
+            }
+        }
+        .onChange(of: viewModel.uiState.success) { _, success in
+            if success {
+                onSuccess()
             }
         }
     }

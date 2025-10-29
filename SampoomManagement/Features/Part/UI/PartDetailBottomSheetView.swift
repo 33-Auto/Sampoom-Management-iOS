@@ -170,7 +170,7 @@ private struct QuantityControlView: View {
                 .frame(width: 50, height: 44)
                 .disabled(isDecreaseDisabled)
 
-                TextField("수량", text: $quantityText)
+                TextField(StringResources.Part.quantity, text: $quantityText)
                     .textFieldStyle(RoundedBorderTextFieldStyle())
                     .frame(width: 100)
                     .multilineTextAlignment(.center)

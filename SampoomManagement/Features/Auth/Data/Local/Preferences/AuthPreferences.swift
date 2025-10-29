@@ -13,6 +13,30 @@ class AuthPreferences {
     private enum Keys {
         static let accessToken = "auth.accessToken"
         static let refreshToken = "auth.refreshToken"
+        static let userId = "auth.userId"
+        static let userName = "auth.userName"
+        static let userRole = "auth.userRole"
+        static let expiresIn = "auth.expiresIn"
+    }
+    
+    func saveUser(_ user: User) throws {
+        do {
+            try keychain.save(user.accessToken, for: Keys.accessToken)
+            try keychain.save(user.refreshToken, for: Keys.refreshToken)
+            try keychain.save(String(user.id), for: Keys.userId)
+            try keychain.save(user.name, for: Keys.userName)
+            try keychain.save(user.role, for: Keys.userRole)
+            try keychain.save(String(user.expiresIn), for: Keys.expiresIn)
+        } catch {
+            // 부분 저장 실패 시 롤백
+            try? keychain.delete(Keys.accessToken)
+            try? keychain.delete(Keys.refreshToken)
+            try? keychain.delete(Keys.userId)
+            try? keychain.delete(Keys.userName)
+            try? keychain.delete(Keys.userRole)
+            try? keychain.delete(Keys.expiresIn)
+            throw error
+        }
     }
     
     func saveToken(accessToken: String, refreshToken: String) throws {
@@ -24,6 +48,33 @@ class AuthPreferences {
             try? keychain.delete(Keys.accessToken)
             try? keychain.delete(Keys.refreshToken)
             throw error
+        }
+    }
+    
+    func getStoredUser() throws -> User? {
+        do {
+            guard let userIdString = try keychain.get(Keys.userId),
+                  let userId = Int(userIdString),
+                  let userName = try keychain.get(Keys.userName),
+                  let userRole = try keychain.get(Keys.userRole),
+                  let accessToken = try keychain.get(Keys.accessToken),
+                  let refreshToken = try keychain.get(Keys.refreshToken),
+                  let expiresInString = try keychain.get(Keys.expiresIn),
+                  let expiresIn = Int(expiresInString) else {
+                return nil
+            }
+            
+            return User(
+                id: userId,
+                name: userName,
+                role: userRole,
+                accessToken: accessToken,
+                refreshToken: refreshToken,
+                expiresIn: expiresIn
+            )
+        } catch {
+            print("AuthPreferences - 사용자 정보 조회 실패: \(error)")
+            return nil
         }
     }
     
@@ -58,6 +109,10 @@ class AuthPreferences {
         do {
             try keychain.delete(Keys.accessToken)
             try keychain.delete(Keys.refreshToken)
+            try keychain.delete(Keys.userId)
+            try keychain.delete(Keys.userName)
+            try keychain.delete(Keys.userRole)
+            try keychain.delete(Keys.expiresIn)
         } catch {
             // 로그아웃 시에는 실패해도 에러를 던지지 않음 (이미 로그아웃 상태로 간주)
             print("AuthPreferences - 키체인 삭제 실패: \(error)")

@@ -66,5 +66,31 @@ class AuthAPI {
             responseType: SignupResponseDTO.self
         )
     }
+    
+    // 로그아웃
+    func logout() async throws -> APIResponse<EmptyResponse> {
+        return try await networkManager.request(
+            endpoint: "auth/logout",
+            method: .post,
+            parameters: nil,
+            responseType: EmptyResponse.self
+        )
+    }
+    
+    // 토큰 재발급
+    func refresh(refreshToken: String) async throws -> APIResponse<RefreshResponseDTO> {
+        let requestDTO = RefreshRequestDTO(refreshToken: refreshToken)
+        
+        let parameters: [String: Any] = [
+            "refreshToken": requestDTO.refreshToken
+        ]
+        
+        return try await networkManager.request(
+            endpoint: "auth/refresh",
+            method: .post,
+            parameters: parameters,
+            responseType: RefreshResponseDTO.self
+        )
+    }
 }
 
