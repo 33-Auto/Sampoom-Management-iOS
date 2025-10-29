@@ -59,6 +59,8 @@ struct CommonTextField: View {
     let isError: Bool
     let errorMessage: String?
     let onTextChange: (String) -> Void
+    let submitLabel: SubmitLabel
+    let onSubmit: () -> Void
     
     init(
         value: Binding<String>,
@@ -67,7 +69,9 @@ struct CommonTextField: View {
         size: TextFieldSize = .medium,
         isError: Bool = false,
         errorMessage: String? = nil,
-        onTextChange: @escaping (String) -> Void = { _ in }
+        onTextChange: @escaping (String) -> Void = { _ in },
+        submitLabel: SubmitLabel = .next,
+        onSubmit: @escaping () -> Void = {}
     ) {
         self._value = value
         self.placeholder = placeholder
@@ -76,6 +80,8 @@ struct CommonTextField: View {
         self.isError = isError
         self.errorMessage = errorMessage
         self.onTextChange = onTextChange
+        self.submitLabel = submitLabel
+        self.onSubmit = onSubmit
     }
     
     var body: some View {
@@ -85,6 +91,8 @@ struct CommonTextField: View {
                 Group {
                     if type == .password && !isPasswordVisible {
                         SecureField(placeholder, text: $value)
+                            .submitLabel(submitLabel)
+                            .onSubmit { onSubmit() }
                             .textFieldStyle(PlainTextFieldStyle())
                             .focused($isFocused)
                     } else {
@@ -92,6 +100,8 @@ struct CommonTextField: View {
                             .keyboardType(keyboardType)
                             .textInputAutocapitalization(autocapitalization)
                             .disableAutocorrection(disableAutocorrection)
+                            .submitLabel(submitLabel)
+                            .onSubmit { onSubmit() }
                             .textFieldStyle(PlainTextFieldStyle())
                             .focused($isFocused)
                     }

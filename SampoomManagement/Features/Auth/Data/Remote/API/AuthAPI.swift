@@ -92,5 +92,15 @@ class AuthAPI {
             responseType: RefreshResponseDTO.self
         )
     }
+
+    // 프로필 조회
+    func getProfile() async throws -> APIResponse<GetProfileResponseDTO> {
+        return try await networkManager.request(
+            endpoint: "user/profile",
+            method: .get,
+            parameters: nil,
+            responseType: GetProfileResponseDTO.self
+        )
+    }
 }
 

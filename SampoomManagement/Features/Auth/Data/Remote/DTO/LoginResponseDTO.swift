@@ -9,7 +9,7 @@ import Foundation
 
 struct LoginResponseDTO: Codable {
     let userId: Int
-    let userName: String
+    let userName: String?
     let role: String
     let accessToken: String
     let refreshToken: String

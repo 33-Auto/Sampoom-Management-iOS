@@ -54,7 +54,10 @@ class TokenRefreshService {
             role: existingUser.role,
             accessToken: dto.accessToken,
             refreshToken: dto.refreshToken,
-            expiresIn: dto.expiresIn
+            expiresIn: dto.expiresIn,
+            position: existingUser.position,
+            workspace: existingUser.workspace,
+            branch: existingUser.branch
         )
         
         try authPreferences.saveUser(updatedUser)

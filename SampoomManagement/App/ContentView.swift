@@ -15,6 +15,7 @@ struct ContentView: View {
     // MARK: - Properties
     let dependencies: AppDependencies
     @StateObject private var partViewModel: PartViewModel
+    @StateObject private var dashboardViewModel: DashboardViewModel
     @State private var selectedTab: Tabs = .dashboard
     @State private var ordersNavigationPath = NavigationPath()
     @State private var partsNavigationPath = NavigationPath()
@@ -23,6 +24,7 @@ struct ContentView: View {
     init(dependencies: AppDependencies) {
         self.dependencies = dependencies
         _partViewModel = StateObject(wrappedValue: dependencies.makePartViewModel())
+        _dashboardViewModel = StateObject(wrappedValue: DashboardViewModel(getOrderUseCase: dependencies.getOrderUseCase))
     }
     
     // MARK: - Body
@@ -33,9 +35,27 @@ struct ContentView: View {
                 .ignoresSafeArea(.all)
             
             TabView(selection: $selectedTab) {
-                // Dashboard 탭 (임시)
+                // Dashboard 탭 (DashboardView directly)
                 Tab(value: .dashboard) {
-                    DashboardScreen(dependencies: dependencies)
+                    NavigationStack {
+                        DashboardView(
+                            viewModel: dashboardViewModel,
+                            onLogoutClick: {
+                                Task { await dependencies.authViewModel.signOut() }
+                            },
+                            onNavigateOrderDetail: { order in
+                                selectedTab = .orders
+                                DispatchQueue.main.async {
+                                    ordersNavigationPath.append(order.orderId)
+                                }
+                            },
+                            onNavigateOrderList: {
+                                selectedTab = .orders
+                            },
+                            userName: ((try? dependencies.authPreferences.getStoredUser())?.name) ?? "",
+                            branch: ((try? dependencies.authPreferences.getStoredUser())?.branch) ?? ""
+                        )
+                    }
                 } label: {
                     Label {
                         Text(StringResources.Tabs.dashboard)

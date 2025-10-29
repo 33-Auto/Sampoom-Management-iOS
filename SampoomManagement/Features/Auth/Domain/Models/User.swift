@@ -14,4 +14,8 @@ struct User: Equatable {
     let accessToken: String
     let refreshToken: String
     let expiresIn: Int
+    // Additional profile fields merged after login
+    let position: String
+    let workspace: String
+    let branch: String
 }

@@ -17,6 +17,9 @@ class AuthPreferences {
         static let userName = "auth.userName"
         static let userRole = "auth.userRole"
         static let expiresIn = "auth.expiresIn"
+        static let position = "auth.position"
+        static let workspace = "auth.workspace"
+        static let branch = "auth.branch"
     }
     
     func saveUser(_ user: User) throws {
@@ -27,6 +30,9 @@ class AuthPreferences {
             try keychain.save(user.name, for: Keys.userName)
             try keychain.save(user.role, for: Keys.userRole)
             try keychain.save(String(user.expiresIn), for: Keys.expiresIn)
+            try keychain.save(user.position, for: Keys.position)
+            try keychain.save(user.workspace, for: Keys.workspace)
+            try keychain.save(user.branch, for: Keys.branch)
         } catch {
             // 부분 저장 실패 시 롤백
             try? keychain.delete(Keys.accessToken)
@@ -35,6 +41,9 @@ class AuthPreferences {
             try? keychain.delete(Keys.userName)
             try? keychain.delete(Keys.userRole)
             try? keychain.delete(Keys.expiresIn)
+            try? keychain.delete(Keys.position)
+            try? keychain.delete(Keys.workspace)
+            try? keychain.delete(Keys.branch)
             throw error
         }
     }
@@ -63,6 +72,10 @@ class AuthPreferences {
                   let expiresIn = Int(expiresInString) else {
                 return nil
             }
+            // Tolerate missing profile keys by defaulting to empty strings
+            let position = (try? keychain.get(Keys.position)) ?? ""
+            let workspace = (try? keychain.get(Keys.workspace)) ?? ""
+            let branch = (try? keychain.get(Keys.branch)) ?? ""
             
             return User(
                 id: userId,
@@ -70,7 +83,10 @@ class AuthPreferences {
                 role: userRole,
                 accessToken: accessToken,
                 refreshToken: refreshToken,
-                expiresIn: expiresIn
+                expiresIn: expiresIn,
+                position: position,
+                workspace: workspace,
+                branch: branch
             )
         } catch {
             print("AuthPreferences - 사용자 정보 조회 실패: \(error)")
@@ -113,6 +129,9 @@ class AuthPreferences {
             try keychain.delete(Keys.userName)
             try keychain.delete(Keys.userRole)
             try keychain.delete(Keys.expiresIn)
+            try keychain.delete(Keys.position)
+            try keychain.delete(Keys.workspace)
+            try keychain.delete(Keys.branch)
         } catch {
             // 로그아웃 시에는 실패해도 에러를 던지지 않음 (이미 로그아웃 상태로 간주)
             print("AuthPreferences - 키체인 삭제 실패: \(error)")
