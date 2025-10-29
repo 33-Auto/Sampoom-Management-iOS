@@ -53,7 +53,6 @@ struct ContentView: View {
                                 selectedTab = .orders
                             },
                             userName: ((try? dependencies.authPreferences.getStoredUser())?.name) ?? "",
-                            workspace: ((try? dependencies.authPreferences.getStoredUser())?.workspace) ?? "",
                             branch: ((try? dependencies.authPreferences.getStoredUser())?.branch) ?? ""
                         )
                     }

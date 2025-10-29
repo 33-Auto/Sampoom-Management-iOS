@@ -13,7 +13,6 @@ struct DashboardView: View {
     let onNavigateOrderDetail: (Order) -> Void
     let onNavigateOrderList: () -> Void
     let userName: String
-    let workspace: String
     let branch: String
     var isManager = true
     
@@ -64,19 +63,19 @@ struct DashboardView: View {
     
     private var titleSection: some View {
         VStack(alignment: .leading, spacing: 16) {
-            Text("\(workspace) \(branch)")
+            Text("\(branch)")
                 .font(.gmarketTitle2)
                 .fontWeight(.bold)
                 .foregroundColor(.text)
             
             Group {
-                Text("안녕하세요, ") + Text(userName).foregroundColor(.accentColor) + Text(" 님")
+                Text(StringResources.Dashboard.greetingPrefix) + Text(userName).foregroundColor(.accent) + Text(StringResources.Dashboard.greetingSuffix)
             }
             .font(.gmarketTitle)
             .fontWeight(.bold)
             .foregroundColor(.text)
             
-            Text("필요한 정보를 한 눈에 확인하세요.")
+            Text(StringResources.Dashboard.intro)
                 .font(.gmarketBody)
                 .foregroundColor(.text)
         }
@@ -87,15 +86,15 @@ struct DashboardView: View {
     private var buttonSection: some View {
         VStack(spacing: 16) {
             if (isManager) {
-                buttonCard(iconName: "employee", valueText: "45", subText: "직원 관리", bordered: true) {}
+                buttonCard(iconName: "employee", valueText: "45", subText: StringResources.Dashboard.employee, bordered: true) {}
             }
             HStack(spacing: 16) {
-                buttonCard(iconName: "parts", valueText: "1234", subText: "보유 부품") {}
-                buttonCard(iconName: "orders", valueText: "23", subText: "진행중 주문") {}
+                buttonCard(iconName: "parts", valueText: "1234", subText: StringResources.Dashboard.partsOnHand) {}
+                buttonCard(iconName: "orders", valueText: "23", subText: StringResources.Dashboard.partsInProgress) {}
             }
             HStack(spacing: 16) {
-                buttonCard(iconName: "warning", valueText: "19", subText: "부족 부품") {}
-                buttonCard(iconName: "money", valueText: "4,123,200", subText: "주문 금액") {}
+                buttonCard(iconName: "warning", valueText: "19", subText: StringResources.Dashboard.shortageOfParts) {}
+                buttonCard(iconName: "money", valueText: "4,123,200", subText: StringResources.Dashboard.orderAmount) {}
             }
         }
         .padding(.bottom, 16)
@@ -108,7 +107,7 @@ struct DashboardView: View {
                     .renderingMode(.template)
                     .foregroundStyle(Color.white)
                     .padding(8)
-                    .background(Color.accentColor)
+                    .background(.accent)
                     .clipShape(Circle())
                 Text(valueText)
                     .font(.gmarketTitle2)
@@ -131,7 +130,7 @@ struct DashboardView: View {
     private var orderListSection: some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack {
-                Text("최근 주문")
+                Text(StringResources.Dashboard.recentOrdersTitle)
                     .font(.gmarketTitle2)
                     .foregroundColor(.text)
                 Spacer()

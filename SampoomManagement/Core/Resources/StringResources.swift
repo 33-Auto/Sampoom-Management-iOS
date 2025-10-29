@@ -14,6 +14,19 @@ struct StringResources {
         static let title = "SampoomManagement"
     }
     
+    // MARK: - Dashboard
+    struct Dashboard {
+        static let greetingPrefix = "안녕하세요, "
+        static let greetingSuffix = " 님"
+        static let intro = "오늘도 효율적인 재고 관리를 시작해보세요."
+        static let employee = "직원 관리"
+        static let partsOnHand = "보유 부품"
+        static let partsInProgress = "진행중 주문"
+        static let shortageOfParts = "부족 부품"
+        static let orderAmount = "주문 금액"
+        static let recentOrdersTitle = "최근 주문"
+    }
+
     // MARK: - Tabs
     struct Tabs {
         static let dashboard = "대시보드"
