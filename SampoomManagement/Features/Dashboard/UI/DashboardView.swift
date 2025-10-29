@@ -12,6 +12,9 @@ struct DashboardView: View {
     let onLogoutClick: () -> Void
     let onNavigateOrderDetail: (Order) -> Void
     let onNavigateOrderList: () -> Void
+    let userName: String
+    let workspace: String
+    let branch: String
     var isManager = true
     
     var body: some View {
@@ -61,13 +64,13 @@ struct DashboardView: View {
     
     private var titleSection: some View {
         VStack(alignment: .leading, spacing: 16) {
-            Text("가산디지털단지점")
+            Text("\(workspace) \(branch)")
                 .font(.gmarketTitle2)
                 .fontWeight(.bold)
                 .foregroundColor(.text)
             
             Group {
-                Text("안녕하세요, ") + Text("홍길동").foregroundColor(.accentColor) + Text(" 님")
+                Text("안녕하세요, ") + Text(userName).foregroundColor(.accentColor) + Text(" 님")
             }
             .font(.gmarketTitle)
             .fontWeight(.bold)

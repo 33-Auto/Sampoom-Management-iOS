@@ -53,12 +53,21 @@ class AuthRepositoryImpl: AuthRepository {
             throw AuthError.tokenSaveFailed(error)
         }
 
-        // 2) 프로필 조회
-        let profileResponse = try await api.getProfile()
-        guard let profileDto = profileResponse.data else {
-            throw AuthError.invalidResponse
+        // 2) 프로필 조회 (실패 시 롤백)
+        let profileUser: User
+        do {
+            let profileResponse = try await api.getProfile()
+            guard let profileDto = profileResponse.data else {
+                // rollback tokens on invalid profile response
+                preferences.clear()
+                throw AuthError.invalidResponse
+            }
+            profileUser = profileDto.toModel()
+        } catch {
+            // rollback tokens on any profile failure
+            preferences.clear()
+            throw error
         }
-        let profileUser = profileDto.toModel()
 
         // 3) 병합
         let mergedUser = loginUser.mergeWith(profile: profileUser)

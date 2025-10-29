@@ -30,7 +30,7 @@ struct DashboardUiState: Equatable {
         return DashboardUiState(
             orderList: orderList ?? self.orderList,
             dashboardLoading: dashboardLoading ?? self.dashboardLoading,
-            dashboardError: dashboardError
+            dashboardError: dashboardError ?? self.dashboardError
         )
     }
 }
