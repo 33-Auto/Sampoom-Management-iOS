@@ -39,21 +39,39 @@ class AuthRepositoryImpl: AuthRepository {
     }
     
     func signIn(email: String, password: String) async throws -> User {
-        let response = try await api.login(email: email, password: password)
-        guard let dto = response.data else {
+        // 1) 로그인
+        let loginResponse = try await api.login(email: email, password: password)
+        guard let loginDto = loginResponse.data else {
             throw AuthError.invalidResponse
         }
-        
-        let user = dto.toModel()
+        let loginUser = loginDto.toModel()
+        // Store tokens immediately so that subsequent authorized calls (e.g., getProfile) carry Authorization header
         do {
-            try preferences.saveUser(user)
+            try preferences.saveToken(accessToken: loginUser.accessToken, refreshToken: loginUser.refreshToken)
         } catch {
-            // 키체인 저장 실패 시 로깅 및 에러 전파
+            print("AuthRepositoryImpl - 초기 토큰 저장 실패: \(error)")
+            throw AuthError.tokenSaveFailed(error)
+        }
+
+        // 2) 프로필 조회
+        let profileResponse = try await api.getProfile()
+        guard let profileDto = profileResponse.data else {
+            throw AuthError.invalidResponse
+        }
+        let profileUser = profileDto.toModel()
+
+        // 3) 병합
+        let mergedUser = loginUser.mergeWith(profile: profileUser)
+
+        // 4) 저장
+        do {
+            try preferences.saveUser(mergedUser)
+        } catch {
             print("AuthRepositoryImpl - 키체인 저장 실패: \(error)")
             throw AuthError.tokenSaveFailed(error)
         }
-        
-        return user
+
+        return mergedUser
     }
     
     func signOut() async throws {
@@ -90,7 +108,10 @@ class AuthRepositoryImpl: AuthRepository {
             role: existingUser.role,
             accessToken: dto.accessToken,
             refreshToken: dto.refreshToken,
-            expiresIn: dto.expiresIn
+            expiresIn: dto.expiresIn,
+            position: existingUser.position,
+            workspace: existingUser.workspace,
+            branch: existingUser.branch
         )
         
         do {

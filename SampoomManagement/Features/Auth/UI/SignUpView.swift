@@ -17,10 +17,15 @@ struct SignUpView: View {
     @State private var email = ""
     @State private var password = ""
     @State private var passwordCheck = ""
+    @FocusState private var focusedField: Field?
     
     let onSuccess: () -> Void
     
     private let labelTextSize: CGFloat = 16
+    
+    private enum Field: Hashable {
+        case name, branch, position, email, password, passwordCheck
+    }
     
     var body: some View {
         ScrollView {
@@ -44,10 +49,12 @@ struct SignUpView: View {
                     value: $name,
                     placeholder: StringResources.Auth.namePlaceholder,
                     isError: viewModel.uiState.nameError != nil,
-                    errorMessage: viewModel.uiState.nameError
-                ) { text in
-                    viewModel.updateName(text)
-                }
+                    errorMessage: viewModel.uiState.nameError,
+                    onTextChange: { text in viewModel.updateName(text) },
+                    submitLabel: .next,
+                    onSubmit: { focusedField = .branch }
+                )
+                .focused($focusedField, equals: .name)
                 
                 Spacer()
                     .frame(height: 8)
@@ -61,10 +68,12 @@ struct SignUpView: View {
                     value: $branch,
                     placeholder: StringResources.Auth.branchPlaceholder,
                     isError: viewModel.uiState.branchError != nil,
-                    errorMessage: viewModel.uiState.branchError
-                ) { text in
-                    viewModel.updateBranch(text)
-                }
+                    errorMessage: viewModel.uiState.branchError,
+                    onTextChange: { text in viewModel.updateBranch(text) },
+                    submitLabel: .next,
+                    onSubmit: { focusedField = .position }
+                )
+                .focused($focusedField, equals: .branch)
                 
                 Spacer()
                     .frame(height: 8)
@@ -78,10 +87,12 @@ struct SignUpView: View {
                     value: $position,
                     placeholder: StringResources.Auth.positionPlaceholder,
                     isError: viewModel.uiState.positionError != nil,
-                    errorMessage: viewModel.uiState.positionError
-                ) { text in
-                    viewModel.updatePosition(text)
-                }
+                    errorMessage: viewModel.uiState.positionError,
+                    onTextChange: { text in viewModel.updatePosition(text) },
+                    submitLabel: .next,
+                    onSubmit: { focusedField = .email }
+                )
+                .focused($focusedField, equals: .position)
                 
                 Spacer()
                     .frame(height: 8)
@@ -96,10 +107,12 @@ struct SignUpView: View {
                     placeholder: StringResources.Auth.emailPlaceholder,
                     type: .email,
                     isError: viewModel.uiState.emailError != nil,
-                    errorMessage: viewModel.uiState.emailError
-                ) { text in
-                    viewModel.updateEmail(text)
-                }
+                    errorMessage: viewModel.uiState.emailError,
+                    onTextChange: { text in viewModel.updateEmail(text) },
+                    submitLabel: .next,
+                    onSubmit: { focusedField = .password }
+                )
+                .focused($focusedField, equals: .email)
                 
                 Spacer()
                     .frame(height: 8)
@@ -114,10 +127,12 @@ struct SignUpView: View {
                     placeholder: StringResources.Auth.passwordPlaceholder,
                     type: .password,
                     isError: viewModel.uiState.passwordError != nil,
-                    errorMessage: viewModel.uiState.passwordError
-                ) { text in
-                    viewModel.updatePassword(text)
-                }
+                    errorMessage: viewModel.uiState.passwordError,
+                    onTextChange: { text in viewModel.updatePassword(text) },
+                    submitLabel: .next,
+                    onSubmit: { focusedField = .passwordCheck }
+                )
+                .focused($focusedField, equals: .password)
                 
                 Spacer()
                     .frame(height: 8)
@@ -132,10 +147,12 @@ struct SignUpView: View {
                     placeholder: StringResources.Auth.passwordCheckPlaceholder,
                     type: .password,
                     isError: viewModel.uiState.passwordCheckError != nil,
-                    errorMessage: viewModel.uiState.passwordCheckError
-                ) { text in
-                    viewModel.updatePasswordCheck(text)
-                }
+                    errorMessage: viewModel.uiState.passwordCheckError,
+                    onTextChange: { text in viewModel.updatePasswordCheck(text) },
+                    submitLabel: .done,
+                    onSubmit: { focusedField = nil }
+                )
+                .focused($focusedField, equals: .passwordCheck)
                 
                 Spacer()
                     .frame(height: 48)

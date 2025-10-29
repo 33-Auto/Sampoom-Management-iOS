@@ -33,9 +33,25 @@ struct ContentView: View {
                 .ignoresSafeArea(.all)
             
             TabView(selection: $selectedTab) {
-                // Dashboard 탭 (임시)
+                // Dashboard 탭 (DashboardView directly)
                 Tab(value: .dashboard) {
-                    DashboardScreen(dependencies: dependencies)
+                    NavigationStack {
+                        DashboardView(
+                            viewModel: DashboardViewModel(getOrderUseCase: dependencies.getOrderUseCase),
+                            onLogoutClick: {
+                                Task { await dependencies.authViewModel.signOut() }
+                            },
+                            onNavigateOrderDetail: { order in
+                                selectedTab = .orders
+                                DispatchQueue.main.async {
+                                    ordersNavigationPath.append(order.orderId)
+                                }
+                            },
+                            onNavigateOrderList: {
+                                selectedTab = .orders
+                            }
+                        )
+                    }
                 } label: {
                     Label {
                         Text(StringResources.Tabs.dashboard)
