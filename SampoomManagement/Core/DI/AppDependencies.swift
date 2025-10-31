@@ -126,7 +126,7 @@ class AppDependencies {
         
         // Order
         orderAPI = OrderAPI(networkManager: networkManager)
-        orderRepository = OrderRepositoryImpl(api: orderAPI)
+        orderRepository = OrderRepositoryImpl(api: orderAPI, preferences: authPreferences)
         getOrderUseCase = GetOrderUseCase(repository: orderRepository)
         createOrderUseCase = CreateOrderUseCase(repository: orderRepository)
         getOrderDetailUseCase = GetOrderDetailUseCase(repository: orderRepository)

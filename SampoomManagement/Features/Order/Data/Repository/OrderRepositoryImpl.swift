@@ -9,9 +9,11 @@ import Foundation
 
 class OrderRepositoryImpl: OrderRepository {
     private let api: OrderAPI
+    private let preferences: AuthPreferences
     
-    init(api: OrderAPI) {
+    init(api: OrderAPI, preferences: AuthPreferences) {
         self.api = api
+        self.preferences = preferences
     }
     
     func getOrderList() async throws -> OrderList {
@@ -20,8 +22,22 @@ class OrderRepositoryImpl: OrderRepository {
         return OrderList(items: orders)
     }
     
-    func createOrder() async throws -> OrderList {
-        let dtos = try await api.createOrder()
+    func createOrder(cartList: CartList) async throws -> OrderList {
+        guard let user = try preferences.getStoredUser() else {
+            throw NetworkError.unauthorized
+        }
+        let items: [OrderItems] = cartList.items
+            .flatMap { $0.groups }
+            .flatMap { $0.parts }
+            .map { part in
+                return OrderItems(code: part.code, quantity: Int64(part.quantity))
+            }
+        let request = OrderRequestDto(
+            requester: "대리점",
+            branch: user.branch,
+            items: items
+        )
+        let dtos = try await api.createOrder(orderRequestDto: request)
         let orders = dtos.map { $0.toModel() }
         return OrderList(items: orders)
     }

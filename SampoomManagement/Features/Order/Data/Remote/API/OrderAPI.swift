@@ -27,10 +27,21 @@ class OrderAPI {
     }
     
     /// 주문 생성
-    func createOrder() async throws -> [OrderDto] {
+    func createOrder(orderRequestDto: OrderRequestDto) async throws -> [OrderDto] {
+        let itemsParams: [[String: Any]] = orderRequestDto.items.map { item in
+            return [
+                "code": item.code,
+                "quantity": item.quantity
+            ]
+        }
+        let parameters: [String: Any] = [
+            "branch": orderRequestDto.branch,
+            "items": itemsParams
+        ]
         let response: APIResponse<[OrderDto]> = try await networkManager.request(
-            endpoint: "/agency/1/orders",
+            endpoint: "order/",
             method: .post,
+            parameters: parameters,
             responseType: [OrderDto].self
         )
         guard response.success else { throw NetworkError.serverError(response.status) }
