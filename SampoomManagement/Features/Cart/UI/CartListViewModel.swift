@@ -97,9 +97,20 @@ class CartListViewModel: ObservableObject {
                     )
                 }
                 globalMessageHandler.showMessage(StringResources.Cart.orderSuccess, isError: false)
+                
+                // 로컬 상태 먼저 업데이트 (즉시 UI 반영)
                 await MainActor.run {
-                    deleteAllCart()
+                    removeAllFromLocalList()
+                }
+                
+                // 서버 삭제 완료 후 재조회
+                do {
+                    try await deleteAllCartUseCase.execute()
                     loadCartList() // 주문 후 장바구니 새로고침
+                } catch {
+                    let errorMessage = (error as? NetworkError)?.errorDescription ?? error.localizedDescription
+                    globalMessageHandler.showMessage(errorMessage, isError: true)
+                    loadCartList() // 에러 발생 시에도 재조회하여 롤백
                 }
             } catch {
                 let errorMessage = (error as? NetworkError)?.errorDescription ?? error.localizedDescription
