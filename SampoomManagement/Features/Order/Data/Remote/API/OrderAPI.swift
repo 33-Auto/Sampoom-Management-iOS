@@ -16,36 +16,33 @@ class OrderAPI {
     }
     
     /// 주문 목록 조회
-    func getOrderList() async throws -> [OrderDto] {
-        let response: APIResponse<[OrderDto]> = try await networkManager.request(
-            endpoint: "/agency/1/orders",
+    func getOrderList(agencyName: String, page: Int = 0, size: Int = 20) async throws -> OrderListDto {
+        let encodedAgencyName = agencyName.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? agencyName
+        let endpoint = "order/requested?from=\(encodedAgencyName)&page=\(page)&size=\(size)"
+        
+        let response: APIResponse<OrderListDto> = try await networkManager.request(
+            endpoint: endpoint,
             method: .get,
-            responseType: [OrderDto].self
+            responseType: OrderListDto.self
         )
-        guard response.success else { throw NetworkError.serverError(response.status) }
-        return response.data ?? []
+        guard response.success else { throw NetworkError.serverError(response.status, message: response.message) }
+        
+        return response.data ?? OrderListDto(content: [], totalElements: 0, totalPages: 0, number: 0, last: true, size: size, first: true)
     }
     
     /// 주문 생성
-    func createOrder(orderRequestDto: OrderRequestDto) async throws -> [OrderDto] {
-        let itemsParams: [[String: Any]] = orderRequestDto.items.map { item in
-            return [
-                "code": item.code,
-                "quantity": item.quantity
-            ]
-        }
-        let parameters: [String: Any] = [
-            "branch": orderRequestDto.branch,
-            "items": itemsParams
-        ]
-        let response: APIResponse<[OrderDto]> = try await networkManager.request(
+    func createOrder(orderRequestDto: OrderRequestDto) async throws -> OrderDto {
+        let response: APIResponse<OrderDto> = try await networkManager.request(
             endpoint: "order/",
             method: .post,
-            parameters: parameters,
-            responseType: [OrderDto].self
+            body: orderRequestDto,
+            responseType: OrderDto.self
         )
-        guard response.success else { throw NetworkError.serverError(response.status) }
-        return response.data ?? []
+        guard response.success else { throw NetworkError.serverError(response.status, message: response.message) }
+        guard let data = response.data else {
+            throw NetworkError.noData
+        }
+        return data
     }
     
     /// 주문 입고 처리
@@ -55,26 +52,30 @@ class OrderAPI {
             method: .patch,
             responseType: EmptyResponse.self
         )
-        if !response.success { throw NetworkError.serverError(response.status) }
+        if !response.success { throw NetworkError.serverError(response.status, message: response.message) }
     }
     
     /// 주문 상세 조회
-    func getOrderDetail(orderId: Int) async throws -> [OrderDto] {
-        let response: APIResponse<[OrderDto]> = try await networkManager.request(
-            endpoint: "/agency/1/orders/\(orderId)",
+    func getOrderDetail(orderId: Int) async throws -> OrderDto {
+        let response: APIResponse<OrderDto> = try await networkManager.request(
+            endpoint: "order/\(orderId)",
             method: .get,
-            responseType: [OrderDto].self
+            responseType: OrderDto.self
         )
-        return response.data ?? []
+        guard response.success else { throw NetworkError.serverError(response.status, message: response.message) }
+        guard let data = response.data else {
+            throw NetworkError.noData
+        }
+        return data
     }
     
     /// 주문 취소
     func cancelOrder(orderId: Int) async throws {
         let response: APIResponse<EmptyResponse> = try await networkManager.request(
-            endpoint: "/agency/1/orders/\(orderId)",
-            method: .delete,
+            endpoint: "order/cancel/\(orderId)",
+            method: .patch,
             responseType: EmptyResponse.self
         )
-        if !response.success { throw NetworkError.serverError(response.status) }
+        if !response.success { throw NetworkError.serverError(response.status, message: response.message) }
     }
 }

@@ -14,8 +14,6 @@ enum CartListUiEvent {
     case updateQuantity(cartItemId: Int, quantity: Int)
     case deleteCart(cartItemId: Int)
     case deleteAllCart
-    case clearUpdateError
-    case clearDeleteError
     case dismissOrderResult
 }
 

@@ -16,40 +16,56 @@ class OrderRepositoryImpl: OrderRepository {
         self.preferences = preferences
     }
     
-    func getOrderList() async throws -> OrderList {
-        let dtos = try await api.getOrderList()
-        let orders = dtos.map { $0.toModel() }
-        return OrderList(items: orders)
-    }
-    
-    func createOrder(cartList: CartList) async throws -> OrderList {
+    func getOrderList(page: Int, size: Int) async throws -> (items: [Order], hasMore: Bool) {
         guard let user = try preferences.getStoredUser() else {
             throw NetworkError.unauthorized
         }
-        let items: [OrderItems] = cartList.items
-            .flatMap { $0.groups }
-            .flatMap { $0.parts }
-            .map { part in
-                return OrderItems(code: part.code, quantity: Int64(part.quantity))
-            }
+        let dto = try await api.getOrderList(agencyName: user.branch, page: page, size: size)
+        let orders = dto.content.map { $0.toModel() }
+        // last가 false면 더 많은 페이지가 있음
+        let hasMore = !dto.last
+        return (items: orders, hasMore: hasMore)
+    }
+    
+    func createOrder(cartList: CartList) async throws -> Order {
+        guard let user = try preferences.getStoredUser() else {
+            throw NetworkError.unauthorized
+        }
+        let items = cartList.items.map { cart in
+            OrderCategoryDto(
+                categoryId: cart.categoryId,
+                categoryName: cart.categoryName,
+                groups: cart.groups.map { group in
+                    OrderGroupDto(
+                        groupId: group.groupId,
+                        groupName: group.groupName,
+                        parts: group.parts.map { part in
+                            OrderPartDto(
+                                partId: part.partId,
+                                code: part.code,
+                                name: part.name,
+                                quantity: part.quantity
+                            )
+                        }
+                    )
+                }
+            )
+        }
         let request = OrderRequestDto(
-            requester: "대리점",
-            branch: user.branch,
+            agencyName: user.branch,
             items: items
         )
-        let dtos = try await api.createOrder(orderRequestDto: request)
-        let orders = dtos.map { $0.toModel() }
-        return OrderList(items: orders)
+        let dto = try await api.createOrder(orderRequestDto: request)
+        return dto.toModel()
     }
     
     func receiveOrder(orderId: Int) async throws {
         try await api.receiveOrder(orderId: orderId)
     }
     
-    func getOrderDetail(orderId: Int) async throws -> OrderList {
-        let dtos = try await api.getOrderDetail(orderId: orderId)
-        let orders = dtos.map { $0.toModel() }
-        return OrderList(items: orders)
+    func getOrderDetail(orderId: Int) async throws -> Order {
+        let dto = try await api.getOrderDetail(orderId: orderId)
+        return dto.toModel()
     }
     
     func cancelOrder(orderId: Int) async throws {

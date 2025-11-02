@@ -84,6 +84,7 @@ struct StringResources {
         static let done = "완료"
         static let error = "오류"
         static let retry = "다시 시도"
+        static let loadMore = "더 보기"
     }
     
     // MARK: - Search
@@ -97,7 +98,7 @@ struct StringResources {
     // MARK: - Outbound
     struct Outbound {
         static let title = "출고"
-        static let emptyAll = "출고목록 비우기"
+        static let emptyAll = "비우기"
         static let processOrder = "부품 출고처리"
         static let orderSuccess = "출고 주문 성공"
         static let updateQuantityError = "수량 업데이트 에러"
@@ -112,7 +113,7 @@ struct StringResources {
     // MARK: - Cart
     struct Cart {
         static let title = "장바구니"
-        static let emptyAll = "장바구니 비우기"
+        static let emptyAll = "비우기"
         static let processOrder = "부품 주문"
         static let orderSuccess = "주문 성공!"
         static let updateQuantityError = "수량 업데이트 에러"
@@ -132,13 +133,13 @@ struct StringResources {
         static let quantity = "수량"
         static let addToOutbound = "출고 추가"
         static let addToCart = "장바구니 추가"
-        static let outboundSuccess = "출고 성공!"
-        static let cartSuccess = "장바구니 추가 성공!"
+        static let outboundSuccess = "출고 목록에 추가되었습니다"
+        static let cartSuccess = "장바구니 목록에 추가되었습니다"
         static let errorOccurred = "에러 발생"
         static let confirmOutboundTitle = "출고 확인"
-        static let confirmOutboundMessage = "선택하신 부품을 출고 목록에 추가하시겠습니까?"
+        static let confirmOutboundMessage = "출고 목록에 추가하시겠습니까?"
         static let confirmCartTitle = "장바구니 확인"
-        static let confirmCartMessage = "선택하신 부품을 장바구니에 추가하시겠습니까?"
+        static let confirmCartMessage = "장바구니 목록에 추가하시겠습니까?"
     }
     
     // MARK: - Part
@@ -147,6 +148,7 @@ struct StringResources {
         static let selectCategory = "카테고리 선택"
         static let selectCategoryPrompt = "카테고리를 선택해주세요"
         static let selectGroup = "그룹 선택"
+        static let emptyPart = "부품 목록이 없습니다."
     }
     
     // MARK: - Order

@@ -12,5 +12,4 @@ enum OrderDetailUiEvent {
     case retryOrder
     case receiveOrder
     case cancelOrder
-    case clearError
 }

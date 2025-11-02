@@ -14,7 +14,7 @@ class GetOrderUseCase {
         self.repository = repository
     }
     
-    func execute() async throws -> OrderList {
-        return try await repository.getOrderList()
+    func execute(page: Int = 0, size: Int = 20) async throws -> (items: [Order], hasMore: Bool) {
+        return try await repository.getOrderList(page: page, size: size)
     }
 }

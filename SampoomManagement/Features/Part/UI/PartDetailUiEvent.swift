@@ -14,6 +14,5 @@ enum PartDetailUiEvent {
     case setQuantity(Int)
     case addToOutbound(partId: Int, quantity: Int)
     case addToCart(partId: Int, quantity: Int)
-    case clearError
     case dismiss
 }

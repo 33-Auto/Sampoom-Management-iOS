@@ -9,13 +9,8 @@ import Foundation
 
 /// 주문 생성 요청 DTO
 struct OrderRequestDto: Codable {
-    let branch: String
-    let items: [OrderItems]
-}
-
-struct OrderItems: Codable {
-    let code: String
-    let quantity: Int64
+    let agencyName: String
+    let items: [OrderCategoryDto]
 }
 
 

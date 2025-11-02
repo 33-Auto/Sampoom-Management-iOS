@@ -6,6 +6,7 @@ struct PartDetailBottomSheetView: View {
     @State private var showOutboundDialog = false
     @State private var showCartDialog = false
     @State private var quantityText: String = "1"
+    @Environment(\.dismiss) private var dismiss
     
     private func decreaseQuantity() { viewModel.onEvent(.decreaseQuantity) }
     private func increaseQuantity() { viewModel.onEvent(.increaseQuantity) }
@@ -41,9 +42,6 @@ struct PartDetailBottomSheetView: View {
             }
             .onChange(of: viewModel.uiState.isCartSuccess) { _, newValue in
                 handleCartSuccess(newValue)
-            }
-            .onChange(of: viewModel.uiState.updateError) { _, newValue in
-                handleUpdateError(newValue)
             }
             .alert(StringResources.PartDetail.confirmOutboundTitle, isPresented: $showOutboundDialog) {
                 Button(StringResources.Common.ok) { showOutboundDialog = false; addToOutbound() }
@@ -105,24 +103,17 @@ struct PartDetailBottomSheetView: View {
     
     private func handleOutboundSuccess(_ newValue: Bool) {
         if newValue {
-            Toast.text(StringResources.PartDetail.outboundSuccess).show()
             showOutboundDialog = false
-            viewModel.clearSuccess()
+            // 성공 상태는 유지하고 바텀시트만 닫음 (메시지는 onDisappear에서 표시)
+            dismiss()
         }
     }
     
     private func handleCartSuccess(_ newValue: Bool) {
         if newValue {
-            Toast.text(StringResources.PartDetail.cartSuccess).show()
             showCartDialog = false
-            viewModel.clearSuccess()
-        }
-    }
-    
-    private func handleUpdateError(_ newValue: String?) {
-        if let error = newValue {
-            Toast.text("\(StringResources.PartDetail.errorOccurred): \(error)").show()
-            viewModel.onEvent(.clearError)
+            // 성공 상태는 유지하고 바텀시트만 닫음 (메시지는 onDisappear에서 표시)
+            dismiss()
         }
     }
 }

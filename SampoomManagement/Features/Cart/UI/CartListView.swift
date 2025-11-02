@@ -20,27 +20,15 @@ struct CartListView: View {
             get: { viewModel.uiState.isOrderSuccess },
             set: { _ in }
         )
-        let updateError = Binding<Bool>(
-            get: { viewModel.uiState.updateError != nil },
-            set: { _ in }
-        )
-        let deleteError = Binding<Bool>(
-            get: { viewModel.uiState.deleteError != nil },
-            set: { _ in }
-        )
 
         MainNavigationContent(
             shouldShowEmptyButton: shouldShowEmptyButton,
             showEmptyCartDialog: $showEmptyCartDialog,
             showConfirmDialog: $showConfirmDialog,
             isOrderSuccessBinding: isOrderSuccess,
-            hasUpdateError: updateError,
-            hasDeleteError: deleteError,
             onEmptyAll: { viewModel.onEvent(.deleteAllCart) },
             onProcessOrder: { viewModel.onEvent(.processOrder) },
             onAppear: { viewModel.onEvent(.loadCartList) },
-            onClearUpdateError: { viewModel.onEvent(.clearUpdateError) },
-            onClearDeleteError: { viewModel.onEvent(.clearDeleteError) },
             cartContent: { AnyView(cartContent) },
             orderResultSheet: { 
                 AnyView(
@@ -51,7 +39,7 @@ struct CartListView: View {
                                 onDismiss: {
                                     viewModel.onEvent(.dismissOrderResult)
                                 },
-                                viewModel: dependencies.makeOrderDetailViewModel(orderId: processedOrder.first?.orderId ?? 0)
+                                viewModel: dependencies.makeOrderDetailViewModel(orderId: processedOrder.orderId)
                             )
                         } else {
                             EmptyView()
@@ -67,8 +55,6 @@ struct CartListView: View {
     private var cartContent: some View {
         if viewModel.uiState.cartLoading {
             loadingView
-        } else if let error = viewModel.uiState.cartError {
-            errorView(error: error)
         } else if viewModel.uiState.cartList.isEmpty {
             emptyView
         } else {
@@ -81,20 +67,6 @@ struct CartListView: View {
             Spacer()
             ProgressView()
                 .scaleEffect(1.5)
-            Spacer()
-        }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-    }
-    
-    private func errorView(error: String) -> some View {
-        HStack {
-            Spacer()
-            ErrorView(
-                error: error,
-                onRetry: {
-                    viewModel.onEvent(.retryCartList)
-                }
-            )
             Spacer()
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -144,7 +116,6 @@ struct CartListView: View {
     
     private var shouldShowEmptyButton: Bool {
         !viewModel.uiState.cartLoading && 
-        viewModel.uiState.cartError == nil && 
         !viewModel.uiState.cartList.isEmpty
     }
     
@@ -155,13 +126,9 @@ private struct MainNavigationContent: View {
     @Binding var showEmptyCartDialog: Bool
     @Binding var showConfirmDialog: Bool
     let isOrderSuccessBinding: Binding<Bool>
-    let hasUpdateError: Binding<Bool>
-    let hasDeleteError: Binding<Bool>
     let onEmptyAll: () -> Void
     let onProcessOrder: () -> Void
     let onAppear: () -> Void
-    let onClearUpdateError: () -> Void
-    let onClearDeleteError: () -> Void
     let cartContent: () -> AnyView
     let orderResultSheet: () -> AnyView
     @ObservedObject var viewModel: CartListViewModel
@@ -202,21 +169,6 @@ private struct MainNavigationContent: View {
             }
             .onAppear {
                 onAppear()
-            }
-            .onChange(of: isOrderSuccessBinding.wrappedValue) { _, newValue in
-                if newValue {
-                    // handled by parent
-                }
-            }
-            .onChange(of: hasUpdateError.wrappedValue) { _, newValue in
-                if newValue {
-                    onClearUpdateError()
-                }
-            }
-            .onChange(of: hasDeleteError.wrappedValue) { _, newValue in
-                if newValue {
-                    onClearDeleteError()
-                }
             }
             .sheet(isPresented: Binding<Bool>(
                 get: { viewModel.uiState.processedOrder != nil && viewModel.uiState.isOrderSuccess },

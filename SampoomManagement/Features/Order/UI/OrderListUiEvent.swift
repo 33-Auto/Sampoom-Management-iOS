@@ -10,4 +10,5 @@ import Foundation
 enum OrderListUiEvent {
     case loadOrderList
     case retryOrderList
+    case loadMore
 }

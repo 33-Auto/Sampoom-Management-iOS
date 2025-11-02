@@ -11,7 +11,6 @@ struct PartDetailUiState {
     let part: Part?
     let quantity: Int
     let isUpdating: Bool
-    let updateError: String?
     let isOutboundSuccess: Bool
     let isCartSuccess: Bool
     
@@ -19,14 +18,12 @@ struct PartDetailUiState {
         part: Part? = nil,
         quantity: Int = 1,
         isUpdating: Bool = false,
-        updateError: String? = nil,
         isOutboundSuccess: Bool = false,
         isCartSuccess: Bool = false
     ) {
         self.part = part
         self.quantity = quantity
         self.isUpdating = isUpdating
-        self.updateError = updateError
         self.isOutboundSuccess = isOutboundSuccess
         self.isCartSuccess = isCartSuccess
     }
@@ -35,7 +32,6 @@ struct PartDetailUiState {
         part: Part?? = nil,
         quantity: Int? = nil,
         isUpdating: Bool? = nil,
-        updateError: String?? = nil,
         isOutboundSuccess: Bool? = nil,
         isCartSuccess: Bool? = nil
     ) -> PartDetailUiState {
@@ -43,7 +39,6 @@ struct PartDetailUiState {
             part: part ?? self.part,
             quantity: quantity ?? self.quantity,
             isUpdating: isUpdating ?? self.isUpdating,
-            updateError: updateError ?? self.updateError,
             isOutboundSuccess: isOutboundSuccess ?? self.isOutboundSuccess,
             isCartSuccess: isCartSuccess ?? self.isCartSuccess
         )

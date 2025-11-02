@@ -9,7 +9,7 @@ import SwiftUI
 import Combine
 
 struct OrderResultBottomSheet: View {
-    let order: [Order]
+    let order: Order
     let onDismiss: () -> Void
     @ObservedObject var viewModel: OrderDetailViewModel
     
@@ -27,7 +27,7 @@ struct OrderResultBottomSheet: View {
                 .frame(height: 16)
             
             OrderDetailContent(
-                order: viewModel.uiState.orderDetail.isEmpty ? order : viewModel.uiState.orderDetail
+                order: viewModel.uiState.orderDetail ?? order
             )
             
             Spacer()
@@ -50,40 +50,27 @@ struct OrderResultBottomSheet: View {
         .background(Color("Background"))
         .alert(StringResources.Order.detailDialogOrderCancel, isPresented: $showCancelDialog) {
             Button(StringResources.Common.ok) {
-                if let orderId = order.first?.orderId {
-                    viewModel.setOrderId(orderId)
-                    viewModel.onEvent(.cancelOrder)
-                }
+                viewModel.setOrderId(order.orderId)
+                viewModel.onEvent(.cancelOrder)
             }
             Button(StringResources.Common.cancel, role: .cancel) { }
         }
         .onAppear {
-            if let orderId = order.first?.orderId {
-                viewModel.setOrderId(orderId)
-            }
+            viewModel.setOrderId(order.orderId)
         }
         .onChange(of: viewModel.uiState.isProcessingCancelSuccess) { _, newValue in
             if newValue {
-                // Toast 대신 Alert 사용하거나 다른 방법으로 처리
                 viewModel.clearSuccess()
                 viewModel.onEvent(.loadOrder)
                 onDismiss()
             }
         }
-        .onChange(of: viewModel.uiState.isProcessingError) { _, newValue in
-            if newValue != nil {
-                // Toast 대신 Alert 사용하거나 다른 방법으로 처리
-                viewModel.onEvent(.clearError)
-            }
-        }
     }
     
     private var isCancelEnabled: Bool {
-        guard order.first?.orderId != nil else { return false }
         if viewModel.uiState.isProcessing { return false }
-        let item = viewModel.uiState.orderDetail.first ?? order.first
-        guard let status = item?.status else { return false }
-        return status != .completed && status != .canceled
+        let currentOrder = viewModel.uiState.orderDetail ?? order
+        return currentOrder.status != .completed && currentOrder.status != .canceled
     }
 }
 
