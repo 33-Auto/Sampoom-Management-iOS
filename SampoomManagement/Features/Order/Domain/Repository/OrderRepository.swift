@@ -8,9 +8,9 @@
 import Foundation
 
 protocol OrderRepository {
-    func getOrderList() async throws -> OrderList
-    func createOrder() async throws -> OrderList
+    func getOrderList(page: Int, size: Int) async throws -> (items: [Order], hasMore: Bool)
+    func createOrder(cartList: CartList) async throws -> Order
     func receiveOrder(orderId: Int) async throws
-    func getOrderDetail(orderId: Int) async throws -> OrderList
+    func getOrderDetail(orderId: Int) async throws -> Order
     func cancelOrder(orderId: Int) async throws
 }

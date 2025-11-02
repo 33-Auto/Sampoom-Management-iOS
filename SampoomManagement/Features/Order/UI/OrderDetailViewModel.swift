@@ -16,6 +16,7 @@ class OrderDetailViewModel: ObservableObject {
     private let getOrderDetailUseCase: GetOrderDetailUseCase
     private let cancelOrderUseCase: CancelOrderUseCase
     private let receiveOrderUseCase: ReceiveOrderUseCase
+    private let globalMessageHandler: GlobalMessageHandler
     
     private var orderId: Int = 0
     
@@ -23,11 +24,13 @@ class OrderDetailViewModel: ObservableObject {
         getOrderDetailUseCase: GetOrderDetailUseCase,
         cancelOrderUseCase: CancelOrderUseCase,
         receiveOrderUseCase: ReceiveOrderUseCase,
+        globalMessageHandler: GlobalMessageHandler,
         orderId: Int = 0
     ) {
         self.getOrderDetailUseCase = getOrderDetailUseCase
         self.cancelOrderUseCase = cancelOrderUseCase
         self.receiveOrderUseCase = receiveOrderUseCase
+        self.globalMessageHandler = globalMessageHandler
         self.orderId = orderId
     }
     
@@ -44,8 +47,6 @@ class OrderDetailViewModel: ObservableObject {
             receiveOrder()
         case .cancelOrder:
             cancelOrder()
-        case .clearError:
-            uiState = uiState.copy(isProcessingError: nil)
         }
     }
     
@@ -58,20 +59,18 @@ class OrderDetailViewModel: ObservableObject {
     
     private func loadOrderDetail() {
         Task {
-            uiState = uiState.copy(orderDetailLoading: true, orderDetailError: nil)
+            uiState = uiState.copy(orderDetailLoading: true)
             
             do {
-                let orderList = try await getOrderDetailUseCase.execute(orderId: orderId)
+                let order = try await getOrderDetailUseCase.execute(orderId: orderId)
                 uiState = uiState.copy(
-                    orderDetail: orderList.items,
-                    orderDetailLoading: false,
-                    orderDetailError: nil
+                    orderDetail: order,
+                    orderDetailLoading: false
                 )
             } catch {
-                uiState = uiState.copy(
-                    orderDetailLoading: false,
-                    orderDetailError: error.localizedDescription
-                )
+                let errorMessage = (error as? NetworkError)?.errorDescription ?? error.localizedDescription
+                globalMessageHandler.showMessage(errorMessage, isError: true)
+                uiState = uiState.copy(orderDetailLoading: false)
             }
             print("OrderDetailViewModel - loadOrderDetail: \(uiState)")
         }
@@ -80,20 +79,20 @@ class OrderDetailViewModel: ObservableObject {
     private func cancelOrder() {
         Task {
             print("OrderDetailViewModel - orderId : \(orderId)")
-            uiState = uiState.copy(isProcessing: true, isProcessingError: nil)
+            uiState = uiState.copy(isProcessing: true)
             
             do {
                 try await cancelOrderUseCase.execute(orderId: orderId)
+                globalMessageHandler.showMessage(StringResources.Order.detailToastOrderCancel, isError: false)
                 uiState = uiState.copy(
                     isProcessing: false,
-                    isProcessingCancelSuccess: true,
-                    isProcessingError: nil
+                    isProcessingCancelSuccess: true
                 )
+                loadOrderDetail()
             } catch {
-                uiState = uiState.copy(
-                    isProcessing: false,
-                    isProcessingError: error.localizedDescription
-                )
+                let errorMessage = (error as? NetworkError)?.errorDescription ?? error.localizedDescription
+                globalMessageHandler.showMessage(errorMessage, isError: true)
+                uiState = uiState.copy(isProcessing: false)
             }
             print("OrderDetailViewModel - cancelOrder: \(uiState)")
         }
@@ -101,20 +100,20 @@ class OrderDetailViewModel: ObservableObject {
     
     private func receiveOrder() {
         Task {
-            uiState = uiState.copy(isProcessing: true, isProcessingError: nil)
+            uiState = uiState.copy(isProcessing: true)
             
             do {
                 try await receiveOrderUseCase.execute(orderId: orderId)
+                globalMessageHandler.showMessage(StringResources.Order.detailToastOrderReceive, isError: false)
                 uiState = uiState.copy(
                     isProcessing: false,
-                    isProcessingReceiveSuccess: true,
-                    isProcessingError: nil
+                    isProcessingReceiveSuccess: true
                 )
+                loadOrderDetail()
             } catch {
-                uiState = uiState.copy(
-                    isProcessing: false,
-                    isProcessingError: error.localizedDescription
-                )
+                let errorMessage = (error as? NetworkError)?.errorDescription ?? error.localizedDescription
+                globalMessageHandler.showMessage(errorMessage, isError: true)
+                uiState = uiState.copy(isProcessing: false)
             }
             print("OrderDetailViewModel - receiveOrder: \(uiState)")
         }

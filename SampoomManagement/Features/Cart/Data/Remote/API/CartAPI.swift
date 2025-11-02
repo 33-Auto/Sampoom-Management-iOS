@@ -22,7 +22,9 @@ class CartAPI {
             method: .get,
             responseType: [CartDto].self
         )
-        print("CartAPI - getCartList response: \(response)")
+        if !response.success {
+            throw NetworkError.serverError(response.status, message: response.message)
+        }
         return response.data ?? []
     }
     
@@ -36,7 +38,7 @@ class CartAPI {
             responseType: EmptyResponse.self
         )
         if !response.success {
-            throw NetworkError.serverError(response.status)
+            throw NetworkError.serverError(response.status, message: response.message)
         }
     }
     
@@ -48,7 +50,7 @@ class CartAPI {
             responseType: EmptyResponse.self
         )
         if !response.success {
-            throw NetworkError.serverError(response.status)
+            throw NetworkError.serverError(response.status, message: response.message)
         }
     }
     
@@ -62,7 +64,7 @@ class CartAPI {
             responseType: EmptyResponse.self
         )
         if !response.success {
-            throw NetworkError.serverError(response.status)
+            throw NetworkError.serverError(response.status, message: response.message)
         }
     }
     
@@ -74,7 +76,7 @@ class CartAPI {
             responseType: EmptyResponse.self
         )
         if !response.success {
-            throw NetworkError.serverError(response.status)
+            throw NetworkError.serverError(response.status, message: response.message)
         }
     }
 }

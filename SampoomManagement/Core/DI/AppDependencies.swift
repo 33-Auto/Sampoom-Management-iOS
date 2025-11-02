@@ -12,6 +12,7 @@ import SwiftUI
 class AppDependencies {
     // MARK: - Core
     let networkManager: NetworkManager
+    let globalMessageHandler: GlobalMessageHandler
     
     // MARK: - Auth
     let authPreferences: AuthPreferences
@@ -65,6 +66,9 @@ class AppDependencies {
     let cancelOrderUseCase: CancelOrderUseCase
     
     init() {
+        // Global Message Handler
+        globalMessageHandler = GlobalMessageHandler.shared
+        
         // Auth Preferences
         authPreferences = AuthPreferences()
         
@@ -126,7 +130,7 @@ class AppDependencies {
         
         // Order
         orderAPI = OrderAPI(networkManager: networkManager)
-        orderRepository = OrderRepositoryImpl(api: orderAPI)
+        orderRepository = OrderRepositoryImpl(api: orderAPI, preferences: authPreferences)
         getOrderUseCase = GetOrderUseCase(repository: orderRepository)
         createOrderUseCase = CreateOrderUseCase(repository: orderRepository)
         getOrderDetailUseCase = GetOrderDetailUseCase(repository: orderRepository)
@@ -158,7 +162,11 @@ class AppDependencies {
     }
     
     func makePartDetailViewModel() -> PartDetailViewModel {
-        return PartDetailViewModel(addOutboundUseCase: addOutboundUseCase, addCartUseCase: addCartUseCase)
+        return PartDetailViewModel(
+            addOutboundUseCase: addOutboundUseCase,
+            addCartUseCase: addCartUseCase,
+            globalMessageHandler: globalMessageHandler
+        )
     }
     
     func makeSearchViewModel() -> SearchViewModel {
@@ -182,12 +190,16 @@ class AppDependencies {
             updateCartQuantityUseCase: updateCartQuantityUseCase,
             deleteCartUseCase: deleteCartUseCase,
             deleteAllCartUseCase: deleteAllCartUseCase,
-            createOrderUseCase: createOrderUseCase
+            createOrderUseCase: createOrderUseCase,
+            globalMessageHandler: globalMessageHandler
         )
     }
     
     func makeOrderListViewModel() -> OrderListViewModel {
-        return OrderListViewModel(getOrderUseCase: getOrderUseCase)
+        return OrderListViewModel(
+            getOrderUseCase: getOrderUseCase,
+            globalMessageHandler: globalMessageHandler
+        )
     }
     
     func makeOrderDetailViewModel(orderId: Int) -> OrderDetailViewModel {
@@ -195,6 +207,7 @@ class AppDependencies {
             getOrderDetailUseCase: getOrderDetailUseCase,
             cancelOrderUseCase: cancelOrderUseCase,
             receiveOrderUseCase: receiveOrderUseCase,
+            globalMessageHandler: globalMessageHandler,
             orderId: orderId
         )
     }

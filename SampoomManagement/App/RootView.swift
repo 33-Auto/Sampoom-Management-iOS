@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import Toast
 
 struct RootView: View {
     let dependencies: AppDependencies
@@ -13,6 +14,7 @@ struct RootView: View {
     @StateObject private var loginViewModel: LoginViewModel
     @StateObject private var signUpViewModel: SignUpViewModel
     @ObservedObject private var authViewModel: AuthViewModel
+    @ObservedObject private var globalMessageHandler: GlobalMessageHandler
     @State private var showSignUp: Bool = false
     
     init(dependencies: AppDependencies) {
@@ -20,6 +22,7 @@ struct RootView: View {
         _loginViewModel = StateObject(wrappedValue: dependencies.makeLoginViewModel())
         _signUpViewModel = StateObject(wrappedValue: dependencies.makeSignUpViewModel())
         self.authViewModel = dependencies.authViewModel
+        self.globalMessageHandler = dependencies.globalMessageHandler
     }
     
     var body: some View {
@@ -70,6 +73,9 @@ struct RootView: View {
                     }
                 }
             }
+            
+            // Toast 컨테이너 (앱 최상단에 배치)
+            ToastContainer(globalMessageHandler: globalMessageHandler)
         }
         .onChange(of: authViewModel.shouldNavigateToLogin) { _, shouldNavigate in
             if shouldNavigate {

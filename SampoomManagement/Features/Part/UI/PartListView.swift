@@ -43,7 +43,7 @@ struct PartListView: View {
                 Spacer()
                 EmptyView(
                     icon: "tray",
-                    title: "부품이 없습니다"
+                    title: StringResources.Part.emptyPart
                 )
                 .frame(height: 200)
                 Spacer()
@@ -76,6 +76,9 @@ struct PartListView: View {
                         detailViewModel.onEvent(.initialize(selectedPart))
                     }
                     .onDisappear {
+                        // 바텀시트가 닫힌 후 성공 메시지를 부품 리스트 화면에서 표시
+                        detailViewModel.showPendingSuccessMessage()
+                        detailViewModel.clearSuccess()
                         showBottomSheet = false
                         viewModel.onEvent(.dismissBottomSheet)
                     }

@@ -15,10 +15,16 @@ class PartDetailViewModel: ObservableObject {
     
     private let addOutboundUseCase: AddOutboundUseCase
     private let addCartUseCase: AddCartUseCase
+    private let globalMessageHandler: GlobalMessageHandler
     
-    init(addOutboundUseCase: AddOutboundUseCase, addCartUseCase: AddCartUseCase) {
+    init(
+        addOutboundUseCase: AddOutboundUseCase,
+        addCartUseCase: AddCartUseCase,
+        globalMessageHandler: GlobalMessageHandler
+    ) {
         self.addOutboundUseCase = addOutboundUseCase
         self.addCartUseCase = addCartUseCase
+        self.globalMessageHandler = globalMessageHandler
     }
     
     func onEvent(_ event: PartDetailUiEvent) {
@@ -28,7 +34,6 @@ class PartDetailViewModel: ObservableObject {
                 part: part,
                 quantity: 1,
                 isUpdating: false,
-                updateError: nil,
                 isOutboundSuccess: false,
                 isCartSuccess: false
             )
@@ -52,13 +57,10 @@ class PartDetailViewModel: ObservableObject {
             if part != nil {
                 addToCart(partId: partId, quantity: quantity)
             }
-        case .clearError:
-            uiState = uiState.copy(updateError: .some(nil))
         case .dismiss:
             uiState = uiState.copy(
                 part: .some(nil),
-                quantity: 1,
-                updateError: .some(nil)
+                quantity: 1
             )
         }
     }
@@ -66,22 +68,20 @@ class PartDetailViewModel: ObservableObject {
     private func addToOutbound(partId: Int, quantity: Int) {
         Task {
             await MainActor.run {
-                uiState = uiState.copy(isUpdating: true, updateError: nil)
+                uiState = uiState.copy(isUpdating: true)
             }
             
             do {
                 try await addOutboundUseCase.execute(partId: partId, quantity: quantity)
-                
                 await MainActor.run {
                     uiState = uiState.copy(isUpdating: false, isOutboundSuccess: true)
                 }
                 print("PartDetailViewModel - addToOutbound success: \(uiState)")
             } catch {
+                let errorMessage = (error as? NetworkError)?.errorDescription ?? error.localizedDescription
+                globalMessageHandler.showMessage(errorMessage, isError: true)
                 await MainActor.run {
-                    uiState = uiState.copy(
-                        isUpdating: false,
-                        updateError: error.localizedDescription
-                    )
+                    uiState = uiState.copy(isUpdating: false)
                 }
                 print("PartDetailViewModel - addToOutbound error: \(error)")
             }
@@ -91,25 +91,32 @@ class PartDetailViewModel: ObservableObject {
     private func addToCart(partId: Int, quantity: Int) {
         Task {
             await MainActor.run {
-                uiState = uiState.copy(isUpdating: true, updateError: nil)
+                uiState = uiState.copy(isUpdating: true)
             }
             
             do {
                 try await addCartUseCase.execute(partId: partId, quantity: quantity)
-                
                 await MainActor.run {
                     uiState = uiState.copy(isUpdating: false, isCartSuccess: true)
                 }
                 print("PartDetailViewModel - addToCart success: \(uiState)")
             } catch {
+                let errorMessage = (error as? NetworkError)?.errorDescription ?? error.localizedDescription
+                globalMessageHandler.showMessage(errorMessage, isError: true)
                 await MainActor.run {
-                    uiState = uiState.copy(
-                        isUpdating: false,
-                        updateError: error.localizedDescription
-                    )
+                    uiState = uiState.copy(isUpdating: false)
                 }
                 print("PartDetailViewModel - addToCart error: \(error)")
             }
+        }
+    }
+    
+    /// 바텀시트가 닫힌 후 성공 메시지를 표시 (부품 리스트 화면에서 보임)
+    func showPendingSuccessMessage() {
+        if uiState.isOutboundSuccess {
+            globalMessageHandler.showMessage(StringResources.PartDetail.outboundSuccess, isError: false)
+        } else if uiState.isCartSuccess {
+            globalMessageHandler.showMessage(StringResources.PartDetail.cartSuccess, isError: false)
         }
     }
     

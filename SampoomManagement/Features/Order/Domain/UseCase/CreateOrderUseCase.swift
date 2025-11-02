@@ -14,7 +14,7 @@ class CreateOrderUseCase {
         self.repository = repository
     }
     
-    func execute() async throws -> OrderList {
-        return try await repository.createOrder()
+    func execute(cartList: CartList) async throws -> Order {
+        return try await repository.createOrder(cartList: cartList)
     }
 }

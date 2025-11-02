@@ -26,29 +26,17 @@ struct OrderDetailView: View {
                 Spacer()
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
-        } else if let error = viewModel.uiState.orderDetailError {
-            HStack {
-                Spacer()
-                ErrorView(
-                    error: error,
-                    onRetry: {
-                        viewModel.onEvent(.retryOrder)
-                    }
-                )
-                Spacer()
-            }
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
-        } else if viewModel.uiState.orderDetail.isEmpty {
+        } else if let order = viewModel.uiState.orderDetail {
+            OrderDetailContent(
+                order: order
+            )
+        } else {
             HStack {
                 Spacer()
                 EmptyView(title: StringResources.Order.emptyList)
                 Spacer()
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
-        } else {
-            OrderDetailContent(
-                order: viewModel.uiState.orderDetail
-            )
         }
     }
 
@@ -78,7 +66,7 @@ struct OrderDetailView: View {
         }
     }
 
-    private var hasOrderDetail: Bool { !viewModel.uiState.orderDetail.isEmpty }
+    private var hasOrderDetail: Bool { viewModel.uiState.orderDetail != nil }
     
     var body: some View {
         ZStack(alignment: .bottom) {
@@ -108,29 +96,19 @@ struct OrderDetailView: View {
         }
         .onChange(of: viewModel.uiState.isProcessingCancelSuccess) { _, newValue in
             if newValue {
-                // Toast 대신 Alert 사용하거나 다른 방법으로 처리
                 viewModel.clearSuccess()
-                viewModel.onEvent(.loadOrder)
             }
         }
         .onChange(of: viewModel.uiState.isProcessingReceiveSuccess) { _, newValue in
             if newValue {
-                // Toast 대신 Alert 사용하거나 다른 방법으로 처리
                 viewModel.clearSuccess()
-                viewModel.onEvent(.loadOrder)
-            }
-        }
-        .onChange(of: viewModel.uiState.isProcessingError) { _, newValue in
-            if newValue != nil {
-                // Toast 대신 Alert 사용하거나 다른 방법으로 처리
-                viewModel.onEvent(.clearError)
             }
         }
     }
     
     private var cannotPerformAction: Bool {
-        guard let order = viewModel.uiState.orderDetail.first else { return true }
-        return order.status == .completed || order.status == .canceled
+        guard let order = viewModel.uiState.orderDetail else { return true }
+        return order.status == .completed || order.status == .canceled || viewModel.uiState.isProcessing
     }
 }
 

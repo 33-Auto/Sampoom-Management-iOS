@@ -36,7 +36,7 @@ class OutboundAPI {
             responseType: EmptyResponse.self
         )
         if !response.success {
-            throw NetworkError.serverError(response.status)
+            throw NetworkError.serverError(response.status, message: response.message)
         }
     }
     
@@ -48,7 +48,7 @@ class OutboundAPI {
             responseType: EmptyResponse.self
         )
         if !response.success {
-            throw NetworkError.serverError(response.status)
+            throw NetworkError.serverError(response.status, message: response.message)
         }
     }
     
@@ -60,7 +60,7 @@ class OutboundAPI {
             responseType: EmptyResponse.self
         )
         if !response.success {
-            throw NetworkError.serverError(response.status)
+            throw NetworkError.serverError(response.status, message: response.message)
         }
     }
     
@@ -74,7 +74,7 @@ class OutboundAPI {
             responseType: EmptyResponse.self
         )
         if !response.success {
-            throw NetworkError.serverError(response.status)
+            throw NetworkError.serverError(response.status, message: response.message)
         }
     }
     
@@ -86,7 +86,7 @@ class OutboundAPI {
             responseType: EmptyResponse.self
         )
         if !response.success {
-            throw NetworkError.serverError(response.status)
+            throw NetworkError.serverError(response.status, message: response.message)
         }
     }
 }

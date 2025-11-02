@@ -14,7 +14,7 @@ class GetOrderDetailUseCase {
         self.repository = repository
     }
 
-    func execute(orderId: Int) async throws -> OrderList {
+    func execute(orderId: Int) async throws -> Order {
         return try await repository.getOrderDetail(orderId: orderId)
     }
 }

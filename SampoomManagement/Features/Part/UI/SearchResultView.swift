@@ -31,6 +31,9 @@ struct SearchResultView: View {
                         partDetailViewModel.onEvent(.initialize(selectedPart))
                     }
                     .onDisappear {
+                        // 바텀시트가 닫힌 후 성공 메시지를 검색 결과 화면에서 표시
+                        partDetailViewModel.showPendingSuccessMessage()
+                        partDetailViewModel.clearSuccess()
                         showBottomSheet = false
                         viewModel.onEvent(.dismissBottomSheet)
                     }
@@ -71,7 +74,7 @@ struct SearchResultView: View {
     private var emptyView: some View {
         HStack {
             Spacer()
-            EmptyView(title: "검색 결과가 없습니다")
+            EmptyView(title: StringResources.SearchParts.emptyMessage)
             Spacer()
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)

@@ -15,7 +15,7 @@ struct OrderListView: View {
     var body: some View {
         VStack(spacing: 0) {
             // Content
-            if viewModel.uiState.orderLoading {
+            if viewModel.uiState.orderLoading && viewModel.uiState.orderList.isEmpty {
                 HStack {
                     Spacer()
                     ProgressView()
@@ -23,19 +23,7 @@ struct OrderListView: View {
                     Spacer()
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
-            } else if let error = viewModel.uiState.orderError {
-                HStack {
-                    Spacer()
-                    ErrorView(
-                        error: error,
-                        onRetry: {
-                            viewModel.onEvent(.retryOrderList)
-                        }
-                    )
-                    Spacer()
-                }
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-            } else if viewModel.uiState.orderList.isEmpty {
+            } else if viewModel.uiState.orderList.isEmpty && !viewModel.uiState.orderLoading {
                 HStack {
                     Spacer()
                     EmptyView(title: StringResources.Order.emptyList)
@@ -53,6 +41,26 @@ struct OrderListView: View {
                                 }
                             )
                         }
+                        
+                        if viewModel.uiState.hasMore {
+                            Button(action: {
+                                viewModel.onEvent(.loadMore)
+                            }) {
+                                HStack {
+                                    if viewModel.uiState.isLoadingMore {
+                                        ProgressView()
+                                    } else {
+                                        Text(StringResources.Common.loadMore)
+                                            .font(.gmarketBody)
+                                            .foregroundColor(.accentColor)
+                                    }
+                                }
+                                .frame(maxWidth: .infinity)
+                                .padding()
+                            }
+                            .disabled(viewModel.uiState.isLoadingMore || viewModel.uiState.orderLoading)
+                        }
+                        
                         Spacer()
                             .frame(height: 100)
                     }

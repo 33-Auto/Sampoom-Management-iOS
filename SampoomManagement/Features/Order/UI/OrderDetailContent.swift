@@ -9,32 +9,31 @@ import SwiftUI
 import Combine
 
 struct OrderDetailContent: View {
-    let order: [Order]
+    let order: Order
     
     var body: some View {
         ScrollView {
             LazyVStack(spacing: 16) {
-                ForEach(order, id: \.orderId) { orderItem in
-                    OrderInfoCard(
-                        order: orderItem
-                    )
-                    
-                    Text(StringResources.Order.detailOrderItemsTitle)
-                        .font(.gmarketTitle2)
-                        .fontWeight(.bold)
-                        .foregroundColor(Color("Text"))
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                    
-                    ForEach(orderItem.items, id: \.categoryId) { category in
-                        ForEach(category.groups, id: \.groupId) { group in
-                            OrderSection(
-                                categoryName: category.categoryName,
-                                groupName: group.groupName,
-                                parts: group.parts
-                            )
-                        }
+                OrderInfoCard(
+                    order: order
+                )
+                
+                Text(StringResources.Order.detailOrderItemsTitle)
+                    .font(.gmarketTitle2)
+                    .fontWeight(.bold)
+                    .foregroundColor(Color("Text"))
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                
+                ForEach(order.items, id: \.categoryId) { category in
+                    ForEach(category.groups, id: \.groupId) { group in
+                        OrderSection(
+                            categoryName: category.categoryName,
+                            groupName: group.groupName,
+                            parts: group.parts
+                        )
                     }
                 }
+                
                 Spacer()
                     .frame(height: 100)
             }
