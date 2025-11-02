@@ -31,7 +31,7 @@ class OrderListViewModel: ObservableObject {
         case .retryOrderList:
             loadOrderList(page: 0, append: false)
         case .loadMore:
-            guard uiState.hasMore, !uiState.orderLoading else { return }
+            guard uiState.hasMore, !uiState.orderLoading, !uiState.isLoadingMore else { return }
             loadOrderList(page: uiState.currentPage + 1, append: true)
         }
     }
