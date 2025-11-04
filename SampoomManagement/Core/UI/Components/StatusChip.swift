@@ -10,7 +10,7 @@ import Foundation
 
 /// 주문 상태를 표시하는 칩 컴포넌트
 struct StatusChip: View {
-    let status: String // 임시로 String 사용
+    let status: OrderStatus
     
     var body: some View {
         let (text, color) = statusDisplayInfo
@@ -25,24 +25,35 @@ struct StatusChip: View {
     }
     
     private var statusDisplayInfo: (text: String, color: Color) {
-        switch status.lowercased() {
-        case "pending":
-            return ("승인대기", Color(.waitYellow))
-        case "completed":
-            return ("입고완료", Color(.successGreen))
-        case "canceled":
-            return ("주문취소", Color(.failRed))
-        default:
-            return ("승인대기", Color(.waitYellow))
+        switch status {
+        case .pending:
+            return (StringResources.Order.statusPending, Color(.waitYellow))
+        case .confirmed:
+            return (StringResources.Order.statusConfirmed, Color(.waitYellow))
+        case .shipping:
+            return (StringResources.Order.statusShipping, Color(.waitYellow))
+        case .delayed:
+            return (StringResources.Order.statusDelayed, Color(.waitYellow))
+        case .producing:
+            return (StringResources.Order.statusProducing, Color(.waitYellow))
+        case .arrived:
+            return (StringResources.Order.statusArrived, Color(.waitYellow))
+        case .completed:
+            return (StringResources.Order.statusCompleted, Color(.successGreen))
+        case .canceled:
+            return (StringResources.Order.statusCanceled, Color(.failRed))
         }
     }
 }
 
 #Preview {
     VStack(spacing: 16) {
-        StatusChip(status: "pending")
-        StatusChip(status: "completed")
-        StatusChip(status: "canceled")
+        StatusChip(status: .pending)
+        StatusChip(status: .confirmed)
+        StatusChip(status: .shipping)
+        StatusChip(status: .arrived)
+        StatusChip(status: .completed)
+        StatusChip(status: .canceled)
     }
     .padding()
 }

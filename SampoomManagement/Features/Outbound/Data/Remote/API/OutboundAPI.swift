@@ -16,9 +16,9 @@ class OutboundAPI {
     }
     
     // 출고 목록 조회
-    func getOutboundList() async throws -> [OutboundDto] {
+    func getOutboundList(agencyId: Int) async throws -> [OutboundDto] {
         let response = try await networkManager.request(
-            endpoint: "agency/1/outbound",
+            endpoint: "agency/\(agencyId)/outbound",
             method: .get,
             responseType: [OutboundDto].self
         )
@@ -27,10 +27,10 @@ class OutboundAPI {
     }
     
     // 출고 목록에 부품 추가
-    func addOutbound(request: AddOutboundRequestDto) async throws {
+    func addOutbound(agencyId: Int, request: AddOutboundRequestDto) async throws {
         guard let params = request.toDictionary() else { throw NetworkError.invalidParameters }
         let response = try await networkManager.request(
-            endpoint: "agency/1/outbound",
+            endpoint: "agency/\(agencyId)/outbound",
             method: .post,
             parameters: params,
             responseType: EmptyResponse.self
@@ -41,9 +41,9 @@ class OutboundAPI {
     }
     
     // 출고 처리
-    func processOutbound() async throws {
+    func processOutbound(agencyId: Int) async throws {
         let response = try await networkManager.request(
-            endpoint: "agency/1/outbound/process",
+            endpoint: "agency/\(agencyId)/outbound/process",
             method: .post,
             responseType: EmptyResponse.self
         )
@@ -53,9 +53,9 @@ class OutboundAPI {
     }
     
     // 출고 항목 삭제
-    func deleteOutbound(outboundId: Int) async throws {
+    func deleteOutbound(agencyId: Int, outboundId: Int) async throws {
         let response = try await networkManager.request(
-            endpoint: "agency/1/outbound/\(outboundId)",
+            endpoint: "agency/\(agencyId)/outbound/\(outboundId)",
             method: .delete,
             responseType: EmptyResponse.self
         )
@@ -65,10 +65,10 @@ class OutboundAPI {
     }
     
     // 출고 수량 변경
-    func updateOutbound(outboundId: Int, request: UpdateOutboundRequestDto) async throws {
+    func updateOutbound(agencyId: Int, outboundId: Int, request: UpdateOutboundRequestDto) async throws {
         guard let params = request.toDictionary() else { throw NetworkError.invalidParameters }
         let response = try await networkManager.request(
-            endpoint: "agency/1/outbound/\(outboundId)",
+            endpoint: "agency/\(agencyId)/outbound/\(outboundId)",
             method: .patch,
             parameters: params,
             responseType: EmptyResponse.self
@@ -79,9 +79,9 @@ class OutboundAPI {
     }
     
     // 출고 목록 전체 비우기
-    func deleteAllOutbound() async throws {
+    func deleteAllOutbound(agencyId: Int) async throws {
         let response = try await networkManager.request(
-            endpoint: "agency/1/outbound/clear",
+            endpoint: "agency/\(agencyId)/outbound/clear",
             method: .delete,
             responseType: EmptyResponse.self
         )

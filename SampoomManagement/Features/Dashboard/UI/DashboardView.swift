@@ -12,9 +12,10 @@ struct DashboardView: View {
     let onLogoutClick: () -> Void
     let onNavigateOrderDetail: (Order) -> Void
     let onNavigateOrderList: () -> Void
+    let onSettingClick: () -> Void
     let userName: String
     let branch: String
-    var isManager = true
+    let userRole: UserRole
     
     var body: some View {
         VStack(spacing: 0) {
@@ -26,13 +27,12 @@ struct DashboardView: View {
                     .frame(height: 24)
                 Spacer()
                 HStack(spacing: 12) {
-                    // TODO: role-based employee button
-                    if (isManager) {
+                    if userRole.isAdmin {
                         Button(action: {}) {
                             Image("employee").renderingMode(.template).foregroundStyle(.text)
                         }
                     }
-                    Button(action: {}) {
+                    Button(action: onSettingClick) {
                         Image("settings").renderingMode(.template).foregroundStyle(.text)
                     }
                 }
@@ -42,11 +42,6 @@ struct DashboardView: View {
             
             ScrollView {
                 VStack(spacing: 16) {
-                    // Logout (temporary)
-                    CommonButton(StringResources.Auth.logoutButton, backgroundColor: .red, textColor: .white) {
-                        onLogoutClick()
-                    }
-                    
                     titleSection
                     buttonSection
                     orderListSection
@@ -85,7 +80,7 @@ struct DashboardView: View {
     
     private var buttonSection: some View {
         VStack(spacing: 16) {
-            if (isManager) {
+            if userRole.isAdmin {
                 buttonCard(iconName: "employee", valueText: "45", subText: StringResources.Dashboard.employee, bordered: true) {}
             }
             HStack(spacing: 16) {

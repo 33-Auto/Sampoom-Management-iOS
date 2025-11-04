@@ -45,10 +45,20 @@ class OrderAPI {
         return data
     }
     
-    /// 주문 입고 처리
-    func receiveOrder(orderId: Int) async throws {
+    /// 주문 완료 처리
+    func completeOrder(orderId: Int) async throws {
         let response: APIResponse<EmptyResponse> = try await networkManager.request(
-            endpoint: "/agency/1/orders/\(orderId)/receive",
+            endpoint: "order/complete/\(orderId)",
+            method: .patch,
+            responseType: EmptyResponse.self
+        )
+        if !response.success { throw NetworkError.serverError(response.status, message: response.message) }
+    }
+    
+    /// 주문 입고 처리 (대리점)
+    func receiveOrder(agencyId: Int, orderId: Int) async throws {
+        let response: APIResponse<EmptyResponse> = try await networkManager.request(
+            endpoint: "agency/\(agencyId)/orders/\(orderId)/receive",
             method: .patch,
             responseType: EmptyResponse.self
         )

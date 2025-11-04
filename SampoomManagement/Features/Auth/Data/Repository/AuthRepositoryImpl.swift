@@ -114,13 +114,17 @@ class AuthRepositoryImpl: AuthRepository {
         let updatedUser = User(
             id: existingUser.id,
             name: existingUser.name,
+            email: existingUser.email,
             role: existingUser.role,
             accessToken: dto.accessToken,
             refreshToken: dto.refreshToken,
             expiresIn: dto.expiresIn,
             position: existingUser.position,
             workspace: existingUser.workspace,
-            branch: existingUser.branch
+            branch: existingUser.branch,
+            agencyId: existingUser.agencyId,
+            startedAt: existingUser.startedAt,
+            endedAt: existingUser.endedAt
         )
         
         do {

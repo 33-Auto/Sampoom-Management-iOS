@@ -28,7 +28,7 @@ struct OrderItem: View {
                     Text(order.createdAt ?? "-")
                         .font(.gmarketCaption)
                         .foregroundColor(.textSecondary)
-                    StatusChip(status: order.status.rawValue)
+                    StatusChip(status: order.status)
                 }
             }
             .padding(16)

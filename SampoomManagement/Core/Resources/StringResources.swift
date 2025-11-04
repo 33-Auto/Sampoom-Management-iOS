@@ -21,7 +21,7 @@ struct StringResources {
         static let intro = "오늘도 효율적인 재고 관리를 시작해보세요."
         static let employee = "직원 관리"
         static let partsOnHand = "보유 부품"
-        static let partsInProgress = "진행중 주문"
+        static let partsInProgress = "진행중 부품"
         static let shortageOfParts = "부족 부품"
         static let orderAmount = "주문 금액"
         static let recentOrdersTitle = "최근 주문"
@@ -77,6 +77,7 @@ struct StringResources {
     // MARK: - Common
     struct Common {
         static let ok = "확인"
+        static let confirm = "확인"
         static let cancel = "취소"
         static let save = "저장"
         static let delete = "삭제"
@@ -85,6 +86,10 @@ struct StringResources {
         static let error = "오류"
         static let retry = "다시 시도"
         static let loadMore = "더 보기"
+        static let close = "닫기"
+        static let detail = "상세 보기"
+        static let EA = "EA"
+        static let slash = "-"
     }
     
     // MARK: - Search
@@ -169,9 +174,22 @@ struct StringResources {
         static let detailToastOrderReceive = "입고 처리되었습니다"
         
         // Order Status
-        static let statusPending = "승인대기"
+        static let statusPending = "대기중"
+        static let statusConfirmed = "주문확인"
+        static let statusShipping = "배송중"
+        static let statusDelayed = "배송지연"
+        static let statusProducing = "생산중"
+        static let statusArrived = "배송완료"
         static let statusCompleted = "입고완료"
         static let statusCanceled = "주문취소"
+    }
+    
+    // MARK: - Setting
+    struct Setting {
+        static let title = "설정"
+        static let editProfile = "프로필 수정"
+        static let logout = "로그아웃"
+        static let dialogLogout = "로그아웃 하시겠습니까?"
     }
     
     // MARK: - Auth
@@ -203,14 +221,16 @@ struct StringResources {
         
         // Validation Messages
         static func fieldRequired(_ field: String) -> String {
-            return "\(field)을(를) 입력해주세요."
+            return "\(field)을(를) 입력해주세요"
         }
-        static let emailRequired = "이메일을 입력해주세요."
-        static let emailInvalid = "올바른 이메일 형식이 아닙니다."
-        static let passwordRequired = "비밀번호를 입력해주세요."
-        static let passwordTooShort = "비밀번호는 8자 이상이어야 합니다."
+        static let emailRequired = "이메일을 입력해주세요"
+        static let emailInvalid = "올바른 이메일 형식이 아닙니다"
+        static let passwordRequired = "비밀번호를 입력해주세요"
+        static let passwordTooShort = "비밀번호는 최소 8자 이상이어야 합니다"
+        static let passwordMaxLength = "비밀번호는 최대 30자까지 가능합니다"
+        static let passwordComplexity = "영문, 숫자, 특수문자를 각각 1개 이상 포함해야 합니다"
         static let passwordInvalid = "비밀번호는 영문과 숫자를 포함해야 합니다."
-        static let passwordCheckRequired = "비밀번호 확인을 입력해주세요."
-        static let passwordCheckMismatch = "비밀번호가 일치하지 않습니다."
+        static let passwordCheckRequired = "비밀번호 확인을 입력해주세요"
+        static let passwordCheckMismatch = "비밀번호가 일치하지 않습니다"
     }
 }

@@ -45,8 +45,7 @@ class AuthViewModel: ObservableObject {
         }
         
         // 로그아웃 성공/실패 관계없이 로컬 상태 업데이트
-        isLoggedIn = false
-        shouldNavigateToLogin = true
+        handleSignedOutState()
     }
     
     func handleTokenExpired() async {
@@ -64,5 +63,10 @@ class AuthViewModel: ObservableObject {
     
     func resetNavigationState() {
         shouldNavigateToLogin = false
+    }
+
+    func handleSignedOutState() {
+        isLoggedIn = false
+        shouldNavigateToLogin = true
     }
 }

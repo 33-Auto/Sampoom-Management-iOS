@@ -17,9 +17,10 @@ class AuthAPI {
     
     // 로그인
     func login(email: String, password: String) async throws -> APIResponse<LoginResponseDTO> {
-        let requestDTO = LoginRequestDTO(email: email, password: password)
+        let requestDTO = LoginRequestDTO(workspace: "AGENCY", email: email, password: password)
         
         let parameters: [String: Any] = [
+            "workspace": requestDTO.workspace,
             "email": requestDTO.email,
             "password": requestDTO.password
         ]
@@ -94,9 +95,9 @@ class AuthAPI {
     }
 
     // 프로필 조회
-    func getProfile() async throws -> APIResponse<GetProfileResponseDTO> {
+    func getProfile(workspace: String = "AGENCY") async throws -> APIResponse<GetProfileResponseDTO> {
         return try await networkManager.request(
-            endpoint: "user/profile",
+            endpoint: "user/profile?workspace=\(workspace)",
             method: .get,
             parameters: nil,
             responseType: GetProfileResponseDTO.self

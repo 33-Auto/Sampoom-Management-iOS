@@ -15,6 +15,7 @@ class OrderDetailViewModel: ObservableObject {
     
     private let getOrderDetailUseCase: GetOrderDetailUseCase
     private let cancelOrderUseCase: CancelOrderUseCase
+    private let completeOrderUseCase: CompleteOrderUseCase
     private let receiveOrderUseCase: ReceiveOrderUseCase
     private let globalMessageHandler: GlobalMessageHandler
     
@@ -23,12 +24,14 @@ class OrderDetailViewModel: ObservableObject {
     init(
         getOrderDetailUseCase: GetOrderDetailUseCase,
         cancelOrderUseCase: CancelOrderUseCase,
+        completeOrderUseCase: CompleteOrderUseCase,
         receiveOrderUseCase: ReceiveOrderUseCase,
         globalMessageHandler: GlobalMessageHandler,
         orderId: Int = 0
     ) {
         self.getOrderDetailUseCase = getOrderDetailUseCase
         self.cancelOrderUseCase = cancelOrderUseCase
+        self.completeOrderUseCase = completeOrderUseCase
         self.receiveOrderUseCase = receiveOrderUseCase
         self.globalMessageHandler = globalMessageHandler
         self.orderId = orderId
@@ -103,7 +106,11 @@ class OrderDetailViewModel: ObservableObject {
             uiState = uiState.copy(isProcessing: true)
             
             do {
+                // 1단계: 주문 입고 처리
                 try await receiveOrderUseCase.execute(orderId: orderId)
+                // 2단계: 주문 완료 처리
+                try await completeOrderUseCase.execute(orderId: orderId)
+                
                 globalMessageHandler.showMessage(StringResources.Order.detailToastOrderReceive, isError: false)
                 uiState = uiState.copy(
                     isProcessing: false,
