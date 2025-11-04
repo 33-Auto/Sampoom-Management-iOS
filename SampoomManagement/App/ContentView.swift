@@ -63,7 +63,7 @@ struct ContentView: View {
                             },
                             userName: user?.name ?? "",
                             branch: user?.branch ?? "",
-                            userRole: user?.role ?? ""
+                            userRole: user?.role ?? .user
                         )
                         .navigationDestination(for: SettingNavigation.self) { destination in
                             switch destination {

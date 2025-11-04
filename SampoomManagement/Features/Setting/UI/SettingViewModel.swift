@@ -36,7 +36,8 @@ class SettingViewModel: ObservableObject {
             // TODO: Implement edit profile
             break
         case .logout:
-            logout()
+            // Deprecated in favor of explicit async logout() from the View
+            break
         }
     }
     
@@ -48,15 +49,14 @@ class SettingViewModel: ObservableObject {
         }
     }
     
-    private func logout() {
-        Task {
-            do {
-                try await signOutUseCase.execute()
-                // Logout handled by AuthViewModel
-            } catch {
-                let errorMessage = (error as? NetworkError)?.errorDescription ?? error.localizedDescription
-                globalMessageHandler.showMessage(errorMessage, isError: true)
-            }
+    func logout() async -> Bool {
+        do {
+            try await signOutUseCase.execute()
+            return true
+        } catch {
+            let errorMessage = (error as? NetworkError)?.errorDescription ?? error.localizedDescription
+            globalMessageHandler.showMessage(errorMessage, isError: true)
+            return false
         }
     }
 }

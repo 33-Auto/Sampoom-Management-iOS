@@ -15,7 +15,7 @@ struct DashboardView: View {
     let onSettingClick: () -> Void
     let userName: String
     let branch: String
-    let userRole: String
+    let userRole: UserRole
     
     var body: some View {
         VStack(spacing: 0) {
@@ -27,7 +27,7 @@ struct DashboardView: View {
                     .frame(height: 24)
                 Spacer()
                 HStack(spacing: 12) {
-                    if userRole == "ADMIN" {
+                    if userRole.isAdmin {
                         Button(action: {}) {
                             Image("employee").renderingMode(.template).foregroundStyle(.text)
                         }
@@ -80,7 +80,7 @@ struct DashboardView: View {
     
     private var buttonSection: some View {
         VStack(spacing: 16) {
-            if userRole == "ADMIN" {
+            if userRole.isAdmin {
                 buttonCard(iconName: "employee", valueText: "45", subText: StringResources.Dashboard.employee, bordered: true) {}
             }
             HStack(spacing: 16) {

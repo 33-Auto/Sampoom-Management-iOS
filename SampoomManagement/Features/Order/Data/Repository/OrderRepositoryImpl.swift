@@ -60,6 +60,10 @@ class OrderRepositoryImpl: OrderRepository {
     }
     
     func completeOrder(orderId: Int) async throws {
+        // 인증 확인 (다른 상태 변경 메서드와 동일한 패턴)
+        guard (try preferences.getStoredUser()) != nil else {
+            throw NetworkError.unauthorized
+        }
         try await api.completeOrder(orderId: orderId)
     }
     

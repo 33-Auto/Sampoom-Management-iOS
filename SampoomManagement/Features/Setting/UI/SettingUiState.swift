@@ -18,11 +18,18 @@ struct SettingUiState {
     
     func copy(
         loading: Bool? = nil,
-        error: String? = nil
+        error: String?? = nil
     ) -> SettingUiState {
+        let resolvedError: String?
+        if let error = error {
+            resolvedError = error
+        } else {
+            resolvedError = self.error
+        }
+        
         return SettingUiState(
             loading: loading ?? self.loading,
-            error: error ?? self.error
+            error: resolvedError
         )
     }
 }

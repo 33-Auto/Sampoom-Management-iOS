@@ -40,8 +40,11 @@ struct SettingView: View {
         .alert("로그아웃", isPresented: $showLogoutDialog) {
             Button(StringResources.Common.cancel, role: .cancel) {}
             Button(StringResources.Common.confirm) {
-                viewModel.onEvent(.logout)
-                onLogoutClick()
+                Task {
+                    if await viewModel.logout() {
+                        onLogoutClick()
+                    }
+                }
             }
         } message: {
             Text(StringResources.Setting.dialogLogout)

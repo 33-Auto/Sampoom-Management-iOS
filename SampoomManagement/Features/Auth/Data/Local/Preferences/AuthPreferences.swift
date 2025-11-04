@@ -33,7 +33,7 @@ class AuthPreferences {
             try keychain.save(String(user.id), for: Keys.userId)
             try keychain.save(user.name, for: Keys.userName)
             try keychain.save(user.email, for: Keys.userEmail)
-            try keychain.save(user.role, for: Keys.userRole)
+            try keychain.save(user.role.rawValue, for: Keys.userRole)
             try keychain.save(String(user.expiresIn), for: Keys.expiresIn)
             try keychain.save(user.position, for: Keys.position)
             try keychain.save(user.workspace, for: Keys.workspace)
@@ -98,7 +98,7 @@ class AuthPreferences {
                 id: userId,
                 name: userName,
                 email: userEmail,
-                role: userRole,
+                role: UserRole(rawValue: userRole) ?? .user,
                 accessToken: accessToken,
                 refreshToken: refreshToken,
                 expiresIn: expiresIn,
