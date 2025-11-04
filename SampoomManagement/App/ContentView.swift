@@ -74,7 +74,7 @@ struct ContentView: View {
                                         dashboardNavigationPath.removeLast()
                                     },
                                     onLogoutClick: {
-                                        Task { await dependencies.authViewModel.signOut() }
+                                        dependencies.authViewModel.handleSignedOutState()
                                     }
                                 )
                             }

@@ -74,23 +74,23 @@ class AuthPreferences {
     
     func getStoredUser() throws -> User? {
         do {
+            // Require only core identifiers and tokens; allow missing new fields for migration
             guard let userIdString = try keychain.get(Keys.userId),
                   let userId = Int(userIdString),
                   let userName = try keychain.get(Keys.userName),
-                  let userEmail = try keychain.get(Keys.userEmail),
                   let userRole = try keychain.get(Keys.userRole),
                   let accessToken = try keychain.get(Keys.accessToken),
                   let refreshToken = try keychain.get(Keys.refreshToken),
                   let expiresInString = try keychain.get(Keys.expiresIn),
-                  let expiresIn = Int(expiresInString),
-                  let agencyIdString = try keychain.get(Keys.agencyId),
-                  let agencyId = Int(agencyIdString) else {
+                  let expiresIn = Int(expiresInString) else {
                 return nil
             }
-            // Tolerate missing profile keys by defaulting to empty strings
+            // Tolerate missing profile keys by defaulting to safe values
             let position = (try? keychain.get(Keys.position)) ?? ""
             let workspace = (try? keychain.get(Keys.workspace)) ?? ""
             let branch = (try? keychain.get(Keys.branch)) ?? ""
+            let userEmail = (try? keychain.get(Keys.userEmail)) ?? ""
+            let agencyId = Int((try? keychain.get(Keys.agencyId)) ?? "0") ?? 0
             let startedAt = try? keychain.get(Keys.startedAt)
             let endedAt = try? keychain.get(Keys.endedAt)
             
