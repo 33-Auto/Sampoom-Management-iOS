@@ -9,9 +9,11 @@ import Foundation
 
 class PartRepositoryImpl: PartRepository {
     private let api: PartAPI
+    private let preferences: AuthPreferences
     
-    init(api: PartAPI) {
+    init(api: PartAPI, preferences: AuthPreferences) {
         self.api = api
+        self.preferences = preferences
     }
     
     func getCategoryList() async throws -> CategoryList {
@@ -23,10 +25,16 @@ class PartRepositoryImpl: PartRepository {
     }
     
     func getPartList(groupId: Int) async throws -> PartList {
-        return try await api.getPartList(groupId: groupId)
+        guard let user = try preferences.getStoredUser() else {
+            throw NetworkError.unauthorized
+        }
+        return try await api.getPartList(agencyId: user.agencyId, groupId: groupId)
     }
     
     func searchParts(keyword: String, page: Int) async throws -> (results: [SearchResult], hasMore: Bool) {
-        return try await api.searchParts(keyword: keyword, page: page)
+        guard let user = try preferences.getStoredUser() else {
+            throw NetworkError.unauthorized
+        }
+        return try await api.searchParts(agencyId: user.agencyId, keyword: keyword, page: page)
     }
 }

@@ -78,7 +78,7 @@ struct OrderInfoCard: View {
                 
                 Spacer()
                 
-                StatusChip(status: order.status.rawValue)
+                StatusChip(status: order.status)
             }
             .padding(16)
         }

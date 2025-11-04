@@ -16,9 +16,9 @@ class CartAPI {
     }
     
     // 장바구니 목록 조회
-    func getCartList() async throws -> [CartDto] {
+    func getCartList(agencyId: Int) async throws -> [CartDto] {
         let response = try await networkManager.request(
-            endpoint: "agency/1/cart",
+            endpoint: "agency/\(agencyId)/cart",
             method: .get,
             responseType: [CartDto].self
         )
@@ -29,10 +29,10 @@ class CartAPI {
     }
     
     // 장바구니에 부품 추가
-    func addCart(request: AddCartRequestDto) async throws {
+    func addCart(agencyId: Int, request: AddCartRequestDto) async throws {
         guard let params = request.toDictionary() else { throw NetworkError.invalidParameters }
         let response = try await networkManager.request(
-            endpoint: "agency/1/cart",
+            endpoint: "agency/\(agencyId)/cart",
             method: .post,
             parameters: params,
             responseType: EmptyResponse.self
@@ -43,9 +43,9 @@ class CartAPI {
     }
     
     // 장바구니 항목 삭제
-    func deleteCart(cartItemId: Int) async throws {
+    func deleteCart(agencyId: Int, cartItemId: Int) async throws {
         let response = try await networkManager.request(
-            endpoint: "agency/1/cart/\(cartItemId)",
+            endpoint: "agency/\(agencyId)/cart/\(cartItemId)",
             method: .delete,
             responseType: EmptyResponse.self
         )
@@ -55,10 +55,10 @@ class CartAPI {
     }
     
     // 장바구니 수량 변경
-    func updateCart(cartItemId: Int, request: UpdateCartRequestDto) async throws {
+    func updateCart(agencyId: Int, cartItemId: Int, request: UpdateCartRequestDto) async throws {
         guard let params = request.toDictionary() else { throw NetworkError.invalidParameters }
         let response = try await networkManager.request(
-            endpoint: "agency/1/cart/\(cartItemId)",
+            endpoint: "agency/\(agencyId)/cart/\(cartItemId)",
             method: .put,
             parameters: params,
             responseType: EmptyResponse.self
@@ -69,9 +69,9 @@ class CartAPI {
     }
     
     // 장바구니 전체 비우기
-    func deleteAllCart() async throws {
+    func deleteAllCart(agencyId: Int) async throws {
         let response = try await networkManager.request(
-            endpoint: "agency/1/cart/clear",
+            endpoint: "agency/\(agencyId)/cart/clear",
             method: .delete,
             responseType: EmptyResponse.self
         )

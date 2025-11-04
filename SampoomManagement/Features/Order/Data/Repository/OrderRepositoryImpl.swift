@@ -59,8 +59,15 @@ class OrderRepositoryImpl: OrderRepository {
         return dto.toModel()
     }
     
+    func completeOrder(orderId: Int) async throws {
+        try await api.completeOrder(orderId: orderId)
+    }
+    
     func receiveOrder(orderId: Int) async throws {
-        try await api.receiveOrder(orderId: orderId)
+        guard let user = try preferences.getStoredUser() else {
+            throw NetworkError.unauthorized
+        }
+        try await api.receiveOrder(agencyId: user.agencyId, orderId: orderId)
     }
     
     func getOrderDetail(orderId: Int) async throws -> Order {

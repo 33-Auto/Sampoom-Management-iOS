@@ -9,6 +9,11 @@ import Foundation
 
 enum OrderStatus: String, CaseIterable, Codable {
     case pending = "PENDING"
+    case confirmed = "CONFIRMED"
+    case shipping = "SHIPPING"
+    case delayed = "DELAYED"
+    case producing = "PRODUCING"
+    case arrived = "ARRIVED"
     case completed = "COMPLETED"
     case canceled = "CANCELED"
     
@@ -18,6 +23,16 @@ enum OrderStatus: String, CaseIterable, Codable {
         switch rawValue {
         case "PENDING":
             return .pending
+        case "CONFIRMED":
+            return .confirmed
+        case "SHIPPING":
+            return .shipping
+        case "DELAYED":
+            return .delayed
+        case "PRODUCING":
+            return .producing
+        case "ARRIVED":
+            return .arrived
         case "COMPLETED":
             return .completed
         case "CANCELED":

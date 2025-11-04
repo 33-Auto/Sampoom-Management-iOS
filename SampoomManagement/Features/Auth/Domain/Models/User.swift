@@ -10,6 +10,7 @@ import Foundation
 struct User: Equatable {
     let id: Int
     let name: String
+    let email: String
     let role: String
     let accessToken: String
     let refreshToken: String
@@ -18,4 +19,7 @@ struct User: Equatable {
     let position: String
     let workspace: String
     let branch: String
+    let agencyId: Int
+    let startedAt: String?
+    let endedAt: String?
 }

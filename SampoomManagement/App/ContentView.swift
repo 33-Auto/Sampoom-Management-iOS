@@ -11,6 +11,10 @@ enum Tabs {
     case dashboard, outbound, cart, orders, parts
 }
 
+enum SettingNavigation: Hashable {
+    case settings
+}
+
 struct ContentView: View {
     // MARK: - Properties
     let dependencies: AppDependencies
@@ -19,6 +23,7 @@ struct ContentView: View {
     @State private var selectedTab: Tabs = .dashboard
     @State private var ordersNavigationPath = NavigationPath()
     @State private var partsNavigationPath = NavigationPath()
+    @State private var dashboardNavigationPath = NavigationPath()
     
     // MARK: - Initialization
     init(dependencies: AppDependencies) {
@@ -37,7 +42,8 @@ struct ContentView: View {
             TabView(selection: $selectedTab) {
                 // Dashboard 탭 (DashboardView directly)
                 Tab(value: .dashboard) {
-                    NavigationStack {
+                    NavigationStack(path: $dashboardNavigationPath) {
+                        let user = try? dependencies.authPreferences.getStoredUser()
                         DashboardView(
                             viewModel: dashboardViewModel,
                             onLogoutClick: {
@@ -52,9 +58,27 @@ struct ContentView: View {
                             onNavigateOrderList: {
                                 selectedTab = .orders
                             },
-                            userName: ((try? dependencies.authPreferences.getStoredUser())?.name) ?? "",
-                            branch: ((try? dependencies.authPreferences.getStoredUser())?.branch) ?? ""
+                            onSettingClick: {
+                                dashboardNavigationPath.append(SettingNavigation.settings)
+                            },
+                            userName: user?.name ?? "",
+                            branch: user?.branch ?? "",
+                            userRole: user?.role ?? ""
                         )
+                        .navigationDestination(for: SettingNavigation.self) { destination in
+                            switch destination {
+                            case .settings:
+                                SettingView(
+                                    viewModel: dependencies.makeSettingViewModel(),
+                                    onNavigateBack: {
+                                        dashboardNavigationPath.removeLast()
+                                    },
+                                    onLogoutClick: {
+                                        Task { await dependencies.authViewModel.signOut() }
+                                    }
+                                )
+                            }
+                        }
                     }
                 } label: {
                     Label {

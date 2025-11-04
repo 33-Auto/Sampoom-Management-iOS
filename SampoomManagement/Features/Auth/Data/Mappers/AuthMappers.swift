@@ -11,14 +11,18 @@ extension LoginResponseDTO {
     func toModel() -> User {
         return User(
             id: self.userId,
-            name: self.userName ?? "",
-            role: self.role,
+            name: "",
+            email: "",
+            role: "",
             accessToken: self.accessToken,
             refreshToken: self.refreshToken,
             expiresIn: self.expiresIn,
             position: "",
             workspace: "",
-            branch: ""
+            branch: "",
+            agencyId: 0,
+            startedAt: nil,
+            endedAt: nil
         )
     }
 }
@@ -27,14 +31,18 @@ extension GetProfileResponseDTO {
     func toModel() -> User {
         return User(
             id: self.userId,
-            name: self.userName ?? "",
-            role: "",
+            name: self.userName,
+            email: self.email,
+            role: self.role,
             accessToken: "",
             refreshToken: "",
             expiresIn: 0,
-            position: self.position ?? "",
-            workspace: self.workspace ?? "",
-            branch: self.branch ?? ""
+            position: self.position,
+            workspace: self.workspace,
+            branch: self.branch,
+            agencyId: self.organizationId,
+            startedAt: self.startedAt.isEmpty ? nil : self.startedAt,
+            endedAt: self.endedAt
         )
     }
 }
@@ -44,13 +52,17 @@ extension User {
         return User(
             id: self.id,
             name: profile.name,
-            role: self.role,
+            email: profile.email,
+            role: profile.role,
             accessToken: self.accessToken,
             refreshToken: self.refreshToken,
             expiresIn: self.expiresIn,
             position: profile.position,
             workspace: profile.workspace,
-            branch: profile.branch
+            branch: profile.branch,
+            agencyId: profile.agencyId,
+            startedAt: profile.startedAt,
+            endedAt: profile.endedAt
         )
     }
 }

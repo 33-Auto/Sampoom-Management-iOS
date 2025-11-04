@@ -33,18 +33,18 @@ class PartAPI {
         return PartsGroupList(items: groups)
     }
     
-    func getPartList(groupId: Int) async throws -> PartList {
+    func getPartList(agencyId: Int, groupId: Int) async throws -> PartList {
         let response = try await networkManager.request(
-            endpoint: "agency/1/group/\(groupId)",
+            endpoint: "agency/\(agencyId)/group/\(groupId)",
             responseType: [PartDTO].self
         )
         let parts = (response.data ?? []).map { $0.toModel() }
         return PartList(items: parts)
     }
     
-    func searchParts(keyword: String, page: Int = 0, size: Int = 20) async throws -> (results: [SearchResult], hasMore: Bool) {
+    func searchParts(agencyId: Int, keyword: String, page: Int = 0, size: Int = 20) async throws -> (results: [SearchResult], hasMore: Bool) {
         let response = try await networkManager.request(
-            endpoint: "agency/1/search",
+            endpoint: "agency/\(agencyId)/search",
             method: .get,
             parameters: [
                 "keyword": keyword,

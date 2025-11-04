@@ -62,6 +62,7 @@ class AppDependencies {
     let getOrderUseCase: GetOrderUseCase
     let createOrderUseCase: CreateOrderUseCase
     let getOrderDetailUseCase: GetOrderDetailUseCase
+    let completeOrderUseCase: CompleteOrderUseCase
     let receiveOrderUseCase: ReceiveOrderUseCase
     let cancelOrderUseCase: CancelOrderUseCase
     
@@ -103,7 +104,7 @@ class AppDependencies {
         
         // Part
         partAPI = PartAPI(networkManager: networkManager)
-        partRepository = PartRepositoryImpl(api: partAPI)
+        partRepository = PartRepositoryImpl(api: partAPI, preferences: authPreferences)
         getCategoryUseCase = GetCategoryUseCase(repository: partRepository)
         getGroupUseCase = GetGroupUseCase(repository: partRepository)
         getPartUseCase = GetPartUseCase(repository: partRepository)
@@ -111,7 +112,7 @@ class AppDependencies {
         
         // Outbound
         outboundAPI = OutboundAPI(networkManager: networkManager)
-        outboundRepository = OutboundRepositoryImpl(api: outboundAPI)
+        outboundRepository = OutboundRepositoryImpl(api: outboundAPI, preferences: authPreferences)
         getOutboundUseCase = GetOutboundUseCase(repository: outboundRepository)
         addOutboundUseCase = AddOutboundUseCase(repository: outboundRepository)
         deleteOutboundUseCase = DeleteOutboundUseCase(repository: outboundRepository)
@@ -121,7 +122,7 @@ class AppDependencies {
         
         // Cart
         cartAPI = CartAPI(networkManager: networkManager)
-        cartRepository = CartRepositoryImpl(api: cartAPI)
+        cartRepository = CartRepositoryImpl(api: cartAPI, preferences: authPreferences)
         getCartUseCase = GetCartUseCase(repository: cartRepository)
         addCartUseCase = AddCartUseCase(repository: cartRepository)
         deleteCartUseCase = DeleteCartUseCase(repository: cartRepository)
@@ -134,6 +135,7 @@ class AppDependencies {
         getOrderUseCase = GetOrderUseCase(repository: orderRepository)
         createOrderUseCase = CreateOrderUseCase(repository: orderRepository)
         getOrderDetailUseCase = GetOrderDetailUseCase(repository: orderRepository)
+        completeOrderUseCase = CompleteOrderUseCase(repository: orderRepository)
         receiveOrderUseCase = ReceiveOrderUseCase(repository: orderRepository)
         cancelOrderUseCase = CancelOrderUseCase(repository: orderRepository)
     }
@@ -206,9 +208,18 @@ class AppDependencies {
         return OrderDetailViewModel(
             getOrderDetailUseCase: getOrderDetailUseCase,
             cancelOrderUseCase: cancelOrderUseCase,
+            completeOrderUseCase: completeOrderUseCase,
             receiveOrderUseCase: receiveOrderUseCase,
             globalMessageHandler: globalMessageHandler,
             orderId: orderId
+        )
+    }
+    
+    func makeSettingViewModel() -> SettingViewModel {
+        return SettingViewModel(
+            authPreferences: authPreferences,
+            signOutUseCase: signOutUseCase,
+            globalMessageHandler: globalMessageHandler
         )
     }
 }

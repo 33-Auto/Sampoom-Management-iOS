@@ -104,7 +104,7 @@ struct OrderItemCard: View {
                         .font(.gmarketCaption)
                         .foregroundColor(Color("TextSecondary"))
                     
-                    StatusChip(status: order.status.rawValue)
+                    StatusChip(status: order.status)
                 }
             }
             .padding(16)
