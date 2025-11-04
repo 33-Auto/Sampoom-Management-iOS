@@ -71,7 +71,9 @@ struct ContentView: View {
                                 SettingView(
                                     viewModel: dependencies.makeSettingViewModel(),
                                     onNavigateBack: {
-                                        dashboardNavigationPath.removeLast()
+                                        if !dashboardNavigationPath.isEmpty {
+                                            dashboardNavigationPath.removeLast()
+                                        }
                                     },
                                     onLogoutClick: {
                                         dependencies.authViewModel.handleSignedOutState()
