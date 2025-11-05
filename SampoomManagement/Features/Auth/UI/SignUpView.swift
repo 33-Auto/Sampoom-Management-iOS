@@ -13,7 +13,7 @@ struct SignUpView: View {
     @StateObject private var keyboardObserver = KeyboardObserver()
     @State private var name = ""
     @State private var branch = ""
-    @State private var position = ""
+    @State private var selectedPosition: UserPosition? = nil
     @State private var email = ""
     @State private var password = ""
     @State private var passwordCheck = ""
@@ -83,15 +83,42 @@ struct SignUpView: View {
                     .font(.gmarketBody)
                     .foregroundColor(Color("Text"))
                     .padding(.bottom, 4)
-                CommonTextField(
-                    value: $position,
-                    placeholder: StringResources.Auth.positionPlaceholder,
-                    isError: viewModel.uiState.positionError != nil,
-                    errorMessage: viewModel.uiState.positionError,
-                    onTextChange: { text in viewModel.updatePosition(text) },
-                    submitLabel: .next,
-                    onSubmit: { focusedField = .email }
-                )
+                Menu {
+                    ForEach(UserPosition.allCases, id: \.self) { pos in
+                        Button(action: {
+                            selectedPosition = pos
+                            viewModel.updatePosition(pos.rawValue)
+                            focusedField = .email
+                        }) {
+                            Text(pos.displayNameKo)
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                                .padding(.vertical, 6)
+                        }
+                    }
+                } label: {
+                    VStack(alignment: .leading, spacing: 4) {
+                        HStack {
+                            Text(selectedPosition?.displayNameKo ?? StringResources.Auth.positionPlaceholder)
+                                .font(.gmarketBody)
+                                .foregroundColor(selectedPosition == nil ? .gray : Color("Text"))
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                        }
+                        .padding(EdgeInsets(top: 12, leading: 16, bottom: 12, trailing: 16))
+                        .padding(4)
+                        .background(
+                            RoundedRectangle(cornerRadius: 16)
+                                .stroke(viewModel.uiState.positionError != nil ? Color.red : Color.gray.opacity(0.4), lineWidth: 1)
+                        )
+                        if let error = viewModel.uiState.positionError {
+                            Text(error)
+                                .font(.gmarketBody)
+                                .foregroundColor(.red)
+                                .padding(.leading, 4)
+                        }
+                    }
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .contentShape(Rectangle())
+                }
                 .focused($focusedField, equals: .position)
                 
                 Spacer()

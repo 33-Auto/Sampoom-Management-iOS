@@ -58,7 +58,7 @@ struct SettingView: View {
                     .font(.gmarketTitle)
                     .foregroundColor(.text)
                 
-                Text(user.position)
+                Text(user.position.displayNameKo)
                     .font(.gmarketBody)
                     .foregroundColor(.textSecondary)
             }

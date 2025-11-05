@@ -30,7 +30,7 @@ struct SignUpUiState: UIState {
     
     init(
         name: String = "",
-        workspace: String = "대리점",
+        workspace: String = "AGENCY",
         branch: String = "",
         position: String = "",
         email: String = "",

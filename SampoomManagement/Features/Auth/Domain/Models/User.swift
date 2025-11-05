@@ -34,7 +34,7 @@ struct User: Equatable {
     let refreshToken: String
     let expiresIn: Int
     // Additional profile fields merged after login
-    let position: String
+    let position: UserPosition
     let workspace: String
     let branch: String
     let agencyId: Int
