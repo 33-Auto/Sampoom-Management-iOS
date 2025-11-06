@@ -14,7 +14,7 @@ class ReceiveOrderUseCase {
         self.repository = repository
     }
     
-    func execute(orderId: Int) async throws {
-        try await repository.receiveOrder(orderId: orderId)
+    func execute(items: [(Int, Int)]) async throws {
+        try await repository.receiveOrder(items: items)
     }
 }

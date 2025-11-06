@@ -55,7 +55,7 @@ struct OrderDetailView: View {
 
                 CommonButton(
                     StringResources.Order.detailOrderReceive,
-                    isEnabled: !cannotPerformAction,
+                    isEnabled: canReceiveOrder,
                     backgroundColor: .accent,
                     textColor: .white
                 ) {
@@ -109,6 +109,11 @@ struct OrderDetailView: View {
     private var cannotPerformAction: Bool {
         guard let order = viewModel.uiState.orderDetail else { return true }
         return order.status == .completed || order.status == .canceled || viewModel.uiState.isProcessing
+    }
+    
+    private var canReceiveOrder: Bool {
+        guard let order = viewModel.uiState.orderDetail else { return false }
+        return order.status == .arrived && !viewModel.uiState.isProcessing
     }
 }
 

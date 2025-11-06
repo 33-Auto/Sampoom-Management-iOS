@@ -55,11 +55,12 @@ class OrderAPI {
         if !response.success { throw NetworkError.serverError(response.status, message: response.message) }
     }
     
-    /// 주문 입고 처리 (대리점)
-    func receiveOrder(agencyId: Int, orderId: Int) async throws {
+    /// 주문 입고 처리 (대리점) - 재고 반영
+    func receiveOrder(agencyId: Int, body: ReceiveStockRequestDto) async throws {
         let response: APIResponse<EmptyResponse> = try await networkManager.request(
-            endpoint: "agency/\(agencyId)/orders/\(orderId)/receive",
+            endpoint: "agency/\(agencyId)/stock",
             method: .patch,
+            body: body,
             responseType: EmptyResponse.self
         )
         if !response.success { throw NetworkError.serverError(response.status, message: response.message) }

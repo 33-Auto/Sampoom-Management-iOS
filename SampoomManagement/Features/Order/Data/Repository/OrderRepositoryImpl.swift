@@ -44,7 +44,8 @@ class OrderRepositoryImpl: OrderRepository {
                                 partId: part.partId,
                                 code: part.code,
                                 name: part.name,
-                                quantity: part.quantity
+                                quantity: part.quantity,
+                                standardCost: part.standardCost
                             )
                         }
                     )
@@ -67,11 +68,16 @@ class OrderRepositoryImpl: OrderRepository {
         try await api.completeOrder(orderId: orderId)
     }
     
-    func receiveOrder(orderId: Int) async throws {
+    func receiveOrder(items: [(Int, Int)]) async throws {
         guard let user = try preferences.getStoredUser() else {
             throw NetworkError.unauthorized
         }
-        try await api.receiveOrder(agencyId: user.agencyId, orderId: orderId)
+        let body = ReceiveStockRequestDto(
+            items: items.map { (partId, quantity) in
+                ReceiveStockItemDto(partId: partId, quantity: quantity)
+            }
+        )
+        try await api.receiveOrder(agencyId: user.agencyId, body: body)
     }
     
     func getOrderDetail(orderId: Int) async throws -> Order {

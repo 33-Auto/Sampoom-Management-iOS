@@ -14,9 +14,12 @@ class SignUpViewModel: ObservableObject {
     @Published var uiState = SignUpUiState()
     
     private let signUpUseCase: SignUpUseCase
+    private let getVendorUseCase: GetVendorUseCase
     
-    init(signUpUseCase: SignUpUseCase) {
+    init(signUpUseCase: SignUpUseCase, getVendorUseCase: GetVendorUseCase) {
         self.signUpUseCase = signUpUseCase
+        self.getVendorUseCase = getVendorUseCase
+        Task { await loadVendors() }
     }
     
     // 이름 업데이트
@@ -28,6 +31,12 @@ class SignUpViewModel: ObservableObject {
     // 지점 업데이트
     func updateBranch(_ branch: String) {
         uiState = uiState.copy(branch: branch)
+        validateBranch()
+    }
+    
+    // Vendor 선택 시 브랜치 채우기
+    func selectVendor(_ vendor: Vendor) {
+        uiState = uiState.copy(branch: vendor.name, selectedVendor: vendor)
         validateBranch()
     }
     
@@ -123,6 +132,17 @@ class SignUpViewModel: ObservableObject {
             StringResources.Auth.branchLabel
         )
         uiState = uiState.copy(branchError: result.errorMessage)
+    }
+
+    private func loadVendors() async {
+        uiState = uiState.copy(vendorsLoading: true)
+        do {
+            let list = try await getVendorUseCase.execute()
+            uiState = uiState.copy(vendors: list.items, vendorsLoading: false)
+        } catch {
+            // 실패 시에도 로딩 해제만
+            uiState = uiState.copy(vendorsLoading: false)
+        }
     }
     
     private func validatePosition() {

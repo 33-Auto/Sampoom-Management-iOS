@@ -23,6 +23,7 @@ struct PartDetailBottomSheetView: View {
 
     private var partName: String { viewModel.uiState.part?.name ?? "N/A" }
     private var partCode: String { viewModel.uiState.part?.code ?? "N/A" }
+    private var partPrice: String { formatWon(viewModel.uiState.part?.standardCost ?? 0) }
     private var quantityLabelText: String { "\(StringResources.PartDetail.currentQuantity): \(viewModel.uiState.part?.quantity ?? 0)EA" }
 
     var body: some View {
@@ -65,7 +66,8 @@ struct PartDetailBottomSheetView: View {
                 PartInfoHeaderView(
                     name: partName,
                     code: partCode,
-                    quantityLabel: quantityLabelText
+                    quantityLabel: quantityLabelText,
+                    priceLabel: partPrice
                 )
 
                 QuantityControlView(
@@ -122,6 +124,7 @@ private struct PartInfoHeaderView: View {
     let name: String
     let code: String
     let quantityLabel: String
+    let priceLabel: String
 
     var body: some View {
         HStack {
@@ -134,9 +137,14 @@ private struct PartInfoHeaderView: View {
                     .foregroundColor(.textSecondary)
             }
             Spacer()
-            Text(quantityLabel)
-                .font(.gmarketBody)
-                .foregroundColor(.textSecondary)
+            VStack(alignment: .trailing, spacing: 4) {
+                Text(priceLabel)
+                    .font(.gmarketTitle3)
+                    .foregroundColor(.text)
+                Text(quantityLabel)
+                    .font(.gmarketBody)
+                    .foregroundColor(.textSecondary)
+            }
         }
     }
 }

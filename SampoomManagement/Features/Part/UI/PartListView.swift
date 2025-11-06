@@ -109,9 +109,14 @@ struct PartListItemCard: View {
                 
                 Spacer()
                 
-                Text("\(part.quantity)")
-                    .font(.gmarketTitle3)
-                    .foregroundColor(.text)
+                VStack(alignment: .trailing, spacing: 4) {
+                    Text(formatWon(part.standardCost))
+                        .font(.gmarketBody)
+                        .foregroundColor(.text)
+                    Text("\(part.quantity)")
+                        .font(.gmarketCaption)
+                        .foregroundColor(.textSecondary)
+                }
                 
                 Image(systemName: "chevron.right")
                     .foregroundColor(.textSecondary)

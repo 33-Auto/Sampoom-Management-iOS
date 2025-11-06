@@ -16,6 +16,11 @@ struct SignUpUiState: UIState {
     let password: String
     let passwordCheck: String
     
+    // Vendor
+    let vendors: [Vendor]
+    let selectedVendor: Vendor?
+    let vendorsLoading: Bool
+    
     // Error message
     let nameError: String?
     let branchError: String?
@@ -36,6 +41,9 @@ struct SignUpUiState: UIState {
         email: String = "",
         password: String = "",
         passwordCheck: String = "",
+        vendors: [Vendor] = [],
+        selectedVendor: Vendor? = nil,
+        vendorsLoading: Bool = false,
         nameError: String? = nil,
         branchError: String? = nil,
         positionError: String? = nil,
@@ -53,6 +61,9 @@ struct SignUpUiState: UIState {
         self.email = email
         self.password = password
         self.passwordCheck = passwordCheck
+        self.vendors = vendors
+        self.selectedVendor = selectedVendor
+        self.vendorsLoading = vendorsLoading
         self.nameError = nameError
         self.branchError = branchError
         self.positionError = positionError
@@ -87,6 +98,9 @@ struct SignUpUiState: UIState {
         email: String? = nil,
         password: String? = nil,
         passwordCheck: String? = nil,
+        vendors: [Vendor]? = nil,
+        selectedVendor: Vendor?? = nil,
+        vendorsLoading: Bool? = nil,
         nameError: String?? = nil,
         branchError: String?? = nil,
         positionError: String?? = nil,
@@ -105,6 +119,9 @@ struct SignUpUiState: UIState {
             email: email ?? self.email,
             password: password ?? self.password,
             passwordCheck: passwordCheck ?? self.passwordCheck,
+            vendors: vendors ?? self.vendors,
+            selectedVendor: selectedVendor ?? self.selectedVendor,
+            vendorsLoading: vendorsLoading ?? self.vendorsLoading,
             nameError: nameError ?? self.nameError,
             branchError: branchError ?? self.branchError,
             positionError: positionError ?? self.positionError,

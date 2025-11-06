@@ -34,7 +34,8 @@ extension PartDTO {
             id: self.partId,
             code: self.code,
             name: self.name,
-            quantity: self.quantity
+            quantity: self.quantity,
+            standardCost: self.standardCost
         )
     }
 }

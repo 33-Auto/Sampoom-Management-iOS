@@ -33,9 +33,20 @@ class AuthRepositoryImpl: AuthRepository {
             userName: userName,
             position: position
         )
-        
-        // 회원가입 후 자동 로그인
-        return try await signIn(email: email, password: password)
+        // 회원가입 직후 DB 반영 지연을 고려하여 잠시 대기 후 재시도하며 로그인
+        // 0.5초 대기 후 최대 5회 재시도 (지수 백오프)
+        try await Task.sleep(nanoseconds: 500_000_000)
+        var currentDelayMs: UInt64 = 500
+        for attempt in 1...5 {
+            do {
+                return try await signIn(email: email, password: password)
+            } catch {
+                if attempt == 5 { throw error }
+                try await Task.sleep(nanoseconds: currentDelayMs * 1_000_000)
+                currentDelayMs = min(currentDelayMs &* 2, 2_000)
+            }
+        }
+        throw AuthError.invalidResponse
     }
     
     func signIn(email: String, password: String) async throws -> User {
@@ -153,6 +164,16 @@ class AuthRepositoryImpl: AuthRepository {
     func getRefreshToken() throws -> String? {
         return try preferences.getRefreshToken()
     }
+
+    // MARK: - Vendors
+    func getVendorList() async throws -> VendorList {
+        let response = try await api.getVendors()
+        if !response.success {
+            throw NetworkError.serverError(response.status, message: response.message)
+        }
+        let items = (response.data ?? []).map { $0.toModel() }
+        return VendorList(items: items)
+    }
 }
 
 // MARK: - Retry Helper (Exponential Backoff)
@@ -165,7 +186,7 @@ private func retry<T>(
 ) async throws -> T {
     precondition(times >= 1)
     var currentDelayMs = initialDelayMs
-    for attempt in 1..<(times) {
+    for _ in 1..<(times) {
         do {
             return try await block()
         } catch {
