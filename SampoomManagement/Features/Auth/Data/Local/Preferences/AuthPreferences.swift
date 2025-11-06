@@ -35,7 +35,7 @@ class AuthPreferences {
             try keychain.save(user.email, for: Keys.userEmail)
             try keychain.save(user.role.rawValue, for: Keys.userRole)
             try keychain.save(String(user.expiresIn), for: Keys.expiresIn)
-            try keychain.save(user.position, for: Keys.position)
+            try keychain.save(user.position.rawValue, for: Keys.position)
             try keychain.save(user.workspace, for: Keys.workspace)
             try keychain.save(user.branch, for: Keys.branch)
             try keychain.save(String(user.agencyId), for: Keys.agencyId)
@@ -86,7 +86,7 @@ class AuthPreferences {
                 return nil
             }
             // Tolerate missing profile keys by defaulting to safe values
-            let position = (try? keychain.get(Keys.position)) ?? ""
+            let positionRaw = (try? keychain.get(Keys.position)) ?? ""
             let workspace = (try? keychain.get(Keys.workspace)) ?? ""
             let branch = (try? keychain.get(Keys.branch)) ?? ""
             let userEmail = (try? keychain.get(Keys.userEmail)) ?? ""
@@ -102,7 +102,7 @@ class AuthPreferences {
                 accessToken: accessToken,
                 refreshToken: refreshToken,
                 expiresIn: expiresIn,
-                position: position,
+                position: UserPosition(rawValue: positionRaw) ?? .staff,
                 workspace: workspace,
                 branch: branch,
                 agencyId: agencyId,

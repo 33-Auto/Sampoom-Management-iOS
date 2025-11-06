@@ -53,16 +53,16 @@ class AuthRepositoryImpl: AuthRepository {
             throw AuthError.tokenSaveFailed(error)
         }
 
-        // 2) 프로필 조회 (실패 시 롤백)
+        // 2) 프로필 조회 (서버 반영 지연 고려하여 재시도, 최종 실패 시 롤백)
         let profileUser: User
         do {
-            let profileResponse = try await api.getProfile()
-            guard let profileDto = profileResponse.data else {
-                // rollback tokens on invalid profile response
-                preferences.clear()
-                throw AuthError.invalidResponse
+            profileUser = try await retry(times: 5, initialDelayMs: 300, maxDelayMs: 1500, factor: 1.8) {
+                let profileResponse = try await self.api.getProfile()
+                guard let profileDto = profileResponse.data else {
+                    throw AuthError.invalidResponse
+                }
+                return profileDto.toModel()
             }
-            profileUser = profileDto.toModel()
         } catch {
             // rollback tokens on any profile failure
             preferences.clear()
@@ -153,4 +153,28 @@ class AuthRepositoryImpl: AuthRepository {
     func getRefreshToken() throws -> String? {
         return try preferences.getRefreshToken()
     }
+}
+
+// MARK: - Retry Helper (Exponential Backoff)
+private func retry<T>(
+    times: Int = 5,
+    initialDelayMs: UInt64 = 300,
+    maxDelayMs: UInt64 = 1500,
+    factor: Double = 1.8,
+    _ block: @escaping () async throws -> T
+) async throws -> T {
+    precondition(times >= 1)
+    var currentDelayMs = initialDelayMs
+    for attempt in 1..<(times) {
+        do {
+            return try await block()
+        } catch {
+            // Optional: filter retryable errors only
+            let ns = currentDelayMs * 1_000_000 // ms -> ns
+            try? await Task.sleep(nanoseconds: ns)
+            let next = UInt64(Double(currentDelayMs) * factor)
+            currentDelayMs = min(next, maxDelayMs)
+        }
+    }
+    return try await block()
 }
