@@ -66,3 +66,19 @@ extension User {
         )
     }
 }
+
+// MARK: - Vendors
+
+extension GetVendorsResponseDTO {
+    func toModel() -> Vendor {
+        return Vendor(
+            id: id,
+            vendorCode: vendorCode,
+            name: name,
+            businessNumber: businessNumber,
+            ceoName: ceoName,
+            address: address,
+            status: status
+        )
+    }
+}

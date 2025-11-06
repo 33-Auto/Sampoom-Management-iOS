@@ -165,7 +165,8 @@ class CartListViewModel: ObservableObject {
                                     partId: part.partId,
                                     code: part.code,
                                     name: part.name,
-                                    quantity: quantity
+                                    quantity: quantity,
+                                    standardCost: part.standardCost
                                 )
                             } else {
                                 part

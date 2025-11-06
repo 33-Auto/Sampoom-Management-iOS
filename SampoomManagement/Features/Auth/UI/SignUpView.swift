@@ -17,6 +17,7 @@ struct SignUpView: View {
     @State private var email = ""
     @State private var password = ""
     @State private var passwordCheck = ""
+    @State private var showVendorSheet = false
     @FocusState private var focusedField: Field?
     
     let onSuccess: () -> Void
@@ -64,15 +65,50 @@ struct SignUpView: View {
                     .font(.gmarketBody)
                     .foregroundColor(Color("Text"))
                     .padding(.bottom, 4)
-                CommonTextField(
-                    value: $branch,
-                    placeholder: StringResources.Auth.branchPlaceholder,
-                    isError: viewModel.uiState.branchError != nil,
-                    errorMessage: viewModel.uiState.branchError,
-                    onTextChange: { text in viewModel.updateBranch(text) },
-                    submitLabel: .next,
-                    onSubmit: { focusedField = .position }
-                )
+                Button(action: { showVendorSheet = true }) {
+                    HStack {
+                        Text(viewModel.uiState.selectedVendor?.name ?? StringResources.Auth.branchPlaceholder)
+                            .font(.gmarketBody)
+                            .foregroundColor(viewModel.uiState.selectedVendor == nil ? Color.gray : Color("Text"))
+                        Spacer()
+                        Image(systemName: "chevron.down")
+                            .foregroundColor(Color.gray)
+                    }
+                    .padding(EdgeInsets(top: 12, leading: 16, bottom: 12, trailing: 16))
+                    .padding(4)
+                    .background(
+                        RoundedRectangle(cornerRadius: 16)
+                            .stroke(viewModel.uiState.branchError != nil ? Color.red : Color.gray.opacity(0.4), lineWidth: 1)
+                    )
+                }
+                .sheet(isPresented: $showVendorSheet) {
+                    NavigationStack {
+                        List(viewModel.uiState.vendors, id: \.id) { vendor in
+                            Button(action: {
+                                viewModel.selectVendor(vendor)
+                                showVendorSheet = false
+                            }) {
+                                VStack(alignment: .leading, spacing: 2) {
+                                    Text(vendor.name)
+                                        .foregroundColor(Color("Text"))
+                                    Text(vendor.vendorCode)
+                                        .font(.gmarketCaption)
+                                        .foregroundColor(Color("TextSecondary"))
+                                }
+                            }
+                        }
+                        .navigationTitle(StringResources.Auth.branchLabel)
+                        .toolbar {
+                            ToolbarItem(placement: .topBarTrailing) {
+                                Button(StringResources.Common.close) { showVendorSheet = false }
+                            }
+                        }
+                    }
+                }
+                .onChange(of: viewModel.uiState.selectedVendor) { _, newValue in
+                    branch = newValue?.name ?? ""
+                    if let b = newValue?.name { viewModel.updateBranch(b) }
+                }
                 .focused($focusedField, equals: .branch)
                 
                 Spacer()

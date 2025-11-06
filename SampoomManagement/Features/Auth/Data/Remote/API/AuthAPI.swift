@@ -77,6 +77,15 @@ class AuthAPI {
             responseType: EmptyResponse.self
         )
     }
+
+    // 벤더 목록 조회
+    func getVendors() async throws -> APIResponse<[GetVendorsResponseDTO]> {
+        return try await networkManager.request(
+            endpoint: "site/vendors",
+            method: .get,
+            responseType: [GetVendorsResponseDTO].self
+        )
+    }
     
     // 토큰 재발급
     func refresh(refreshToken: String) async throws -> APIResponse<RefreshResponseDTO> {

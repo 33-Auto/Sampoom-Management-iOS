@@ -81,6 +81,20 @@ struct OrderInfoCard: View {
                 StatusChip(status: order.status)
             }
             .padding(16)
+
+            Divider()
+                .padding(.horizontal, 16)
+
+            HStack {
+                Text(StringResources.Order.detailTotalAmount)
+                    .font(.gmarketBody)
+                    .foregroundColor(Color("TextSecondary"))
+                Spacer()
+                Text(formatWon(order.totalCost))
+                    .font(.gmarketBody)
+                    .foregroundColor(Color("Text"))
+            }
+            .padding(16)
         }
         .background(Color("Background_Card"))
         .cornerRadius(12)
@@ -129,24 +143,42 @@ struct OrderPartItem: View {
     let part: OrderPart
     
     var body: some View {
-        HStack {
-            VStack(alignment: .leading, spacing: 4) {
-                Text(part.name)
+        VStack(spacing: 0) {
+            HStack {
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(part.name)
+                        .font(.gmarketTitle3)
+                        .foregroundColor(Color("Text"))
+                    
+                    Text(part.code)
+                        .font(.gmarketCaption)
+                        .foregroundColor(Color("TextSecondary"))
+                }
+                
+                Spacer()
+                
+                VStack(alignment: .trailing, spacing: 4) {
+                    Text(formatWon(part.standardCost))
+                        .font(.gmarketBody)
+                        .foregroundColor(Color("Text"))
+                    Text("x \(part.quantity)")
+                        .font(.gmarketBody)
+                        .foregroundColor(Color("Text"))
+                }
+            }
+            .padding(16)
+            
+            Divider()
+                .padding(.horizontal, 16)
+            
+            HStack {
+                Spacer()
+                Text(formatWon(part.subtotal))
                     .font(.gmarketTitle3)
                     .foregroundColor(Color("Text"))
-                
-                Text(part.code)
-                    .font(.gmarketCaption)
-                    .foregroundColor(Color("TextSecondary"))
             }
-            
-            Spacer()
-            
-            Text("\(part.quantity)")
-                .font(.gmarketTitle3)
-                .foregroundColor(Color("Text"))
+            .padding(16)
         }
-        .padding(16)
         .background(Color("Background_Card"))
         .cornerRadius(12)
     }

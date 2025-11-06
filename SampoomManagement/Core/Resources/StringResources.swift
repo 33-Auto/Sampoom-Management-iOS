@@ -102,7 +102,7 @@ struct StringResources {
     
     // MARK: - Outbound
     struct Outbound {
-        static let title = "출고"
+        static let title = "출고목록"
         static let emptyAll = "비우기"
         static let processOrder = "부품 출고처리"
         static let orderSuccess = "출고 주문 성공"
@@ -120,7 +120,7 @@ struct StringResources {
         static let title = "장바구니"
         static let emptyAll = "비우기"
         static let processOrder = "부품 주문"
-        static let orderSuccess = "주문 성공!"
+        static let orderSuccess = "주문이 완료되었습니다"
         static let updateQuantityError = "수량 업데이트 에러"
         static let deleteError = "삭제 에러"
         static let confirmProcessTitle = "주문 확인"
@@ -172,6 +172,7 @@ struct StringResources {
         static let detailOrderReceive = "입고처리"
         static let detailDialogOrderReceive = "입고 처리하시겠습니까?"
         static let detailToastOrderReceive = "입고 처리되었습니다"
+        static let detailTotalAmount = "총 가격"
         
         // Order Status
         static let statusPending = "대기중"

@@ -58,5 +58,15 @@ struct CartListUiState {
             processedOrder: processedOrder ?? self.processedOrder
         )
     }
+    
+    var totalCost: Int {
+        cartList.reduce(0) { acc, category in
+            acc + category.groups.reduce(0) { acc2, group in
+                acc2 + group.parts.reduce(0) { acc3, part in
+                    acc3 + part.subtotal
+                }
+            }
+        }
+    }
 }
 

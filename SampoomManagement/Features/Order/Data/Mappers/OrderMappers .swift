@@ -27,6 +27,6 @@ extension OrderGroupDto {
 
 extension OrderPartDto {
     func toModel() -> OrderPart {
-        return OrderPart(partId: partId, code: code, name: name, quantity: quantity)
+        return OrderPart(partId: partId, code: code, name: name, quantity: quantity, standardCost: standardCost)
     }
 }

@@ -34,4 +34,5 @@ struct OrderPartDto: Codable {
     let code: String
     let name: String
     let quantity: Int
+    let standardCost: Int
 }

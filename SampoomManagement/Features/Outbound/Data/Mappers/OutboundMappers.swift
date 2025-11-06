@@ -34,7 +34,8 @@ extension OutboundPartDto {
             partId: partId,
             code: code,
             name: name,
-            quantity: quantity
+            quantity: quantity,
+            standardCost: standardCost
         )
     }
 }

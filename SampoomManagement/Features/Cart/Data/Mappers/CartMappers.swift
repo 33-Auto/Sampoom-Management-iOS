@@ -21,7 +21,14 @@ extension CartGroupDto {
 
 extension CartPartDto {
     func toModel() -> CartPart {
-        return CartPart(cartItemId: cartItemId, partId: partId, code: code, name: name, quantity: quantity)
+        return CartPart(
+            cartItemId: cartItemId,
+            partId: partId,
+            code: code,
+            name: name,
+            quantity: quantity,
+            standardCost: standardCost
+        )
     }
 }
 

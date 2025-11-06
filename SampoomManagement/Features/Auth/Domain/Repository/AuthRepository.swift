@@ -26,4 +26,7 @@ protocol AuthRepository {
     // 토큰 조회 (API 요청 시 사용)
     func getAccessToken() throws -> String?
     func getRefreshToken() throws -> String?
+
+    // 벤더 목록 조회
+    func getVendorList() async throws -> VendorList
 }

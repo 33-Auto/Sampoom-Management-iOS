@@ -34,12 +34,9 @@ struct OrderListView: View {
                 ScrollView {
                     LazyVStack(spacing: 8) {
                         ForEach(viewModel.uiState.orderList, id: \.orderId) { order in
-                            OrderItemCard(
-                                order: order,
-                                onClick: {
-                                    onNavigateOrderDetail(order.orderId)
-                                }
-                            )
+                            OrderItem(order: order) {
+                                onNavigateOrderDetail(order.orderId)
+                            }
                         }
                         
                         if viewModel.uiState.hasMore {
@@ -105,6 +102,9 @@ struct OrderItemCard: View {
                         .foregroundColor(Color("TextSecondary"))
                     
                     StatusChip(status: order.status)
+                    Text(formatWon(order.totalCost))
+                        .font(.gmarketBody)
+                        .foregroundColor(Color("Text"))
                 }
             }
             .padding(16)

@@ -23,6 +23,7 @@ class AppDependencies {
     let checkLoginStateUseCase: CheckLoginStateUseCase
     let signOutUseCase: SignOutUseCase
     let clearTokensUseCase: ClearTokensUseCase
+    let getVendorUseCase: GetVendorUseCase
     let authViewModel: AuthViewModel
     
     // MARK: - Network Auth
@@ -94,6 +95,7 @@ class AppDependencies {
         checkLoginStateUseCase = CheckLoginStateUseCase(repository: authRepository)
         signOutUseCase = SignOutUseCase(repository: authRepository)
         clearTokensUseCase = ClearTokensUseCase(repository: authRepository)
+        getVendorUseCase = GetVendorUseCase(repository: authRepository)
         
         // Auth ViewModel
         authViewModel = AuthViewModel(
@@ -147,7 +149,7 @@ class AppDependencies {
     }
     
     func makeSignUpViewModel() -> SignUpViewModel {
-        return SignUpViewModel(signUpUseCase: signUpUseCase)
+        return SignUpViewModel(signUpUseCase: signUpUseCase, getVendorUseCase: getVendorUseCase)
     }
     
     func makePartViewModel() -> PartViewModel {

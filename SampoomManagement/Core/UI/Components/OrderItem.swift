@@ -25,10 +25,13 @@ struct OrderItem: View {
                 }
                 Spacer(minLength: 12)
                 VStack(alignment: .trailing, spacing: 6) {
-                    Text(order.createdAt ?? "-")
+                    Text(order.createdAt.map { DateFormatterUtil.formatDate($0) } ?? "-")
                         .font(.gmarketCaption)
                         .foregroundColor(.textSecondary)
                     StatusChip(status: order.status)
+                    Text(formatWon(order.totalCost))
+                        .font(.gmarketBody)
+                        .foregroundColor(.text)
                 }
             }
             .padding(16)

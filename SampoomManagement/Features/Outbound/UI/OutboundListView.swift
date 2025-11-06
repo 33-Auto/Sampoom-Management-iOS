@@ -137,7 +137,7 @@ struct OutboundListView: View {
                 // 출고 주문 버튼
                 VStack {
                     Spacer()
-                    CommonButton(StringResources.Outbound.processOrder, backgroundColor: .red, textColor: .white) {
+                    CommonButton("\(formatWon(viewModel.uiState.totalCost)) \(StringResources.Outbound.processOrder)", backgroundColor: .red, textColor: .white) {
                         showConfirmDialog = true
                     }
                     .padding(.horizontal, 16)
@@ -238,6 +238,16 @@ struct OutboundPartItem: View {
                 }
             }
             .padding(16)
+            
+            // 소계 표시
+            HStack {
+                Spacer()
+                Text(formatWon(part.subtotal))
+                    .font(.gmarketTitle3)
+                    .foregroundColor(.text)
+            }
+            .padding(.horizontal, 16)
+            .padding(.bottom, 16)
         }
         .background(
             RoundedRectangle(cornerRadius: 16)

@@ -106,10 +106,17 @@ class OrderDetailViewModel: ObservableObject {
             uiState = uiState.copy(isProcessing: true)
             
             do {
-                // 1단계: 주문 입고 처리
-                try await receiveOrderUseCase.execute(orderId: orderId)
-                // 2단계: 주문 완료 처리
+                // 1단계: 주문 완료 처리
                 try await completeOrderUseCase.execute(orderId: orderId)
+                
+                // 2단계: 재고 입고 처리 (파트별 수량 목록 생성)
+                guard let order = uiState.orderDetail else { throw NetworkError.noData }
+                let items: [(Int, Int)] = order.items.flatMap { category in
+                    category.groups.flatMap { group in
+                        group.parts.map { part in (part.partId, part.quantity) }
+                    }
+                }
+                try await receiveOrderUseCase.execute(items: items)
                 
                 globalMessageHandler.showMessage(StringResources.Order.detailToastOrderReceive, isError: false)
                 uiState = uiState.copy(

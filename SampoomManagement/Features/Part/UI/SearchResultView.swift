@@ -144,9 +144,14 @@ struct SearchResultItemCard: View {
                 
                 Spacer()
                 
-                Text("\(searchResult.part.quantity)")
-                    .font(.gmarketBody)
-                    .foregroundColor(.text)
+                VStack(alignment: .trailing, spacing: 4) {
+                    Text(formatWon(searchResult.part.standardCost))
+                        .font(.gmarketBody)
+                        .foregroundColor(.text)
+                    Text("x \(searchResult.part.quantity)")
+                        .font(.gmarketCaption)
+                        .foregroundColor(.textSecondary)
+                }
                 
                 Image(systemName: "chevron.right")
                     .font(.caption)

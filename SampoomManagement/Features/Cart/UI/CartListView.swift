@@ -106,7 +106,7 @@ struct CartListView: View {
     private var orderButton: some View {
         VStack {
             Spacer()
-            CommonButton(StringResources.Cart.processOrder, backgroundColor: .accent, textColor: .white) {
+            CommonButton("\(formatWon(viewModel.uiState.totalCost)) \(StringResources.Cart.processOrder)", backgroundColor: .accent, textColor: .white) {
                 showConfirmDialog = true
             }
             .padding(.horizontal, 16)
@@ -293,6 +293,16 @@ struct CartPartItem: View {
                 }
             }
             .padding(16)
+            
+            // 단가 및 소계 표시
+            HStack {
+                Spacer()
+                Text(formatWon(part.subtotal))
+                    .font(.gmarketTitle3)
+                    .foregroundColor(.text)
+            }
+            .padding(.horizontal, 16)
+            .padding(.bottom, 16)
         }
         .background(Color.backgroundCard)
         .cornerRadius(12)

@@ -33,4 +33,5 @@ struct OrderPart: Equatable {
     let code: String
     let name: String
     let quantity: Int
+    let standardCost: Int
 }

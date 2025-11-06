@@ -63,4 +63,14 @@ struct OutboundListUiState {
             isOrderSuccess: isOrderSuccess ?? self.isOrderSuccess
         )
     }
+
+    var totalCost: Int {
+        outboundList.reduce(0) { acc, category in
+            acc + category.groups.reduce(0) { acc2, group in
+                acc2 + group.parts.reduce(0) { acc3, part in
+                    acc3 + part.subtotal
+                }
+            }
+        }
+    }
 }
