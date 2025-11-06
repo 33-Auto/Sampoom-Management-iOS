@@ -67,6 +67,12 @@ class AppDependencies {
     let receiveOrderUseCase: ReceiveOrderUseCase
     let cancelOrderUseCase: CancelOrderUseCase
     
+    // MARK: - Dashboard
+    let dashboardAPI: DashboardAPI
+    let dashboardRepository: DashboardRepository
+    let getDashboardUseCase: GetDashboardUseCase
+    let getWeeklySummaryUseCase: GetWeeklySummaryUseCase
+    
     init() {
         // Global Message Handler
         globalMessageHandler = GlobalMessageHandler.shared
@@ -140,6 +146,12 @@ class AppDependencies {
         completeOrderUseCase = CompleteOrderUseCase(repository: orderRepository)
         receiveOrderUseCase = ReceiveOrderUseCase(repository: orderRepository)
         cancelOrderUseCase = CancelOrderUseCase(repository: orderRepository)
+        
+        // Dashboard
+        dashboardAPI = DashboardAPI(networkManager: networkManager)
+        dashboardRepository = DashboardRepositoryImpl(api: dashboardAPI, authPreferences: authPreferences)
+        getDashboardUseCase = GetDashboardUseCase(repository: dashboardRepository)
+        getWeeklySummaryUseCase = GetWeeklySummaryUseCase(repository: dashboardRepository)
     }
     
     // MARK: - ViewModel Factories
@@ -222,6 +234,15 @@ class AppDependencies {
             authPreferences: authPreferences,
             signOutUseCase: signOutUseCase,
             globalMessageHandler: globalMessageHandler
+        )
+    }
+    
+    func makeDashboardViewModel() -> DashboardViewModel {
+        return DashboardViewModel(
+            getOrderUseCase: getOrderUseCase,
+            getDashboardUseCase: getDashboardUseCase,
+            getWeeklySummaryUseCase: getWeeklySummaryUseCase,
+            messageHandler: globalMessageHandler
         )
     }
 }

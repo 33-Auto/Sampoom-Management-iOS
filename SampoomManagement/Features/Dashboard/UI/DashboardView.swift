@@ -45,6 +45,7 @@ struct DashboardView: View {
                     titleSection
                     buttonSection
                     orderListSection
+                    weeklySummarySection
                     Spacer(minLength: 100)
                 }
                 .padding(.horizontal, 16)
@@ -79,17 +80,18 @@ struct DashboardView: View {
     }
     
     private var buttonSection: some View {
-        VStack(spacing: 16) {
+        let dash = viewModel.uiState.dashboard
+        return VStack(spacing: 16) {
             if userRole.isAdmin {
                 buttonCard(iconName: "employee", valueText: "45", subText: StringResources.Dashboard.employee, bordered: true) {}
             }
             HStack(spacing: 16) {
-                buttonCard(iconName: "parts", valueText: "1234", subText: StringResources.Dashboard.partsOnHand) {}
-                buttonCard(iconName: "orders", valueText: "23", subText: StringResources.Dashboard.partsInProgress) {}
+                buttonCard(iconName: "car", valueText: String(dash?.totalParts ?? 0), subText: StringResources.Dashboard.partsOnHand) {}
+                buttonCard(iconName: "block", valueText: String(dash?.outOfStockParts ?? 0), subText: StringResources.Dashboard.shortageOfParts) {}
             }
             HStack(spacing: 16) {
-                buttonCard(iconName: "warning", valueText: "19", subText: StringResources.Dashboard.shortageOfParts) {}
-                buttonCard(iconName: "money", valueText: "4,123,200", subText: StringResources.Dashboard.orderAmount) {}
+                buttonCard(iconName: "warning", valueText: String(dash?.lowStockParts ?? 0), subText: StringResources.Dashboard.shortageOfParts) {}
+                buttonCard(iconName: "parts", valueText: String(dash?.totalQuantity ?? 0), subText: StringResources.Dashboard.partsOnHand) {}
             }
         }
         .padding(.bottom, 16)
@@ -127,6 +129,7 @@ struct DashboardView: View {
             HStack {
                 Text(StringResources.Dashboard.recentOrdersTitle)
                     .font(.gmarketTitle2)
+                    .fontWeight(.bold)
                     .foregroundColor(.text)
                 Spacer()
                 Button(action: { onNavigateOrderList() }) {
@@ -155,6 +158,44 @@ struct DashboardView: View {
                 }
             }
         }
+    }
+    
+    private var weeklySummarySection: some View {
+        let weekly = viewModel.uiState.weeklySummary
+        return VStack(alignment: .leading, spacing: 16) {
+            Text(StringResources.Dashboard.weeklySummaryTitle)
+                .font(.gmarketTitle2)
+                .fontWeight(.bold)
+                .foregroundColor(.text)
+            
+            HStack(spacing: 0) {
+                VStack(spacing: 8) {
+                    Text(String(weekly?.inStockParts ?? 0))
+                        .font(.gmarketTitle2)
+                        .fontWeight(.bold)
+                        .foregroundColor(.green)
+                    Text(StringResources.Dashboard.weeklySummaryInStock)
+                        .font(.gmarketBody)
+                        .foregroundColor(.textSecondary)
+                }
+                .frame(maxWidth: .infinity)
+                
+                VStack(spacing: 8) {
+                    Text(String(weekly?.outStockParts ?? 0))
+                        .font(.gmarketTitle2)
+                        .fontWeight(.bold)
+                        .foregroundColor(.red)
+                    Text(StringResources.Dashboard.weeklySummaryOutStock)
+                        .font(.gmarketBody)
+                        .foregroundColor(.textSecondary)
+                }
+                .frame(maxWidth: .infinity)
+            }
+        }
+        .frame(maxWidth: .infinity)
+        .padding(16)
+        .background(Color.backgroundCard)
+        .clipShape(RoundedRectangle(cornerRadius: 16))
     }
 }
 

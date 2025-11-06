@@ -14,17 +14,34 @@ class DashboardViewModel: ObservableObject {
     @Published var uiState = DashboardUiState()
     
     private let getOrderUseCase: GetOrderUseCase
+    private let getDashboardUseCase: GetDashboardUseCase
+    private let getWeeklySummaryUseCase: GetWeeklySummaryUseCase
+    private let messageHandler: GlobalMessageHandler
     
-    init(getOrderUseCase: GetOrderUseCase) {
+    init(
+        getOrderUseCase: GetOrderUseCase,
+        getDashboardUseCase: GetDashboardUseCase,
+        getWeeklySummaryUseCase: GetWeeklySummaryUseCase,
+        messageHandler: GlobalMessageHandler
+    ) {
         self.getOrderUseCase = getOrderUseCase
-        loadOrderList()
+        self.getDashboardUseCase = getDashboardUseCase
+        self.getWeeklySummaryUseCase = getWeeklySummaryUseCase
+        self.messageHandler = messageHandler
+        loadAll()
     }
     
     func onEvent(_ event: DashboardUiEvent) {
         switch event {
         case .loadDashboard, .retryDashboard:
-            loadOrderList()
+            loadAll()
         }
+    }
+    
+    private func loadAll() {
+        loadOrderList()
+        Task { await loadDashboard() }
+        Task { await loadWeeklySummary() }
     }
     
     private func loadOrderList() {
@@ -33,16 +50,33 @@ class DashboardViewModel: ObservableObject {
             do {
                 let orderList = try await getOrderUseCase.execute()
                 uiState = uiState.copy(
-                    orderList: Array(orderList.items.prefix(5)),
-                    dashboardLoading: false,
-                    dashboardError: nil
+                    orderList: Array(orderList.items.prefix(5))
                 )
             } catch {
                 uiState = uiState.copy(
-                    dashboardLoading: false,
                     dashboardError: error.localizedDescription
                 )
             }
+        }
+    }
+    
+    private func loadDashboard() async {
+        do {
+            let dashboard = try await getDashboardUseCase.execute()
+            uiState = uiState.copy(dashboard: dashboard, dashboardLoading: false, dashboardError: nil)
+        } catch {
+            messageHandler.showMessage(error.localizedDescription, isError: true)
+            uiState = uiState.copy(dashboardLoading: false, dashboardError: error.localizedDescription)
+        }
+    }
+    
+    private func loadWeeklySummary() async {
+        do {
+            let weekly = try await getWeeklySummaryUseCase.execute()
+            uiState = uiState.copy(weeklySummary: weekly, dashboardLoading: false, dashboardError: nil)
+        } catch {
+            messageHandler.showMessage(error.localizedDescription, isError: true)
+            uiState = uiState.copy(dashboardLoading: false, dashboardError: error.localizedDescription)
         }
     }
 }

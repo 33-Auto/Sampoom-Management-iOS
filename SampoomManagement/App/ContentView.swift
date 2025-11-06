@@ -29,7 +29,7 @@ struct ContentView: View {
     init(dependencies: AppDependencies) {
         self.dependencies = dependencies
         _partViewModel = StateObject(wrappedValue: dependencies.makePartViewModel())
-        _dashboardViewModel = StateObject(wrappedValue: DashboardViewModel(getOrderUseCase: dependencies.getOrderUseCase))
+        _dashboardViewModel = StateObject(wrappedValue: dependencies.makeDashboardViewModel())
     }
     
     // MARK: - Body

@@ -25,6 +25,9 @@ struct StringResources {
         static let shortageOfParts = "부족 부품"
         static let orderAmount = "주문 금액"
         static let recentOrdersTitle = "최근 주문"
+        static let weeklySummaryTitle = "이번 주 요약"
+        static let weeklySummaryInStock = "입고 부품"
+        static let weeklySummaryOutStock = "출고 부품"
     }
 
     // MARK: - Tabs
