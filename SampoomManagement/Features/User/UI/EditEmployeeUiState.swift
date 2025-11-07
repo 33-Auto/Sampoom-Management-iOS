@@ -26,9 +26,9 @@ struct EditEmployeeUiState {
     }
     
     func copy(
-        employee: Employee? = nil,
+        employee: Employee?? = nil,
         isLoading: Bool? = nil,
-        error: String? = nil,
+        error: String?? = nil,
         isSuccess: Bool? = nil
     ) -> EditEmployeeUiState {
         return EditEmployeeUiState(

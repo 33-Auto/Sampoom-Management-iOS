@@ -33,7 +33,6 @@ class DashboardViewModel: ObservableObject {
         self.getStoredUserUseCase = getStoredUserUseCase
         self.messageHandler = messageHandler
         loadAll()
-        loadUser()
     }
     
     func refreshUser() {
