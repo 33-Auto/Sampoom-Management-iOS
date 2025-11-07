@@ -42,6 +42,7 @@ struct CommonButton: View {
     let type: ButtonType
     let size: ButtonSize
     let icon: String?
+    let customIcon: String?
     let iconPosition: IconPosition
     let isEnabled: Bool
     let backgroundColor: Color?
@@ -54,6 +55,7 @@ struct CommonButton: View {
         type: ButtonType = .filled,
         size: ButtonSize = .medium,
         icon: String? = nil,
+        customIcon: String? = nil,
         iconPosition: IconPosition = .leading,
         isEnabled: Bool = true,
         backgroundColor: Color? = nil,
@@ -65,6 +67,7 @@ struct CommonButton: View {
         self.type = type
         self.size = size
         self.icon = icon
+        self.customIcon = customIcon
         self.iconPosition = iconPosition
         self.isEnabled = isEnabled
         self.backgroundColor = backgroundColor
@@ -76,38 +79,50 @@ struct CommonButton: View {
     var body: some View {
         Button(action: action) {
             HStack(spacing: 8) {
-                if let icon = icon, iconPosition == .leading {
+                if let customIcon = customIcon, iconPosition == .leading {
+                    Image(customIcon)
+                        .renderingMode(.template)
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: size.height * 0.5, height: size.height * 0.5)
+                } else if let icon = icon, iconPosition == .leading {
                     Image(systemName: icon)
                         .font(size.font)
                 }
                 
                 Text(title)
-                    .font(size.font)
+                    .font(.gmarketBody)
                 
-                if let icon = icon, iconPosition == .trailing {
+                if let customIcon = customIcon, iconPosition == .trailing {
+                    Image(customIcon)
+                        .renderingMode(.template)
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: size.height * 0.5, height: size.height * 0.5)
+                } else if let icon = icon, iconPosition == .trailing {
                     Image(systemName: icon)
                         .font(size.font)
                 }
             }
             .frame(height: size.height)
             .frame(maxWidth: .infinity)
+            .padding(4)
             .foregroundColor(buttonTextColor)
             .background(buttonBackgroundColor)
             .overlay(
-                RoundedRectangle(cornerRadius: 8)
+                RoundedRectangle(cornerRadius: 16)
                     .stroke(buttonBorderColor, lineWidth: borderWidth)
             )
-            .cornerRadius(8)
+            .cornerRadius(16)
         }
         .disabled(!isEnabled)
-        .opacity(isEnabled ? 1.0 : 0.6)
         .animation(.easeInOut(duration: 0.2), value: isEnabled)
     }
     
     // MARK: - Button Styling
     private var buttonBackgroundColor: Color {
         if !isEnabled {
-            return .gray
+            return .disable
         }
         
         if let customColor = backgroundColor {
@@ -116,7 +131,7 @@ struct CommonButton: View {
         
         switch type {
         case .filled:
-            return Color(red: 0.5, green: 0.2, blue: 0.8) // 기본 보라색
+            return Color(.accent) // 기본 보라색
         case .outlined:
             return .clear
         }
@@ -124,7 +139,7 @@ struct CommonButton: View {
     
     private var buttonTextColor: Color {
         if !isEnabled {
-            return .white
+            return .textSecondary
         }
         
         if let customColor = textColor {
@@ -172,57 +187,3 @@ enum IconPosition {
     case trailing
 }
 
-// MARK: - Preview
-#Preview {
-    VStack(spacing: 16) {
-        // Filled Button (기본 보라색)
-        CommonButton("Button", type: .filled) {
-            print("Filled button tapped")
-        }
-        
-        // Filled Button with Custom Color
-        CommonButton("Button", type: .filled, backgroundColor: .blue, textColor: .white) {
-            print("Custom filled button tapped")
-        }
-        
-        // Filled Button with Icon
-        CommonButton("Button", type: .filled, icon: "phone.fill", backgroundColor: .green, textColor: .white) {
-            print("Filled button with icon tapped")
-        }
-        
-        // Outlined Button (기본 파란색)
-        CommonButton("Button", type: .outlined) {
-            print("Outlined button tapped")
-        }
-        
-        // Outlined Button with Custom Color
-        CommonButton("Button", type: .outlined, textColor: .red, borderColor: .red) {
-            print("Custom outlined button tapped")
-        }
-        
-        // Outlined Button (Gray)
-        CommonButton("Button", type: .outlined, textColor: .gray, borderColor: .gray) {
-            print("Gray outlined button tapped")
-        }
-        
-        // Disabled Button
-        CommonButton("Button", isEnabled: false) {
-            print("Disabled button tapped")
-        }
-        
-        // Size Examples
-        HStack(spacing: 16) {
-            CommonButton("Small", size: .small, backgroundColor: .orange) { }
-            CommonButton("Medium", size: .medium, backgroundColor: .purple) { }
-            CommonButton("Large", size: .large, backgroundColor: .pink) { }
-        }
-        
-        // Icon Position Examples
-        HStack(spacing: 16) {
-            CommonButton("Leading", icon: "star.fill", iconPosition: .leading, backgroundColor: .yellow, textColor: .black) { }
-            CommonButton("Trailing", type: .outlined, icon: "arrow.right", iconPosition: .trailing, textColor: .cyan, borderColor: .cyan) { }
-        }
-    }
-    .padding()
-    .background(Color.black)
-}

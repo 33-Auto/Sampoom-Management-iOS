@@ -1,0 +1,260 @@
+//
+//  SignUpView.swift
+//  SampoomManagement
+//
+//  Created by 채상윤 on 10/14/25.
+//
+
+import SwiftUI
+import Toast
+
+struct SignUpView: View {
+    @ObservedObject var viewModel: SignUpViewModel
+    @StateObject private var keyboardObserver = KeyboardObserver()
+    @State private var name = ""
+    @State private var branch = ""
+    @State private var selectedPosition: UserPosition? = nil
+    @State private var email = ""
+    @State private var password = ""
+    @State private var passwordCheck = ""
+    @State private var showVendorSheet = false
+    @FocusState private var focusedField: Field?
+    
+    let onSuccess: () -> Void
+    
+    private let labelTextSize: CGFloat = 16
+    
+    private enum Field: Hashable {
+        case name, branch, position, email, password, passwordCheck
+    }
+    
+    var body: some View {
+        ScrollView {
+            VStack(alignment: .leading, spacing: 0) {
+                // 로고
+                Image("oneline_logo")
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 120)
+                    .frame(alignment: .leading)
+                
+                Spacer()
+                    .frame(height: 48)
+                
+                // 이름
+                Text(StringResources.Auth.nameLabel)
+                    .font(.gmarketBody)
+                    .foregroundColor(Color("Text"))
+                    .padding(.bottom, 4)
+                CommonTextField(
+                    value: $name,
+                    placeholder: StringResources.Auth.namePlaceholder,
+                    isError: viewModel.uiState.nameError != nil,
+                    errorMessage: viewModel.uiState.nameError,
+                    onTextChange: { text in viewModel.updateName(text) },
+                    submitLabel: .next,
+                    onSubmit: { focusedField = .branch }
+                )
+                .focused($focusedField, equals: .name)
+                
+                Spacer()
+                    .frame(height: 8)
+                
+                // 지점
+                Text(StringResources.Auth.branchLabel)
+                    .font(.gmarketBody)
+                    .foregroundColor(Color("Text"))
+                    .padding(.bottom, 4)
+                Button(action: { showVendorSheet = true }) {
+                    HStack {
+                        Text(viewModel.uiState.selectedVendor?.name ?? StringResources.Auth.branchPlaceholder)
+                            .font(.gmarketBody)
+                            .foregroundColor(viewModel.uiState.selectedVendor == nil ? Color.gray : Color("Text"))
+                        Spacer()
+                        Image(systemName: "chevron.down")
+                            .foregroundColor(Color.gray)
+                    }
+                    .padding(EdgeInsets(top: 12, leading: 16, bottom: 12, trailing: 16))
+                    .padding(4)
+                    .background(
+                        RoundedRectangle(cornerRadius: 16)
+                            .stroke(viewModel.uiState.branchError != nil ? Color.red : Color.gray.opacity(0.4), lineWidth: 1)
+                    )
+                }
+                .sheet(isPresented: $showVendorSheet) {
+                    NavigationStack {
+                        List(viewModel.uiState.vendors, id: \.id) { vendor in
+                            Button(action: {
+                                viewModel.selectVendor(vendor)
+                                showVendorSheet = false
+                            }) {
+                                VStack(alignment: .leading, spacing: 2) {
+                                    Text(vendor.name)
+                                        .foregroundColor(Color("Text"))
+                                    Text(vendor.vendorCode)
+                                        .font(.gmarketCaption)
+                                        .foregroundColor(Color("TextSecondary"))
+                                }
+                            }
+                        }
+                        .navigationTitle(StringResources.Auth.branchLabel)
+                        .toolbar {
+                            ToolbarItem(placement: .topBarTrailing) {
+                                Button(StringResources.Common.close) { showVendorSheet = false }
+                            }
+                        }
+                    }
+                }
+                .onChange(of: viewModel.uiState.selectedVendor) { _, newValue in
+                    branch = newValue?.name ?? ""
+                    if let b = newValue?.name { viewModel.updateBranch(b) }
+                }
+                .focused($focusedField, equals: .branch)
+                
+                Spacer()
+                    .frame(height: 8)
+                
+                // 직급
+                Text(StringResources.Auth.positionLabel)
+                    .font(.gmarketBody)
+                    .foregroundColor(Color("Text"))
+                    .padding(.bottom, 4)
+                Menu {
+                    ForEach(UserPosition.allCases, id: \.self) { pos in
+                        Button(action: {
+                            selectedPosition = pos
+                            viewModel.updatePosition(pos.rawValue)
+                            focusedField = .email
+                        }) {
+                            Text(pos.displayNameKo)
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                                .padding(.vertical, 6)
+                        }
+                    }
+                } label: {
+                    VStack(alignment: .leading, spacing: 4) {
+                        HStack {
+                            Text(selectedPosition?.displayNameKo ?? StringResources.Auth.positionPlaceholder)
+                                .font(.gmarketBody)
+                                .foregroundColor(selectedPosition == nil ? .gray : Color("Text"))
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                        }
+                        .padding(EdgeInsets(top: 12, leading: 16, bottom: 12, trailing: 16))
+                        .padding(4)
+                        .background(
+                            RoundedRectangle(cornerRadius: 16)
+                                .stroke(viewModel.uiState.positionError != nil ? Color.red : Color.gray.opacity(0.4), lineWidth: 1)
+                        )
+                        if let error = viewModel.uiState.positionError {
+                            Text(error)
+                                .font(.gmarketBody)
+                                .foregroundColor(.red)
+                                .padding(.leading, 4)
+                        }
+                    }
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .contentShape(Rectangle())
+                }
+                .focused($focusedField, equals: .position)
+                
+                Spacer()
+                    .frame(height: 8)
+                
+                // 이메일
+                Text(StringResources.Auth.emailLabel)
+                    .font(.gmarketBody)
+                    .foregroundColor(Color("Text"))
+                    .padding(.bottom, 4)
+                CommonTextField(
+                    value: $email,
+                    placeholder: StringResources.Auth.emailPlaceholder,
+                    type: .email,
+                    isError: viewModel.uiState.emailError != nil,
+                    errorMessage: viewModel.uiState.emailError,
+                    onTextChange: { text in viewModel.updateEmail(text) },
+                    submitLabel: .next,
+                    onSubmit: { focusedField = .password }
+                )
+                .focused($focusedField, equals: .email)
+                
+                Spacer()
+                    .frame(height: 8)
+                
+                // 비밀번호
+                Text(StringResources.Auth.passwordLabel)
+                    .font(.gmarketBody)
+                    .foregroundColor(Color("Text"))
+                    .padding(.bottom, 4)
+                CommonTextField(
+                    value: $password,
+                    placeholder: StringResources.Auth.passwordPlaceholder,
+                    type: .password,
+                    isError: viewModel.uiState.passwordError != nil,
+                    errorMessage: viewModel.uiState.passwordError,
+                    onTextChange: { text in viewModel.updatePassword(text) },
+                    submitLabel: .next,
+                    onSubmit: { focusedField = .passwordCheck }
+                )
+                .focused($focusedField, equals: .password)
+                
+                Spacer()
+                    .frame(height: 8)
+                
+                // 비밀번호 확인
+                Text(StringResources.Auth.passwordCheckLabel)
+                    .font(.gmarketBody)
+                    .foregroundColor(Color("Text"))
+                    .padding(.bottom, 4)
+                CommonTextField(
+                    value: $passwordCheck,
+                    placeholder: StringResources.Auth.passwordCheckPlaceholder,
+                    type: .password,
+                    isError: viewModel.uiState.passwordCheckError != nil,
+                    errorMessage: viewModel.uiState.passwordCheckError,
+                    onTextChange: { text in viewModel.updatePasswordCheck(text) },
+                    submitLabel: .done,
+                    onSubmit: { focusedField = nil }
+                )
+                .focused($focusedField, equals: .passwordCheck)
+                
+                Spacer()
+                    .frame(height: 48)
+                
+                // 회원가입 버튼
+                CommonButton(
+                    viewModel.uiState.loading
+                        ? StringResources.Auth.signUpButtonLoading
+                        : StringResources.Auth.signUpButton,
+                    isEnabled: viewModel.uiState.isValid && !viewModel.uiState.loading
+                ) {
+                    viewModel.submit()
+                }
+            }
+            .padding(.horizontal, 16)
+            .padding(.vertical, 16)
+        }
+        .contentShape(Rectangle())
+        .onTapGesture {
+            hideKeyboard()
+        }
+        .onChange(of: viewModel.uiState.success) { _, success in
+            if success {
+                onSuccess()
+            }
+        }
+        .onChange(of: viewModel.uiState.error) { _, error in
+            if let message = error, !message.isEmpty {
+                // 타임스탬프 제거하여 순수한 에러 메시지만 표시
+                let cleanMessage = message.components(separatedBy: "_").first ?? message
+                Toast.text(cleanMessage).show()
+                viewModel.consumeError()
+            }
+        }
+    }
+    
+    // MARK: - Helper Methods
+    
+    private func hideKeyboard() {
+        UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+    }
+}

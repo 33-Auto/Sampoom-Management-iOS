@@ -7,35 +7,57 @@
 
 import Foundation
 
-struct PartUIState: UIState {
-    let loading: Bool
-    let error: String?
-    let success: Bool
-    let partList: [Part]
+struct PartUIState {
+    // Part
+    let groupList: [PartsGroup]
+    let groupLoading: Bool
+    let groupError: String?
+    
+    let selectedCategory: Category?
+    
+    // Category
+    let categoryList: [Category]
+    let categoryLoading: Bool
+    let categoryError: String?
     
     init(
-        loading: Bool = false,
-        error: String? = nil,
-        success: Bool = false,
-        partList: [Part] = []
+        groupList: [PartsGroup] = [],
+        groupLoading: Bool = false,
+        groupError: String? = nil,
+        selectedCategory: Category? = nil,
+        categoryList: [Category] = [],
+        categoryLoading: Bool = false,
+        categoryError: String? = nil
     ) {
-        self.loading = loading
-        self.error = error
-        self.success = success
-        self.partList = partList
+        self.groupList = groupList
+        self.groupLoading = groupLoading
+        self.groupError = groupError
+        
+        self.selectedCategory = selectedCategory
+        
+        self.categoryList = categoryList
+        self.categoryLoading = categoryLoading
+        self.categoryError = categoryError
     }
     
     func copy(
-        loading: Bool? = nil,
-        error: String? = nil,
-        success: Bool? = nil,
-        partList: [Part]? = nil
+        groupList: [PartsGroup]? = nil,
+        groupLoading: Bool? = nil,
+        groupError: String?? = nil,
+        selectedCategory: Category?? = nil,
+        categoryList: [Category]? = nil,
+        categoryLoading: Bool? = nil,
+        categoryError: String?? = nil
     ) -> PartUIState {
         return PartUIState(
-            loading: loading ?? self.loading,
-            error: error ?? self.error,
-            success: success ?? self.success,
-            partList: partList ?? self.partList
+            groupList: groupList ?? self.groupList,
+            groupLoading: groupLoading ?? self.groupLoading,
+            groupError: groupError ?? self.groupError,
+            selectedCategory: selectedCategory ?? self.selectedCategory,
+            categoryList: categoryList ?? self.categoryList,
+            categoryLoading: categoryLoading ?? self.categoryLoading,
+            categoryError: categoryError ?? self.categoryError
         )
     }
 }
+

@@ -15,22 +15,15 @@ struct ErrorView: View {
         VStack(spacing: 16) {
             Spacer()
             
-            Image(systemName: "exclamationmark.triangle")
-                .font(.system(size: 48))
-                .foregroundColor(.red)
-            
             Text("오류가 발생했습니다")
-                .font(.headline)
+                .font(.gmarketHeadline)
                 .foregroundColor(.red)
             
-            Text(error)
-                .font(.caption)
-                .foregroundColor(.secondary)
-                .multilineTextAlignment(.center)
-                .padding(.horizontal, 32)
-            
-            Button("다시 시도") {
+            Button {
                 onRetry()
+            } label: {
+                Text("다시 시도")
+                    .font(.gmarketCaption)
             }
             .buttonStyle(.borderedProminent)
             
@@ -39,8 +32,3 @@ struct ErrorView: View {
     }
 }
 
-#Preview {
-    ErrorView(error: "네트워크 연결을 확인해주세요") {
-        print("Retry tapped")
-    }
-}

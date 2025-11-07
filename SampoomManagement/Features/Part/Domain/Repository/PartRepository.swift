@@ -8,5 +8,8 @@
 import Foundation
 
 protocol PartRepository {
-    func getPartList() async throws -> PartList
+    func getCategoryList() async throws -> CategoryList
+    func getGroupList(categoryId: Int) async throws -> PartsGroupList
+    func getPartList(groupId: Int) async throws -> PartList
+    func searchParts(keyword: String, page: Int) async throws -> (results: [SearchResult], hasMore: Bool)
 }

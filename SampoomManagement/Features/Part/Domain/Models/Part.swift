@@ -7,8 +7,10 @@
 
 import Foundation
 
-struct Part: Identifiable, Codable, Equatable {
+struct Part: Equatable {
     let id: Int
+    let code: String
     let name: String
-    let count: Int
+    let quantity: Int
+    let standardCost: Int
 }

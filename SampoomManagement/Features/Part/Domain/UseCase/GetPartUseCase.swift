@@ -14,7 +14,7 @@ class GetPartUseCase {
         self.repository = repository
     }
     
-    func execute() async throws -> PartList {
-        return try await repository.getPartList()
+    func execute(groupId: Int) async throws -> PartList {
+        return try await repository.getPartList(groupId: groupId)
     }
 }
