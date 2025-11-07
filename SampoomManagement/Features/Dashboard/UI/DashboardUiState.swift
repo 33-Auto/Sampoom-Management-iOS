@@ -39,9 +39,9 @@ struct DashboardUiState: Equatable {
         dashboard: Dashboard?? = nil,
         weeklySummary: WeeklySummary?? = nil,
         dashboardLoading: Bool? = nil,
-        dashboardError: String? = nil,
+        dashboardError: String?? = nil,
         weeklySummaryLoading: Bool? = nil,
-        weeklySummaryError: String? = nil
+        weeklySummaryError: String?? = nil
     ) -> DashboardUiState {
         return DashboardUiState(
             orderList: orderList ?? self.orderList,

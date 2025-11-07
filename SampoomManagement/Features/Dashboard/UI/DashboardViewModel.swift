@@ -59,37 +59,37 @@ class DashboardViewModel: ObservableObject {
     }
     
     private func loadDashboard() async {
-        uiState = uiState.copy(dashboardLoading: true, dashboardError: nil)
+        uiState = uiState.copy(dashboardLoading: true, dashboardError: .some(nil))
         do {
             let dashboard = try await getDashboardUseCase.execute()
             uiState = uiState.copy(
                 dashboard: dashboard,
                 dashboardLoading: false,
-                dashboardError: nil
+                dashboardError: .some(nil)
             )
         } catch {
             messageHandler.showMessage(error.localizedDescription, isError: true)
             uiState = uiState.copy(
                 dashboardLoading: false,
-                dashboardError: error.localizedDescription
+                dashboardError: .some(error.localizedDescription)
             )
         }
     }
     
     private func loadWeeklySummary() async {
-        uiState = uiState.copy(weeklySummaryLoading: true, weeklySummaryError: nil)
+        uiState = uiState.copy(weeklySummaryLoading: true, weeklySummaryError: .some(nil))
         do {
             let weekly = try await getWeeklySummaryUseCase.execute()
             uiState = uiState.copy(
                 weeklySummary: weekly,
                 weeklySummaryLoading: false,
-                weeklySummaryError: nil
+                weeklySummaryError: .some(nil)
             )
         } catch {
             messageHandler.showMessage(error.localizedDescription, isError: true)
             uiState = uiState.copy(
                 weeklySummaryLoading: false,
-                weeklySummaryError: error.localizedDescription
+                weeklySummaryError: .some(error.localizedDescription)
             )
         }
     }
