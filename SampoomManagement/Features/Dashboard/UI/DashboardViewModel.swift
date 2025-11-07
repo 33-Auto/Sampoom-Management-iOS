@@ -46,37 +46,51 @@ class DashboardViewModel: ObservableObject {
     
     private func loadOrderList() {
         Task {
-            uiState = uiState.copy(dashboardLoading: true, dashboardError: nil)
             do {
                 let orderList = try await getOrderUseCase.execute()
                 uiState = uiState.copy(
-                    orderList: Array(orderList.items.prefix(5))
+                    orderList: Array(orderList.items.prefix(5)),
+                    dashboardLoading: false
                 )
             } catch {
-                uiState = uiState.copy(
-                    dashboardError: error.localizedDescription
-                )
+                messageHandler.showMessage(error.localizedDescription, isError: true)
             }
         }
     }
     
     private func loadDashboard() async {
+        uiState = uiState.copy(dashboardLoading: true, dashboardError: nil)
         do {
             let dashboard = try await getDashboardUseCase.execute()
-            uiState = uiState.copy(dashboard: dashboard, dashboardLoading: false, dashboardError: nil)
+            uiState = uiState.copy(
+                dashboard: dashboard,
+                dashboardLoading: false,
+                dashboardError: nil
+            )
         } catch {
             messageHandler.showMessage(error.localizedDescription, isError: true)
-            uiState = uiState.copy(dashboardLoading: false, dashboardError: error.localizedDescription)
+            uiState = uiState.copy(
+                dashboardLoading: false,
+                dashboardError: error.localizedDescription
+            )
         }
     }
     
     private func loadWeeklySummary() async {
+        uiState = uiState.copy(weeklySummaryLoading: true, weeklySummaryError: nil)
         do {
             let weekly = try await getWeeklySummaryUseCase.execute()
-            uiState = uiState.copy(weeklySummary: weekly, dashboardLoading: false, dashboardError: nil)
+            uiState = uiState.copy(
+                weeklySummary: weekly,
+                weeklySummaryLoading: false,
+                weeklySummaryError: nil
+            )
         } catch {
             messageHandler.showMessage(error.localizedDescription, isError: true)
-            uiState = uiState.copy(dashboardLoading: false, dashboardError: error.localizedDescription)
+            uiState = uiState.copy(
+                weeklySummaryLoading: false,
+                weeklySummaryError: error.localizedDescription
+            )
         }
     }
 }

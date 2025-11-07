@@ -139,14 +139,7 @@ struct DashboardView: View {
                 }
             }
             
-            if viewModel.uiState.dashboardLoading {
-                HStack { Spacer(); ProgressView(); Spacer() }
-                    .padding(.vertical, 32)
-            } else if let error = viewModel.uiState.dashboardError {
-                VStack { Text(error).foregroundColor(.red) }
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, 32)
-            } else if viewModel.uiState.orderList.isEmpty {
+            if viewModel.uiState.orderList.isEmpty {
                 VStack { Text(StringResources.Order.emptyList).foregroundColor(.textSecondary) }
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 32)
