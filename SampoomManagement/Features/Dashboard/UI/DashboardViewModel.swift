@@ -12,23 +12,42 @@ import Combine
 @MainActor
 class DashboardViewModel: ObservableObject {
     @Published var uiState = DashboardUiState()
+    @Published var user: User? = nil
     
     private let getOrderUseCase: GetOrderUseCase
     private let getDashboardUseCase: GetDashboardUseCase
     private let getWeeklySummaryUseCase: GetWeeklySummaryUseCase
+    private let getStoredUserUseCase: GetStoredUserUseCase
     private let messageHandler: GlobalMessageHandler
     
     init(
         getOrderUseCase: GetOrderUseCase,
         getDashboardUseCase: GetDashboardUseCase,
         getWeeklySummaryUseCase: GetWeeklySummaryUseCase,
+        getStoredUserUseCase: GetStoredUserUseCase,
         messageHandler: GlobalMessageHandler
     ) {
         self.getOrderUseCase = getOrderUseCase
         self.getDashboardUseCase = getDashboardUseCase
         self.getWeeklySummaryUseCase = getWeeklySummaryUseCase
+        self.getStoredUserUseCase = getStoredUserUseCase
         self.messageHandler = messageHandler
         loadAll()
+        loadUser()
+    }
+    
+    func refreshUser() {
+        loadUser()
+    }
+    
+    private func loadUser() {
+        Task {
+            do {
+                user = try getStoredUserUseCase.execute()
+            } catch {
+                print("DashboardViewModel - 사용자 정보 조회 실패: \(error)")
+            }
+        }
     }
     
     func onEvent(_ event: DashboardUiEvent) {
@@ -40,6 +59,7 @@ class DashboardViewModel: ObservableObject {
     
     private func loadAll() {
         loadOrderList()
+        loadUser()
         Task { await loadDashboard() }
         Task { await loadWeeklySummary() }
     }

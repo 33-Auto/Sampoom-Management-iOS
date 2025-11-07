@@ -9,9 +9,11 @@ import SwiftUI
 
 struct SettingView: View {
     @ObservedObject var viewModel: SettingViewModel
+    @ObservedObject var updateProfileViewModel: UpdateProfileViewModel
     let onNavigateBack: () -> Void
     let onLogoutClick: () -> Void
     @State private var showLogoutDialog = false
+    @State private var showEditProfileSheet = false
     
     var body: some View {
         VStack(spacing: 0) {
@@ -37,7 +39,23 @@ struct SettingView: View {
         .onAppear {
             viewModel.onEvent(.loadProfile)
         }
-        .alert("로그아웃", isPresented: $showLogoutDialog) {
+        .sheet(isPresented: $showEditProfileSheet) {
+            if let user = viewModel.user {
+                UpdateProfileBottomSheet(
+                    user: user,
+                    viewModel: updateProfileViewModel,
+                    onProfileUpdated: { updatedUser in
+                        viewModel.refreshUser()
+                    },
+                    onDismiss: {
+                        showEditProfileSheet = false
+                    }
+                )
+                .presentationDetents([.medium])
+                .presentationDragIndicator(.visible)
+            }
+        }
+        .alert(StringResources.Setting.logoutTitle, isPresented: $showLogoutDialog) {
             Button(StringResources.Common.cancel, role: .cancel) {}
             Button(StringResources.Common.confirm) {
                 Task {
@@ -89,8 +107,7 @@ struct SettingView: View {
     private func settingSection() -> some View {
         VStack(spacing: 8) {
             Button(action: {
-                // TODO: Edit profile
-                viewModel.onEvent(.editProfile)
+                showEditProfileSheet = true
             }) {
                 HStack {
                     Text(StringResources.Setting.editProfile)
@@ -111,7 +128,7 @@ struct SettingView: View {
                 HStack {
                     Text(StringResources.Setting.logout)
                         .font(.gmarketBody)
-                        .foregroundColor(.text)
+                        .foregroundColor(.failRed)
                     Spacer()
                     Image(systemName: "chevron.right")
                         .foregroundColor(.textSecondary)

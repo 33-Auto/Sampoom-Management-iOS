@@ -14,9 +14,11 @@ class LoginViewModel: ObservableObject {
     @Published var uiState = LoginUiState()
     
     private let loginUseCase: LoginUseCase
+    private let getProfileUseCase: GetProfileUseCase
     
-    init(loginUseCase: LoginUseCase) {
+    init(loginUseCase: LoginUseCase, getProfileUseCase: GetProfileUseCase) {
         self.loginUseCase = loginUseCase
+        self.getProfileUseCase = getProfileUseCase
     }
     
     // 이메일 업데이트
@@ -46,7 +48,14 @@ class LoginViewModel: ObservableObject {
             
             do {
                 _ = try await loginUseCase.execute(email: email, password: password)
-                uiState = uiState.copy(loading: false, success: true)
+                // 로그인 성공 후 프로필 조회
+                do {
+                    _ = try await getProfileUseCase.execute(workspace: "AGENCY")
+                    uiState = uiState.copy(loading: false, success: true)
+                } catch {
+                    uiState = uiState.copy(loading: false)
+                    showError(error.localizedDescription)
+                }
             } catch {
                 uiState = uiState.copy(loading: false)
                 showError(error.localizedDescription)
