@@ -73,6 +73,16 @@ class AppDependencies {
     let getDashboardUseCase: GetDashboardUseCase
     let getWeeklySummaryUseCase: GetWeeklySummaryUseCase
     
+    // MARK: - User
+    let userAPI: UserAPI
+    let userRepository: UserRepository
+    let getProfileUseCase: GetProfileUseCase
+    let getStoredUserUseCase: GetStoredUserUseCase
+    let updateProfileUseCase: UpdateProfileUseCase
+    let getEmployeeUseCase: GetEmployeeUseCase
+    let editEmployeeUseCase: EditEmployeeUseCase
+    let getEmployeeCountUseCase: GetEmployeeCountUseCase
+    
     init() {
         // Global Message Handler
         globalMessageHandler = GlobalMessageHandler.shared
@@ -152,16 +162,26 @@ class AppDependencies {
         dashboardRepository = DashboardRepositoryImpl(api: dashboardAPI, authPreferences: authPreferences)
         getDashboardUseCase = GetDashboardUseCase(repository: dashboardRepository)
         getWeeklySummaryUseCase = GetWeeklySummaryUseCase(repository: dashboardRepository)
+        
+        // User
+        userAPI = UserAPI(networkManager: networkManager)
+        userRepository = UserRepositoryImpl(api: userAPI, preferences: authPreferences)
+        getProfileUseCase = GetProfileUseCase(repository: userRepository)
+        getStoredUserUseCase = GetStoredUserUseCase(repository: userRepository)
+        updateProfileUseCase = UpdateProfileUseCase(repository: userRepository)
+        getEmployeeUseCase = GetEmployeeUseCase(repository: userRepository)
+        editEmployeeUseCase = EditEmployeeUseCase(repository: userRepository)
+        getEmployeeCountUseCase = GetEmployeeCountUseCase(repository: userRepository)
     }
     
     // MARK: - ViewModel Factories
     
     func makeLoginViewModel() -> LoginViewModel {
-        return LoginViewModel(loginUseCase: loginUseCase)
+        return LoginViewModel(loginUseCase: loginUseCase, getProfileUseCase: getProfileUseCase)
     }
     
     func makeSignUpViewModel() -> SignUpViewModel {
-        return SignUpViewModel(signUpUseCase: signUpUseCase, getVendorUseCase: getVendorUseCase)
+        return SignUpViewModel(signUpUseCase: signUpUseCase, getVendorUseCase: getVendorUseCase, getProfileUseCase: getProfileUseCase)
     }
     
     func makePartViewModel() -> PartViewModel {
@@ -229,19 +249,43 @@ class AppDependencies {
         )
     }
     
-    func makeSettingViewModel() -> SettingViewModel {
-        return SettingViewModel(
-            authPreferences: authPreferences,
-            signOutUseCase: signOutUseCase,
-            globalMessageHandler: globalMessageHandler
-        )
-    }
-    
     func makeDashboardViewModel() -> DashboardViewModel {
         return DashboardViewModel(
             getOrderUseCase: getOrderUseCase,
             getDashboardUseCase: getDashboardUseCase,
             getWeeklySummaryUseCase: getWeeklySummaryUseCase,
+            getStoredUserUseCase: getStoredUserUseCase,
+            getEmployeeCountUseCase: getEmployeeCountUseCase,
+            messageHandler: globalMessageHandler
+        )
+    }
+    
+    func makeSettingViewModel() -> SettingViewModel {
+        return SettingViewModel(
+            getStoredUserUseCase: getStoredUserUseCase,
+            signOutUseCase: signOutUseCase,
+            globalMessageHandler: globalMessageHandler
+        )
+    }
+    
+    func makeEmployeeListViewModel() -> EmployeeListViewModel {
+        return EmployeeListViewModel(
+            getEmployeeUseCase: getEmployeeUseCase,
+            messageHandler: globalMessageHandler,
+            authPreferences: authPreferences
+        )
+    }
+    
+    func makeEditEmployeeViewModel() -> EditEmployeeViewModel {
+        return EditEmployeeViewModel(
+            editEmployeeUseCase: editEmployeeUseCase,
+            messageHandler: globalMessageHandler
+        )
+    }
+    
+    func makeUpdateProfileViewModel() -> UpdateProfileViewModel {
+        return UpdateProfileViewModel(
+            updateProfileUseCase: updateProfileUseCase,
             messageHandler: globalMessageHandler
         )
     }

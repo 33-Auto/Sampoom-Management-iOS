@@ -14,16 +14,16 @@ class SettingViewModel: ObservableObject {
     @Published var uiState = SettingUiState.initial
     @Published var user: User?
     
-    private let authPreferences: AuthPreferences
+    private let getStoredUserUseCase: GetStoredUserUseCase
     private let signOutUseCase: SignOutUseCase
     private let globalMessageHandler: GlobalMessageHandler
     
     init(
-        authPreferences: AuthPreferences,
+        getStoredUserUseCase: GetStoredUserUseCase,
         signOutUseCase: SignOutUseCase,
         globalMessageHandler: GlobalMessageHandler
     ) {
-        self.authPreferences = authPreferences
+        self.getStoredUserUseCase = getStoredUserUseCase
         self.signOutUseCase = signOutUseCase
         self.globalMessageHandler = globalMessageHandler
     }
@@ -31,21 +31,17 @@ class SettingViewModel: ObservableObject {
     func onEvent(_ event: SettingUiEvent) {
         switch event {
         case .loadProfile:
-            loadProfile()
-        case .editProfile:
-            // TODO: Implement edit profile
-            break
-        case .logout:
-            // Deprecated in favor of explicit async logout() from the View
-            break
+            refreshUser()
         }
     }
     
-    private func loadProfile() {
-        do {
-            user = try authPreferences.getStoredUser()
-        } catch {
-            uiState = uiState.copy(error: error.localizedDescription)
+    func refreshUser() {
+        Task {
+            do {
+                user = try getStoredUserUseCase.execute()
+            } catch {
+                uiState = uiState.copy(error: error.localizedDescription)
+            }
         }
     }
     

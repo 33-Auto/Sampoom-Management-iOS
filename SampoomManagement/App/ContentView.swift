@@ -15,6 +15,10 @@ enum SettingNavigation: Hashable {
     case settings
 }
 
+enum EmployeeNavigation: Hashable {
+    case employeeList
+}
+
 struct ContentView: View {
     // MARK: - Properties
     let dependencies: AppDependencies
@@ -43,7 +47,6 @@ struct ContentView: View {
                 // Dashboard 탭 (DashboardView directly)
                 Tab(value: .dashboard) {
                     NavigationStack(path: $dashboardNavigationPath) {
-                        let user = try? dependencies.authPreferences.getStoredUser()
                         DashboardView(
                             viewModel: dashboardViewModel,
                             onLogoutClick: {
@@ -61,15 +64,16 @@ struct ContentView: View {
                             onSettingClick: {
                                 dashboardNavigationPath.append(SettingNavigation.settings)
                             },
-                            userName: user?.name ?? "",
-                            branch: user?.branch ?? "",
-                            userRole: user?.role ?? .user
+                            onEmployeeClick: {
+                                dashboardNavigationPath.append(EmployeeNavigation.employeeList)
+                            }
                         )
                         .navigationDestination(for: SettingNavigation.self) { destination in
                             switch destination {
                             case .settings:
                                 SettingView(
                                     viewModel: dependencies.makeSettingViewModel(),
+                                    updateProfileViewModel: dependencies.makeUpdateProfileViewModel(),
                                     onNavigateBack: {
                                         if !dashboardNavigationPath.isEmpty {
                                             dashboardNavigationPath.removeLast()
@@ -77,6 +81,20 @@ struct ContentView: View {
                                     },
                                     onLogoutClick: {
                                         dependencies.authViewModel.handleSignedOutState()
+                                    }
+                                )
+                            }
+                        }
+                        .navigationDestination(for: EmployeeNavigation.self) { destination in
+                            switch destination {
+                            case .employeeList:
+                                EmployeeListView(
+                                    viewModel: dependencies.makeEmployeeListViewModel(),
+                                    editEmployeeViewModel: dependencies.makeEditEmployeeViewModel(),
+                                    onNavigateBack: {
+                                        if !dashboardNavigationPath.isEmpty {
+                                            dashboardNavigationPath.removeLast()
+                                        }
                                     }
                                 )
                             }
@@ -184,7 +202,7 @@ struct ContentView: View {
                     }
                 }
             }
-            .accentColor(.accentColor)
+            .accentColor(.accent)
             .tabViewStyle(.automatic)
         }
     }

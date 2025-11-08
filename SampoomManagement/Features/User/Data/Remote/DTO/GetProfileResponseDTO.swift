@@ -20,4 +20,3 @@ struct GetProfileResponseDTO: Codable {
     let endedAt: String?
 }
 
-

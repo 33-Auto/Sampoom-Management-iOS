@@ -41,3 +41,4 @@ struct User: Equatable {
     let startedAt: String?
     let endedAt: String?
 }
+

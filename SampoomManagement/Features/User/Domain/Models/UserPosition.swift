@@ -35,4 +35,3 @@ enum UserPosition: String, CaseIterable, Codable, Equatable, Hashable {
     }
 }
 
-
