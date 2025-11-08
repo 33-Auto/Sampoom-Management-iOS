@@ -16,6 +16,7 @@ struct EmployeeDTO: Codable {
     let organizationId: Int
     let branch: String
     let position: UserPosition
+    let employeeStatus: EmployeeStatus?
     let startedAt: String?
     let endedAt: String?
 }

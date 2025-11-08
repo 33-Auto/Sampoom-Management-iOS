@@ -212,6 +212,13 @@ struct StringResources {
         static let positionLabel = "직급"
         static let editEdited = "직원 수정이 완료되었습니다."
         static let editDeleted = "직원 삭제가 완료되었습니다."
+        static let statusLabel = "재직상태"
+        static let statusEdit = "재직상태 변경"
+        static let positionEdit = "직급 변경"
+        static let editStatusEdited = "직원 상태 수정이 완료되었습니다."
+        static let statusActive = "재직"
+        static let statusLeave = "휴직"
+        static let statusRetired = "퇴직"
         static let employeeNotFound = "직원 정보를 찾을 수 없습니다"
         static let userNotFound = "사용자 정보를 찾을 수 없습니다"
     }

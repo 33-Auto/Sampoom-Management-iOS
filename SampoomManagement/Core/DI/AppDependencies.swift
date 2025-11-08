@@ -82,6 +82,7 @@ class AppDependencies {
     let getEmployeeUseCase: GetEmployeeUseCase
     let editEmployeeUseCase: EditEmployeeUseCase
     let getEmployeeCountUseCase: GetEmployeeCountUseCase
+    let updateEmployeeStatusUseCase: UpdateEmployeeStatusUseCase
     
     init() {
         // Global Message Handler
@@ -172,6 +173,7 @@ class AppDependencies {
         getEmployeeUseCase = GetEmployeeUseCase(repository: userRepository)
         editEmployeeUseCase = EditEmployeeUseCase(repository: userRepository)
         getEmployeeCountUseCase = GetEmployeeCountUseCase(repository: userRepository)
+        updateEmployeeStatusUseCase = UpdateEmployeeStatusUseCase(repository: userRepository)
     }
     
     // MARK: - ViewModel Factories
@@ -279,6 +281,13 @@ class AppDependencies {
     func makeEditEmployeeViewModel() -> EditEmployeeViewModel {
         return EditEmployeeViewModel(
             editEmployeeUseCase: editEmployeeUseCase,
+            messageHandler: globalMessageHandler
+        )
+    }
+    
+    func makeUpdateEmployeeStatusViewModel() -> UpdateEmployeeStatusViewModel {
+        return UpdateEmployeeStatusViewModel(
+            updateEmployeeStatusUseCase: updateEmployeeStatusUseCase,
             messageHandler: globalMessageHandler
         )
     }

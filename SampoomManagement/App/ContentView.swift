@@ -91,6 +91,7 @@ struct ContentView: View {
                                 EmployeeListView(
                                     viewModel: dependencies.makeEmployeeListViewModel(),
                                     editEmployeeViewModel: dependencies.makeEditEmployeeViewModel(),
+                                    updateEmployeeStatusViewModel: dependencies.makeUpdateEmployeeStatusViewModel(),
                                     onNavigateBack: {
                                         if !dashboardNavigationPath.isEmpty {
                                             dashboardNavigationPath.removeLast()

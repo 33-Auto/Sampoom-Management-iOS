@@ -137,7 +137,7 @@ struct OutboundListView: View {
                 // 출고 주문 버튼
                 VStack {
                     Spacer()
-                    CommonButton("\(formatWon(viewModel.uiState.totalCost)) \(StringResources.Outbound.processOrder)", backgroundColor: .red, textColor: .white) {
+                    CommonButton("\(formatWon(viewModel.uiState.totalCost)) \(StringResources.Outbound.processOrder)", type: .secondary) {
                         showConfirmDialog = true
                     }
                     .padding(.horizontal, 16)

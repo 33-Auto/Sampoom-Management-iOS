@@ -66,5 +66,21 @@ class UserAPI {
             responseType: EditEmployeeResponseDTO.self
         )
     }
+    
+    // 직원 상태 수정
+    func updateEmployeeStatus(userId: Int, workspace: String, employeeStatus: String) async throws -> APIResponse<UpdateEmployeeStatusResponseDTO> {
+        let requestDTO = UpdateEmployeeStatusRequestDTO(employeeStatus: employeeStatus)
+        
+        let parameters: [String: Any] = [
+            "employeeStatus": requestDTO.employeeStatus
+        ]
+        
+        return try await networkManager.request(
+            endpoint: "user/status/\(userId)?workspace=\(workspace)",
+            method: .patch,
+            parameters: parameters,
+            responseType: UpdateEmployeeStatusResponseDTO.self
+        )
+    }
 }
 

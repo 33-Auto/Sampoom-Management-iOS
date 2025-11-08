@@ -34,26 +34,39 @@ class EmployeeListViewModel: ObservableObject {
             loadEmployeeList()
         case .retryEmployeeList:
             loadEmployeeList()
-        case .showBottomSheet(let employee):
-            // 같은 직원을 다시 선택할 수 있도록 먼저 nil로 설정한 후 다시 설정
-            if uiState.selectedEmployee?.userId == employee.userId {
-                uiState = uiState.copy(selectedEmployee: nil)
-                Task { @MainActor in
-                    self.uiState = self.uiState.copy(selectedEmployee: employee)
-                }
-            } else {
-                uiState = uiState.copy(selectedEmployee: employee)
-            }
+        case .showEditBottomSheet(let employee):
+            presentBottomSheet(for: employee, type: .edit)
+        case .showStatusBottomSheet(let employee):
+            presentBottomSheet(for: employee, type: .status)
         case .dismissBottomSheet:
-            uiState = uiState.copy(selectedEmployee: .some(nil))
+            uiState = uiState.copy(selectedEmployee: .some(nil), bottomSheetType: .some(nil))
         case .loadMore:
             loadMoreEmployees()
         }
     }
     
+    private func presentBottomSheet(for employee: Employee, type: EmployeeBottomSheetType) {
+        if uiState.selectedEmployee?.userId == employee.userId && uiState.bottomSheetType == type {
+            // toggle to allow re-selection of identical employee & sheet
+            uiState = uiState.copy(selectedEmployee: nil, bottomSheetType: .some(nil))
+            Task { @MainActor in
+                self.uiState = self.uiState.copy(selectedEmployee: employee, bottomSheetType: .some(type))
+            }
+        } else {
+            uiState = uiState.copy(selectedEmployee: employee, bottomSheetType: .some(type))
+        }
+    }
+    
     private func loadEmployeeList() {
         Task {
-            uiState = uiState.copy(employeeList: [], employeeLoading: true, employeeError: nil, currentPage: 0)
+            uiState = uiState.copy(
+                employeeList: [],
+                employeeLoading: true,
+                employeeError: nil,
+                selectedEmployee: .some(nil),
+                bottomSheetType: .some(nil),
+                currentPage: 0
+            )
             await loadEmployees(page: 0)
         }
     }

@@ -10,8 +10,9 @@ import SwiftUI
 struct EmployeeListView: View {
     @ObservedObject var viewModel: EmployeeListViewModel
     @ObservedObject var editEmployeeViewModel: EditEmployeeViewModel
+    @ObservedObject var updateEmployeeStatusViewModel: UpdateEmployeeStatusViewModel
     let onNavigateBack: () -> Void
-    @State private var showEditBottomSheet = false
+    @State private var showBottomSheet = false
     
     var body: some View {
         VStack(spacing: 0) {
@@ -36,28 +37,46 @@ struct EmployeeListView: View {
         .refreshable {
             viewModel.onEvent(.loadEmployeeList)
         }
-        .sheet(isPresented: $showEditBottomSheet) {
-            if let selectedEmployee = viewModel.uiState.selectedEmployee {
-                EditEmployeeBottomSheet(
-                    employee: selectedEmployee,
-                    viewModel: editEmployeeViewModel,
-                    onDismiss: {
-                        showEditBottomSheet = false
-                    },
-                    onEmployeeUpdated: {
-                        viewModel.onEvent(.loadEmployeeList)
-                    }
-                )
-                .presentationDetents([.fraction(0.3)])
-                .presentationDragIndicator(.visible)
-                .onDisappear {
-                    showEditBottomSheet = false
-                    viewModel.onEvent(.dismissBottomSheet)
+        .sheet(isPresented: $showBottomSheet) {
+            if let selectedEmployee = viewModel.uiState.selectedEmployee,
+               let bottomSheetType = viewModel.uiState.bottomSheetType {
+                switch bottomSheetType {
+                case .edit:
+                    EditEmployeeBottomSheet(
+                        employee: selectedEmployee,
+                        viewModel: editEmployeeViewModel,
+                        onDismiss: {
+                            showBottomSheet = false
+                            viewModel.onEvent(.dismissBottomSheet)
+                        },
+                        onEmployeeUpdated: {
+                            viewModel.onEvent(.loadEmployeeList)
+                        }
+                    )
+                    .presentationDetents([.fraction(0.3)])
+                    .presentationDragIndicator(.visible)
+                case .status:
+                    UpdateEmployeeStatusBottomSheet(
+                        employee: selectedEmployee,
+                        viewModel: updateEmployeeStatusViewModel,
+                        onDismiss: {
+                            showBottomSheet = false
+                            viewModel.onEvent(.dismissBottomSheet)
+                        },
+                        onStatusUpdated: { _ in
+                            viewModel.onEvent(.loadEmployeeList)
+                        }
+                    )
+                    .presentationDetents([.fraction(0.3)])
+                    .presentationDragIndicator(.visible)
                 }
             }
         }
         .onChange(of: viewModel.uiState.selectedEmployee) { _, newValue in
-            showEditBottomSheet = newValue != nil
+            showBottomSheet = newValue != nil
+        }
+        .onChange(of: viewModel.uiState.bottomSheetType) { _, newValue in
+            showBottomSheet = newValue != nil
         }
     }
     
@@ -93,12 +112,13 @@ struct EmployeeListView: View {
             ForEach(viewModel.uiState.employeeList, id: \.userId) { employee in
                 EmployeeListItemCard(
                     employee: employee,
-                    onEditClick: {
-                        viewModel.onEvent(.showBottomSheet(employee))
-                        showEditBottomSheet = true
+                    onStatusClick: {
+                        viewModel.onEvent(.showStatusBottomSheet(employee))
+                        showBottomSheet = true
                     },
-                    onDeleteClick: {
-                        // TODO: Implement delete
+                    onEditClick: {
+                        viewModel.onEvent(.showEditBottomSheet(employee))
+                        showBottomSheet = true
                     }
                 )
             }
@@ -120,14 +140,20 @@ struct EmployeeListView: View {
 
 struct EmployeeListItemCard: View {
     let employee: Employee
+    let onStatusClick: () -> Void
     let onEditClick: () -> Void
-    let onDeleteClick: () -> Void
     
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Text(employee.userName)
-                .font(.gmarketTitle3)
-                .foregroundColor(.text)
+            HStack {
+                Text(employee.userName)
+                    .font(.gmarketTitle3)
+                    .foregroundColor(.text)
+                Spacer()
+                Text(employeeStatusToKorean(employee.employeeStatus))
+                    .font(.gmarketBody)
+                    .foregroundColor(.text)
+            }
             
             Text(employee.position.displayNameKo)
                 .font(.gmarketBody)
@@ -157,16 +183,13 @@ struct EmployeeListItemCard: View {
             
             HStack(spacing: 8) {
                 CommonButton(
-                    StringResources.Employee.delete,
+                    StringResources.Employee.statusEdit,
                     type: .outlined,
-                    backgroundColor: .failRed,
-                    textColor: .white,
-                    borderColor: .failRed,
-                    action: onDeleteClick
+                    action: onStatusClick
                 )
                 
                 CommonButton(
-                    StringResources.Employee.edit,
+                    StringResources.Employee.positionEdit,
                     type: .filled,
                     action: onEditClick
                 )
