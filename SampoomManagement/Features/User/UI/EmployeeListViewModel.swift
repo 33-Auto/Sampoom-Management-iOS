@@ -48,12 +48,12 @@ class EmployeeListViewModel: ObservableObject {
     private func presentBottomSheet(for employee: Employee, type: EmployeeBottomSheetType) {
         if uiState.selectedEmployee?.userId == employee.userId && uiState.bottomSheetType == type {
             // toggle to allow re-selection of identical employee & sheet
-            uiState = uiState.copy(selectedEmployee: nil, bottomSheetType: .some(nil))
+            uiState = uiState.copy(selectedEmployee: .some(nil), bottomSheetType: .some(nil))
             Task { @MainActor in
-                self.uiState = self.uiState.copy(selectedEmployee: employee, bottomSheetType: .some(type))
+                self.uiState = self.uiState.copy(selectedEmployee: .some(employee), bottomSheetType: .some(type))
             }
         } else {
-            uiState = uiState.copy(selectedEmployee: employee, bottomSheetType: .some(type))
+            uiState = uiState.copy(selectedEmployee: .some(employee), bottomSheetType: .some(type))
         }
     }
     
