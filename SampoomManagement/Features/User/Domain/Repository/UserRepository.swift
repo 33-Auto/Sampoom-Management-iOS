@@ -13,5 +13,6 @@ protocol UserRepository {
     func updateProfile(user: User) async throws -> User
     func getEmployeeList(workspace: String, organizationId: Int, page: Int, size: Int) async throws -> (employees: [Employee], hasNext: Bool)
     func editEmployee(employee: Employee, workspace: String) async throws -> Employee
+    func getEmployeeCount(workspace: String, organizationId: Int) async throws -> Int
 }
 

@@ -82,7 +82,14 @@ struct DashboardView: View {
         let dash = viewModel.uiState.dashboard
         return VStack(spacing: 16) {
             if let user = viewModel.user, user.role.isAdmin {
-                buttonCard(iconName: "employee", valueText: "45", subText: StringResources.Dashboard.employee, bordered: true, onClick: onEmployeeClick)
+                let employeeValueText: String
+                if let count = viewModel.uiState.employeeCount {
+                    employeeValueText = String(count)
+                } else {
+                    employeeValueText = StringResources.Common.slash
+                }
+                
+                buttonCard(iconName: "employee", valueText: employeeValueText, subText: StringResources.Dashboard.employee, bordered: true, onClick: onEmployeeClick)
             }
             HStack(spacing: 16) {
                 buttonCard(iconName: "car", valueText: String(dash?.totalParts ?? 0), subText: StringResources.Dashboard.partsOnHand)

@@ -51,7 +51,7 @@ struct SettingView: View {
                         showEditProfileSheet = false
                     }
                 )
-                .presentationDetents([.medium])
+                .presentationDetents([.fraction(0.3)])
                 .presentationDragIndicator(.visible)
             }
         }

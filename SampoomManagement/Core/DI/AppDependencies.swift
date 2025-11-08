@@ -81,6 +81,7 @@ class AppDependencies {
     let updateProfileUseCase: UpdateProfileUseCase
     let getEmployeeUseCase: GetEmployeeUseCase
     let editEmployeeUseCase: EditEmployeeUseCase
+    let getEmployeeCountUseCase: GetEmployeeCountUseCase
     
     init() {
         // Global Message Handler
@@ -170,6 +171,7 @@ class AppDependencies {
         updateProfileUseCase = UpdateProfileUseCase(repository: userRepository)
         getEmployeeUseCase = GetEmployeeUseCase(repository: userRepository)
         editEmployeeUseCase = EditEmployeeUseCase(repository: userRepository)
+        getEmployeeCountUseCase = GetEmployeeCountUseCase(repository: userRepository)
     }
     
     // MARK: - ViewModel Factories
@@ -253,6 +255,7 @@ class AppDependencies {
             getDashboardUseCase: getDashboardUseCase,
             getWeeklySummaryUseCase: getWeeklySummaryUseCase,
             getStoredUserUseCase: getStoredUserUseCase,
+            getEmployeeCountUseCase: getEmployeeCountUseCase,
             messageHandler: globalMessageHandler
         )
     }

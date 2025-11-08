@@ -129,6 +129,14 @@ class UserRepositoryImpl: UserRepository {
         
         return completeEmployee
     }
+
+    func getEmployeeCount(workspace: String, organizationId: Int) async throws -> Int {
+        let response = try await api.getEmployeeList(workspace: workspace, organizationId: organizationId, page: 0, size: 1)
+        guard let dto = response.data else {
+            throw NetworkError.serverError(response.status, message: response.message)
+        }
+        return dto.meta.totalElements
+    }
 }
 
 // MARK: - Retry Helper (Exponential Backoff)

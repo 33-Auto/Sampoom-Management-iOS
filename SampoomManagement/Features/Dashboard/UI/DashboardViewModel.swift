@@ -18,6 +18,7 @@ class DashboardViewModel: ObservableObject {
     private let getDashboardUseCase: GetDashboardUseCase
     private let getWeeklySummaryUseCase: GetWeeklySummaryUseCase
     private let getStoredUserUseCase: GetStoredUserUseCase
+    private let getEmployeeCountUseCase: GetEmployeeCountUseCase
     private let messageHandler: GlobalMessageHandler
     
     init(
@@ -25,18 +26,21 @@ class DashboardViewModel: ObservableObject {
         getDashboardUseCase: GetDashboardUseCase,
         getWeeklySummaryUseCase: GetWeeklySummaryUseCase,
         getStoredUserUseCase: GetStoredUserUseCase,
+        getEmployeeCountUseCase: GetEmployeeCountUseCase,
         messageHandler: GlobalMessageHandler
     ) {
         self.getOrderUseCase = getOrderUseCase
         self.getDashboardUseCase = getDashboardUseCase
         self.getWeeklySummaryUseCase = getWeeklySummaryUseCase
         self.getStoredUserUseCase = getStoredUserUseCase
+        self.getEmployeeCountUseCase = getEmployeeCountUseCase
         self.messageHandler = messageHandler
         loadAll()
     }
     
     func refreshUser() {
         loadUser()
+        Task { await loadEmployeeCount() }
     }
     
     private func loadUser() {
@@ -61,6 +65,7 @@ class DashboardViewModel: ObservableObject {
         loadUser()
         Task { await loadDashboard() }
         Task { await loadWeeklySummary() }
+        Task { await loadEmployeeCount() }
     }
     
     private func loadOrderList() {
@@ -109,6 +114,39 @@ class DashboardViewModel: ObservableObject {
             uiState = uiState.copy(
                 weeklySummaryLoading: false,
                 weeklySummaryError: .some(error.localizedDescription)
+            )
+        }
+    }
+    
+    private func loadEmployeeCount() async {
+        uiState = uiState.copy(employeeCountLoading: true, employeeCountError: .some(nil))
+        
+        do {
+            guard let storedUser = try getStoredUserUseCase.execute() else {
+                uiState = uiState.copy(
+                    employeeCountLoading: false,
+                    employeeCountError: .some(StringResources.Employee.userNotFound)
+                )
+                return
+            }
+            let workspace = storedUser.workspace.isEmpty ? "AGENCY" : storedUser.workspace
+            
+            let count = try await getEmployeeCountUseCase.execute(
+                workspace: workspace,
+                organizationId: storedUser.agencyId
+            )
+            
+            uiState = uiState.copy(
+                employeeCount: .some(count),
+                employeeCountLoading: false,
+                employeeCountError: .some(nil)
+            )
+        } catch {
+            let errorMessage = (error as? NetworkError)?.errorDescription ?? error.localizedDescription
+            messageHandler.showMessage(errorMessage, isError: true)
+            uiState = uiState.copy(
+                employeeCountLoading: false,
+                employeeCountError: .some(errorMessage)
             )
         }
     }
