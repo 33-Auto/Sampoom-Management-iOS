@@ -102,15 +102,5 @@ class AuthAPI {
             responseType: RefreshResponseDTO.self
         )
     }
-
-    // 프로필 조회
-    func getProfile(workspace: String = "AGENCY") async throws -> APIResponse<GetProfileResponseDTO> {
-        return try await networkManager.request(
-            endpoint: "user/profile?workspace=\(workspace)",
-            method: .get,
-            parameters: nil,
-            responseType: GetProfileResponseDTO.self
-        )
-    }
 }
 

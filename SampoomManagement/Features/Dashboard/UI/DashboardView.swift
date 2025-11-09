@@ -13,9 +13,7 @@ struct DashboardView: View {
     let onNavigateOrderDetail: (Order) -> Void
     let onNavigateOrderList: () -> Void
     let onSettingClick: () -> Void
-    let userName: String
-    let branch: String
-    let userRole: UserRole
+    let onEmployeeClick: () -> Void
     
     var body: some View {
         VStack(spacing: 0) {
@@ -27,8 +25,8 @@ struct DashboardView: View {
                     .frame(height: 24)
                 Spacer()
                 HStack(spacing: 12) {
-                    if userRole.isAdmin {
-                        Button(action: {}) {
+                    if let user = viewModel.user, user.role.isAdmin {
+                        Button(action: onEmployeeClick) {
                             Image("employee").renderingMode(.template).foregroundStyle(.text)
                         }
                     }
@@ -54,18 +52,19 @@ struct DashboardView: View {
         .background(Color.background)
         .refreshable {
             viewModel.onEvent(.loadDashboard)
+            viewModel.refreshUser()
         }
     }
     
     private var titleSection: some View {
         VStack(alignment: .leading, spacing: 16) {
-            Text("\(branch)")
+            Text(viewModel.user?.branch ?? "")
                 .font(.gmarketTitle2)
                 .fontWeight(.bold)
                 .foregroundColor(.text)
             
             Group {
-                Text(StringResources.Dashboard.greetingPrefix) + Text(userName).foregroundColor(.accent) + Text(StringResources.Dashboard.greetingSuffix)
+                Text(StringResources.Dashboard.greetingPrefix) + Text(viewModel.user?.name ?? "").foregroundColor(.accent) + Text(StringResources.Dashboard.greetingSuffix)
             }
             .font(.gmarketTitle)
             .fontWeight(.bold)
@@ -82,23 +81,25 @@ struct DashboardView: View {
     private var buttonSection: some View {
         let dash = viewModel.uiState.dashboard
         return VStack(spacing: 16) {
-            if userRole.isAdmin {
-                buttonCard(iconName: "employee", valueText: "45", subText: StringResources.Dashboard.employee, bordered: true) {}
+            if let user = viewModel.user, user.role.isAdmin {
+                let employeeValueText = viewModel.uiState.employeeCount
+                    .map { String($0) } ?? StringResources.Common.slash
+                buttonCard(iconName: "employee", valueText: employeeValueText, subText: StringResources.Dashboard.employee, bordered: true, onClick: onEmployeeClick)
             }
             HStack(spacing: 16) {
-                buttonCard(iconName: "car", valueText: String(dash?.totalParts ?? 0), subText: StringResources.Dashboard.partsOnHand) {}
-                buttonCard(iconName: "block", valueText: String(dash?.outOfStockParts ?? 0), subText: StringResources.Dashboard.shortageOfParts) {}
+                buttonCard(iconName: "car", valueText: String(dash?.totalParts ?? 0), subText: StringResources.Dashboard.partsOnHand)
+                buttonCard(iconName: "block", valueText: String(dash?.outOfStockParts ?? 0), subText: StringResources.Dashboard.shortageOfParts)
             }
             HStack(spacing: 16) {
-                buttonCard(iconName: "warning", valueText: String(dash?.lowStockParts ?? 0), subText: StringResources.Dashboard.shortageOfParts) {}
-                buttonCard(iconName: "parts", valueText: String(dash?.totalQuantity ?? 0), subText: StringResources.Dashboard.partsOnHand) {}
+                buttonCard(iconName: "warning", valueText: String(dash?.lowStockParts ?? 0), subText: StringResources.Dashboard.shortageOfParts)
+                buttonCard(iconName: "parts", valueText: String(dash?.totalQuantity ?? 0), subText: StringResources.Dashboard.partsOnHand)
             }
         }
         .padding(.bottom, 16)
     }
     
-    private func buttonCard(iconName: String, valueText: String, subText: String, bordered: Bool = false, onClick: @escaping () -> Void) -> some View {
-        Button(action: onClick) {
+    private func buttonCard(iconName: String, valueText: String, subText: String, bordered: Bool = false, onClick: (() -> Void)? = nil) -> some View {
+        Button(action: onClick ?? {}) {
             VStack(alignment: .center, spacing: 16) {
                 Image(iconName)
                     .renderingMode(.template)
@@ -119,7 +120,7 @@ struct DashboardView: View {
             .clipShape(RoundedRectangle(cornerRadius: 16))
             .overlay(
                 RoundedRectangle(cornerRadius: 16)
-                    .stroke(bordered ? Color.accentColor : Color.clear, lineWidth: 1)
+                    .stroke(bordered ? .accent : Color.clear, lineWidth: 1)
             )
         }
     }

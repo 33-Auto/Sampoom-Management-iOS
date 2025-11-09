@@ -9,7 +9,5 @@ import Foundation
 
 enum SettingUiEvent {
     case loadProfile
-    case editProfile
-    case logout
 }
 

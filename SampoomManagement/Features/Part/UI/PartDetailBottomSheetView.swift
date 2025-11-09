@@ -189,15 +189,15 @@ private struct ActionButtonsView: View {
     let addOutboundAction: () -> Void
     let addCartAction: () -> Void
     let isDisabled: Bool
-
+    
     var body: some View {
         HStack {
-            CommonButton(StringResources.PartDetail.addToOutbound, customIcon: "outbound", backgroundColor: .red, textColor: .white) {
+            CommonButton(StringResources.PartDetail.addToOutbound, type: .secondary, customIcon: "outbound") {
                 addOutboundAction()
             }
             .disabled(isDisabled)
-
-            CommonButton(StringResources.PartDetail.addToCart, customIcon: "cart", backgroundColor: .accent, textColor: .white) {
+            
+            CommonButton(StringResources.PartDetail.addToCart, type: .filled, customIcon: "cart") {
                 addCartAction()
             }
             .disabled(isDisabled)

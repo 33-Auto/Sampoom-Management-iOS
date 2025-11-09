@@ -15,10 +15,12 @@ class SignUpViewModel: ObservableObject {
     
     private let signUpUseCase: SignUpUseCase
     private let getVendorUseCase: GetVendorUseCase
+    private let getProfileUseCase: GetProfileUseCase
     
-    init(signUpUseCase: SignUpUseCase, getVendorUseCase: GetVendorUseCase) {
+    init(signUpUseCase: SignUpUseCase, getVendorUseCase: GetVendorUseCase, getProfileUseCase: GetProfileUseCase) {
         self.signUpUseCase = signUpUseCase
         self.getVendorUseCase = getVendorUseCase
+        self.getProfileUseCase = getProfileUseCase
         Task { await loadVendors() }
     }
     
@@ -97,6 +99,8 @@ class SignUpViewModel: ObservableObject {
                     email: email,
                     password: password
                 )
+                // 회원가입 성공 후 프로필 조회
+                _ = try await getProfileUseCase.execute(workspace: "AGENCY")
                 uiState = uiState.copy(loading: false, success: true)
             } catch {
                 uiState = uiState.copy(loading: false)

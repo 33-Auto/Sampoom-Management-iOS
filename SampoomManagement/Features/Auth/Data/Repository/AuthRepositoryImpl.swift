@@ -56,42 +56,15 @@ class AuthRepositoryImpl: AuthRepository {
             throw AuthError.invalidResponse
         }
         let loginUser = loginDto.toModel()
-        // Store tokens immediately so that subsequent authorized calls (e.g., getProfile) carry Authorization header
+        // Store tokens immediately so that subsequent authorized calls carry Authorization header
         do {
-            try preferences.saveToken(accessToken: loginUser.accessToken, refreshToken: loginUser.refreshToken)
+            try preferences.saveUser(loginUser)
         } catch {
             print("AuthRepositoryImpl - 초기 토큰 저장 실패: \(error)")
             throw AuthError.tokenSaveFailed(error)
         }
 
-        // 2) 프로필 조회 (서버 반영 지연 고려하여 재시도, 최종 실패 시 롤백)
-        let profileUser: User
-        do {
-            profileUser = try await retry(times: 5, initialDelayMs: 300, maxDelayMs: 1500, factor: 1.8) {
-                let profileResponse = try await self.api.getProfile()
-                guard let profileDto = profileResponse.data else {
-                    throw AuthError.invalidResponse
-                }
-                return profileDto.toModel()
-            }
-        } catch {
-            // rollback tokens on any profile failure
-            preferences.clear()
-            throw error
-        }
-
-        // 3) 병합
-        let mergedUser = loginUser.mergeWith(profile: profileUser)
-
-        // 4) 저장
-        do {
-            try preferences.saveUser(mergedUser)
-        } catch {
-            print("AuthRepositoryImpl - 키체인 저장 실패: \(error)")
-            throw AuthError.tokenSaveFailed(error)
-        }
-
-        return mergedUser
+        return loginUser
     }
     
     func signOut() async throws {

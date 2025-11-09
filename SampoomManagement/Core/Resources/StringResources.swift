@@ -192,8 +192,38 @@ struct StringResources {
     struct Setting {
         static let title = "설정"
         static let editProfile = "프로필 수정"
+        static let editProfilePlaceholderUsername = "이름 입력"
+        static let editProfileEdited = "프로필 수정이 완료되었습니다."
         static let logout = "로그아웃"
+        static let logoutTitle = "로그아웃"
         static let dialogLogout = "로그아웃 하시겠습니까?"
+        static let userNotFound = "사용자 정보를 찾을 수 없습니다"
+    }
+    
+    // MARK: - Employee
+    struct Employee {
+        static let title = "직원관리"
+        static let emptyEmployee = "직원이 없습니다."
+        static let email = "이메일"
+        static let createdAt = "최초생성일"
+        static let startedAt = "근무시작일"
+        static let endedAt = "근무종료일"
+        static let deletedAt = "퇴사일"
+        static let delete = "삭제"
+        static let edit = "수정"
+        static let editTitle = "직원 수정"
+        static let positionLabel = "직급"
+        static let editEdited = "직원 수정이 완료되었습니다."
+        static let editDeleted = "직원 삭제가 완료되었습니다."
+        static let statusLabel = "재직상태"
+        static let statusEdit = "재직상태 변경"
+        static let positionEdit = "직급 변경"
+        static let editStatusEdited = "직원 상태 수정이 완료되었습니다."
+        static let statusActive = "재직"
+        static let statusLeave = "휴직"
+        static let statusRetired = "퇴직"
+        static let employeeNotFound = "직원 정보를 찾을 수 없습니다"
+        static let userNotFound = "사용자 정보를 찾을 수 없습니다"
     }
     
     // MARK: - Auth
