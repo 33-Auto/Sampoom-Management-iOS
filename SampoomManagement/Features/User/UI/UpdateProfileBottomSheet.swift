@@ -30,6 +30,15 @@ struct UpdateProfileBottomSheet: View {
     var body: some View {
         NavigationView {
             VStack(spacing: 16) {
+                Spacer()
+                // 직급 선택
+                Text(StringResources.Setting.editProfile)
+                    .font(.gmarketBody)
+                    .foregroundColor(Color("Text"))
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(.horizontal, 16)
+                    .padding(.top, 16)
+                
                 CommonTextField(
                     value: $userName,
                     placeholder: StringResources.Setting.editProfilePlaceholderUsername,
@@ -50,8 +59,6 @@ struct UpdateProfileBottomSheet: View {
                 .padding(.horizontal, 16)
                 .padding(.bottom, 32)
             }
-            .navigationTitle(StringResources.Setting.editProfile)
-            .background(Color.background)
         }
         .onAppear {
             viewModel.onEvent(.initialize(user))
