@@ -82,13 +82,8 @@ struct DashboardView: View {
         let dash = viewModel.uiState.dashboard
         return VStack(spacing: 16) {
             if let user = viewModel.user, user.role.isAdmin {
-                let employeeValueText: String
-                if let count = viewModel.uiState.employeeCount {
-                    employeeValueText = String(count)
-                } else {
-                    employeeValueText = StringResources.Common.slash
-                }
-                
+                let employeeValueText = viewModel.uiState.employeeCount
+                    .map { String($0) } ?? StringResources.Common.slash
                 buttonCard(iconName: "employee", valueText: employeeValueText, subText: StringResources.Dashboard.employee, bordered: true, onClick: onEmployeeClick)
             }
             HStack(spacing: 16) {

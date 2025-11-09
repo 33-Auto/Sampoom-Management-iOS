@@ -106,7 +106,7 @@ struct CartListView: View {
     private var orderButton: some View {
         VStack {
             Spacer()
-            CommonButton("\(formatWon(viewModel.uiState.totalCost)) \(StringResources.Cart.processOrder)", backgroundColor: .accent, textColor: .white) {
+            CommonButton("\(formatWon(viewModel.uiState.totalCost)) \(StringResources.Cart.processOrder)", type: .filled) {
                 showConfirmDialog = true
             }
             .padding(.horizontal, 16)

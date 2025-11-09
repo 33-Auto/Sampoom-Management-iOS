@@ -59,8 +59,11 @@ extension EditEmployeeResponseDTO {
             organizationId: 0,
             branch: "",
             position: UserPosition(rawValue: self.position) ?? .staff,
+            status: .active,
+            createdAt: nil,
             startedAt: nil,
-            endedAt: nil
+            endedAt: nil,
+            deletedAt: nil
         )
     }
 }
@@ -77,9 +80,34 @@ extension EmployeeDTO {
             organizationId: self.organizationId,
             branch: self.branch,
             position: self.position,
+            status: self.status ?? .active,
+            createdAt: self.createdAt,
             startedAt: self.startedAt,
-            endedAt: self.endedAt
+            endedAt: self.endedAt,
+            deletedAt: self.deletedAt
         )
     }
 }
+
+extension UpdateEmployeeStatusResponseDTO {
+    func toModel(existingEmployee: Employee) -> Employee {
+        return Employee(
+            id: existingEmployee.id,
+            userId: self.userId,
+            email: existingEmployee.email,
+            role: existingEmployee.role,
+            userName: self.userName.isEmpty ? existingEmployee.userName : self.userName,
+            workspace: self.workspace.isEmpty ? existingEmployee.workspace : self.workspace,
+            organizationId: existingEmployee.organizationId,
+            branch: existingEmployee.branch,
+            position: existingEmployee.position,
+            status: EmployeeStatus(rawValue: self.employeeStatus.uppercased()) ?? existingEmployee.status,
+            createdAt: existingEmployee.createdAt,
+            startedAt: existingEmployee.startedAt,
+            endedAt: existingEmployee.endedAt,
+            deletedAt: existingEmployee.deletedAt
+        )
+    }
+}
+
 

@@ -1,30 +1,32 @@
 //
-//  EditEmployeeViewModel.swift
+//  UpdateEmployeeStatusViewModel.swift
 //  SampoomManagement
 //
 //  Created by Generated.
 //
 
 import Foundation
-import SwiftUI
 import Combine
 
 @MainActor
-class EditEmployeeViewModel: ObservableObject {
-    @Published var uiState = EditEmployeeUiState()
+class UpdateEmployeeStatusViewModel: ObservableObject {
+    @Published var uiState = UpdateEmployeeStatusUiState()
     
-    private let editEmployeeUseCase: EditEmployeeUseCase
+    private let updateEmployeeStatusUseCase: UpdateEmployeeStatusUseCase
     private let messageHandler: GlobalMessageHandler
     
     init(
-        editEmployeeUseCase: EditEmployeeUseCase,
+        updateEmployeeStatusUseCase: UpdateEmployeeStatusUseCase,
         messageHandler: GlobalMessageHandler
     ) {
-        self.editEmployeeUseCase = editEmployeeUseCase
+        self.updateEmployeeStatusUseCase = updateEmployeeStatusUseCase
         self.messageHandler = messageHandler
     }
     
-    func onEvent(_ event: EditEmployeeUiEvent) {
+    private var errorLabel: String = ""
+    private var editEmployeeLabel: String = ""
+    
+    func onEvent(_ event: UpdateEmployeeStatusUiEvent) {
         switch event {
         case .initialize(let employee):
             uiState = uiState.copy(
@@ -32,8 +34,8 @@ class EditEmployeeViewModel: ObservableObject {
                 isLoading: false,
                 isSuccess: false
             )
-        case .editEmployee(let position):
-            editEmployee(position: position)
+        case .editEmployeeStatus(let status):
+            updateEmployeeStatus(status: status)
         case .dismiss:
             uiState = uiState.copy(
                 employee: nil,
@@ -43,9 +45,14 @@ class EditEmployeeViewModel: ObservableObject {
         }
     }
     
-    private func editEmployee(position: UserPosition) {
+    func bindLabel(error: String, editEmployee: String) {
+        errorLabel = error
+        editEmployeeLabel = editEmployee
+    }
+    
+    private func updateEmployeeStatus(status: EmployeeStatus) {
         guard let currentEmployee = uiState.employee else {
-            messageHandler.showMessage(StringResources.Employee.employeeNotFound, isError: true)
+            messageHandler.showMessage(errorLabel, isError: true)
             return
         }
         
@@ -53,7 +60,7 @@ class EditEmployeeViewModel: ObservableObject {
             uiState = uiState.copy(isLoading: true, error: nil)
             
             let updatedEmployee = Employee(
-                id: currentEmployee.userId,
+                id: currentEmployee.id,
                 userId: currentEmployee.userId,
                 email: currentEmployee.email,
                 role: currentEmployee.role,
@@ -61,8 +68,8 @@ class EditEmployeeViewModel: ObservableObject {
                 workspace: currentEmployee.workspace,
                 organizationId: currentEmployee.organizationId,
                 branch: currentEmployee.branch,
-                position: position,
-                status: currentEmployee.status,
+                position: currentEmployee.position,
+                status: status,
                 createdAt: currentEmployee.createdAt,
                 startedAt: currentEmployee.startedAt,
                 endedAt: currentEmployee.endedAt,
@@ -70,14 +77,14 @@ class EditEmployeeViewModel: ObservableObject {
             )
             
             do {
-                let result = try await editEmployeeUseCase.execute(employee: updatedEmployee, workspace: "AGENCY")
+                let result = try await updateEmployeeStatusUseCase.execute(employee: updatedEmployee, workspace: "AGENCY")
                 uiState = uiState.copy(
                     employee: result,
                     isLoading: false,
                     error: nil,
                     isSuccess: true
                 )
-                messageHandler.showMessage(StringResources.Employee.editEdited, isError: false)
+                messageHandler.showMessage(editEmployeeLabel, isError: false)
             } catch {
                 let errorMessage = (error as? NetworkError)?.errorDescription ?? error.localizedDescription
                 messageHandler.showMessage(errorMessage, isError: true)
@@ -93,4 +100,5 @@ class EditEmployeeViewModel: ObservableObject {
         uiState = uiState.copy(error: nil, isSuccess: false)
     }
 }
+
 

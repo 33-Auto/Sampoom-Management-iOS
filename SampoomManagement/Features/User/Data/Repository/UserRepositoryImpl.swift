@@ -123,11 +123,29 @@ class UserRepositoryImpl: UserRepository {
             organizationId: employee.organizationId,
             branch: employee.branch,
             position: updatedEmployee.position,
+            status: employee.status,
+            createdAt: employee.createdAt,
             startedAt: employee.startedAt,
-            endedAt: employee.endedAt
+            endedAt: employee.endedAt,
+            deletedAt: employee.deletedAt
         )
         
         return completeEmployee
+    }
+    
+    func updateEmployeeStatus(employee: Employee, workspace: String) async throws -> Employee {
+        let response = try await api.updateEmployeeStatus(
+            userId: employee.userId,
+            workspace: workspace,
+            employeeStatus: employee.status.rawValue
+        )
+        
+        guard let dto = response.data else {
+            throw NetworkError.serverError(response.status, message: response.message)
+        }
+        
+        let updatedEmployee = dto.toModel(existingEmployee: employee)
+        return updatedEmployee
     }
 
     func getEmployeeCount(workspace: String, organizationId: Int) async throws -> Int {

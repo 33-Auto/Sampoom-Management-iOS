@@ -11,6 +11,7 @@ import SwiftUI
 enum ButtonType {
     case filled            // 채워진 버튼
     case outlined          // 테두리만 있는 버튼
+    case secondary         // 톤 다운된 배경이 있는 버튼
 }
 
 // MARK: - Button Sizes
@@ -134,6 +135,8 @@ struct CommonButton: View {
             return Color(.accent) // 기본 보라색
         case .outlined:
             return .clear
+        case .secondary:
+            return Color(.accent).opacity(0.3)
         }
     }
     
@@ -150,7 +153,9 @@ struct CommonButton: View {
         case .filled:
             return .white
         case .outlined:
-            return borderColor ?? .blue
+            return borderColor ?? Color(.accent)
+        case .secondary:
+            return textColor ?? Color(.accent)
         }
     }
     
@@ -167,7 +172,9 @@ struct CommonButton: View {
         case .filled:
             return .clear
         case .outlined:
-            return .blue
+            return borderColor ?? Color(.accent)
+        case .secondary:
+            return borderColor ?? Color(.accent)
         }
     }
     
@@ -176,6 +183,8 @@ struct CommonButton: View {
         case .filled:
             return 0
         case .outlined:
+            return 1
+        case .secondary:
             return 1
         }
     }
