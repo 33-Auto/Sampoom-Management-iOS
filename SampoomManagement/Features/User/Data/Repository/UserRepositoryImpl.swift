@@ -123,9 +123,11 @@ class UserRepositoryImpl: UserRepository {
             organizationId: employee.organizationId,
             branch: employee.branch,
             position: updatedEmployee.position,
-            employeeStatus: employee.employeeStatus,
+            status: employee.status,
+            createdAt: employee.createdAt,
             startedAt: employee.startedAt,
-            endedAt: employee.endedAt
+            endedAt: employee.endedAt,
+            deletedAt: employee.deletedAt
         )
         
         return completeEmployee
@@ -135,7 +137,7 @@ class UserRepositoryImpl: UserRepository {
         let response = try await api.updateEmployeeStatus(
             userId: employee.userId,
             workspace: workspace,
-            employeeStatus: employee.employeeStatus.rawValue
+            employeeStatus: employee.status.rawValue
         )
         
         guard let dto = response.data else {

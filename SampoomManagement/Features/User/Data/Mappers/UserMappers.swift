@@ -59,9 +59,11 @@ extension EditEmployeeResponseDTO {
             organizationId: 0,
             branch: "",
             position: UserPosition(rawValue: self.position) ?? .staff,
-            employeeStatus: .active,
+            status: .active,
+            createdAt: nil,
             startedAt: nil,
-            endedAt: nil
+            endedAt: nil,
+            deletedAt: nil
         )
     }
 }
@@ -78,9 +80,11 @@ extension EmployeeDTO {
             organizationId: self.organizationId,
             branch: self.branch,
             position: self.position,
-            employeeStatus: self.employeeStatus ?? .active,
+            status: self.status ?? .active,
+            createdAt: self.createdAt,
             startedAt: self.startedAt,
-            endedAt: self.endedAt
+            endedAt: self.endedAt,
+            deletedAt: self.deletedAt
         )
     }
 }
@@ -97,9 +101,11 @@ extension UpdateEmployeeStatusResponseDTO {
             organizationId: existingEmployee.organizationId,
             branch: existingEmployee.branch,
             position: existingEmployee.position,
-            employeeStatus: EmployeeStatus(rawValue: self.employeeStatus.uppercased()) ?? existingEmployee.employeeStatus,
+            status: EmployeeStatus(rawValue: self.employeeStatus.uppercased()) ?? existingEmployee.status,
+            createdAt: existingEmployee.createdAt,
             startedAt: existingEmployee.startedAt,
-            endedAt: existingEmployee.endedAt
+            endedAt: existingEmployee.endedAt,
+            deletedAt: existingEmployee.deletedAt
         )
     }
 }

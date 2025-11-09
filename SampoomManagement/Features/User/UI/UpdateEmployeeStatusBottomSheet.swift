@@ -24,7 +24,7 @@ struct UpdateEmployeeStatusBottomSheet: View {
         self.viewModel = viewModel
         self.onDismiss = onDismiss
         self.onStatusUpdated = onStatusUpdated
-        _selectedStatus = State(initialValue: employee.employeeStatus)
+        _selectedStatus = State(initialValue: employee.status)
     }
     
     var body: some View {
@@ -75,7 +75,7 @@ struct UpdateEmployeeStatusBottomSheet: View {
                 CommonButton(
                     StringResources.Common.confirm,
                     type: .filled,
-                    isEnabled: !viewModel.uiState.isLoading && selectedStatus != employee.employeeStatus,
+                    isEnabled: !viewModel.uiState.isLoading && selectedStatus != employee.status,
                     action: {
                         viewModel.onEvent(.editEmployeeStatus(selectedStatus))
                     }
@@ -90,7 +90,7 @@ struct UpdateEmployeeStatusBottomSheet: View {
                 editEmployee: StringResources.Employee.editStatusEdited
             )
             viewModel.onEvent(.initialize(employee))
-            selectedStatus = employee.employeeStatus
+            selectedStatus = employee.status
         }
         .onChange(of: viewModel.uiState.isSuccess) { _, isSuccess in
             if isSuccess, let updatedEmployee = viewModel.uiState.employee {

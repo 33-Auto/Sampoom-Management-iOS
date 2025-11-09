@@ -17,8 +17,10 @@ struct Employee: Equatable, Identifiable {
     let organizationId: Int
     let branch: String
     let position: UserPosition
-    let employeeStatus: EmployeeStatus
+    let status: EmployeeStatus
+    let createdAt: String?
     let startedAt: String?
     let endedAt: String?
+    let deletedAt: String?
 }
 

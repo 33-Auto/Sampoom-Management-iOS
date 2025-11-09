@@ -62,9 +62,11 @@ class EditEmployeeViewModel: ObservableObject {
                 organizationId: currentEmployee.organizationId,
                 branch: currentEmployee.branch,
                 position: position,
-                employeeStatus: currentEmployee.employeeStatus,
+                status: currentEmployee.status,
+                createdAt: currentEmployee.createdAt,
                 startedAt: currentEmployee.startedAt,
-                endedAt: currentEmployee.endedAt
+                endedAt: currentEmployee.endedAt,
+                deletedAt: currentEmployee.deletedAt
             )
             
             do {

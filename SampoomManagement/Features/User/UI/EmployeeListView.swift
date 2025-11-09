@@ -150,7 +150,7 @@ struct EmployeeListItemCard: View {
                     .font(.gmarketTitle3)
                     .foregroundColor(.text)
                 Spacer()
-                Text(employeeStatusToKorean(employee.employeeStatus))
+                Text(employeeStatusToKorean(employee.status))
                     .font(.gmarketBody)
                     .foregroundColor(.text)
             }
@@ -169,16 +169,44 @@ struct EmployeeListItemCard: View {
                     .foregroundColor(.textSecondary)
             }
             
-            if let startedAt = employee.startedAt, !startedAt.isEmpty {
-                HStack {
-                    Text(StringResources.Employee.startedAt)
-                        .font(.gmarketBody)
-                        .foregroundColor(.textSecondary)
-                    Spacer()
-                    Text(DateFormatterUtil.formatDate(startedAt))
-                        .font(.gmarketBody)
-                        .foregroundColor(.textSecondary)
-                }
+            HStack {
+                Text(StringResources.Employee.createdAt)
+                    .font(.gmarketBody)
+                    .foregroundColor(.textSecondary)
+                Spacer()
+                Text(createdAtText)
+                    .font(.gmarketBody)
+                    .foregroundColor(.textSecondary)
+            }
+            
+            HStack {
+                Text(StringResources.Employee.startedAt)
+                    .font(.gmarketBody)
+                    .foregroundColor(.textSecondary)
+                Spacer()
+                Text(startedAtText)
+                    .font(.gmarketBody)
+                    .foregroundColor(.textSecondary)
+            }
+            
+            HStack {
+                Text(StringResources.Employee.endedAt)
+                    .font(.gmarketBody)
+                    .foregroundColor(.textSecondary)
+                Spacer()
+                Text(endedAtText)
+                    .font(.gmarketBody)
+                    .foregroundColor(.textSecondary)
+            }
+            
+            HStack {
+                Text(StringResources.Employee.deletedAt)
+                    .font(.gmarketBody)
+                    .foregroundColor(.textSecondary)
+                Spacer()
+                Text(deletedAtText)
+                    .font(.gmarketBody)
+                    .foregroundColor(.textSecondary)
             }
             
             HStack(spacing: 8) {
@@ -198,6 +226,36 @@ struct EmployeeListItemCard: View {
         .padding(16)
         .background(Color.backgroundCard)
         .cornerRadius(12)
+    }
+}
+
+private extension EmployeeListItemCard {
+    var createdAtText: String {
+        guard let createdAt = employee.createdAt, !createdAt.isEmpty else {
+            return StringResources.Common.slash
+        }
+        return DateFormatterUtil.formatDate(createdAt)
+    }
+    
+    var startedAtText: String {
+        guard let startedAt = employee.startedAt, !startedAt.isEmpty else {
+            return StringResources.Common.slash
+        }
+        return DateFormatterUtil.formatDate(startedAt)
+    }
+    
+    var endedAtText: String {
+        guard let endedAt = employee.endedAt, !endedAt.isEmpty else {
+            return StringResources.Common.slash
+        }
+        return DateFormatterUtil.formatDate(endedAt)
+    }
+    
+    var deletedAtText: String {
+        guard let deletedAt = employee.deletedAt, !deletedAt.isEmpty else {
+            return StringResources.Common.slash
+        }
+        return DateFormatterUtil.formatDate(deletedAt)
     }
 }
 

@@ -69,9 +69,11 @@ class UpdateEmployeeStatusViewModel: ObservableObject {
                 organizationId: currentEmployee.organizationId,
                 branch: currentEmployee.branch,
                 position: currentEmployee.position,
-                employeeStatus: status,
+                status: status,
+                createdAt: currentEmployee.createdAt,
                 startedAt: currentEmployee.startedAt,
-                endedAt: currentEmployee.endedAt
+                endedAt: currentEmployee.endedAt,
+                deletedAt: currentEmployee.deletedAt
             )
             
             do {
