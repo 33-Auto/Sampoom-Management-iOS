@@ -55,33 +55,9 @@ class NetworkManager {
                     parameters: parameters,
                     encoding: method == .get ? URLEncoding.default : JSONEncoding.default
                 )
+                .validate(statusCode: 200..<300)
                 
                 dataRequest.responseData { response in
-                    // HTTP 상태 코드가 에러 범위(4xx, 5xx)인 경우 응답 body를 파싱 시도
-                    if let httpResponse = response.response,
-                       httpResponse.statusCode >= 400,
-                       let data = response.data {
-                        
-                        Task { @MainActor in
-                            // 1. ApiErrorResponse 형식으로 파싱 시도 (안드로이드와 동일)
-                            if let errorResponse = self.decodeApiErrorResponse(from: data) {
-                                let errorCode = errorResponse.code ?? httpResponse.statusCode
-                                continuation.resume(throwing: NetworkError.serverError(errorCode, message: errorResponse.message))
-                                return
-                            }
-                            
-                            // 2. APIResponse 형식으로 파싱 시도 (기존 방식)
-                            if let apiResponse = self.decodeEmptyApiResponse(from: data) {
-                                continuation.resume(throwing: NetworkError.serverError(httpResponse.statusCode, message: apiResponse.message))
-                                return
-                            }
-                            
-                            // 3. 파싱 실패 시 기본 에러
-                            continuation.resume(throwing: NetworkError.serverError(httpResponse.statusCode, message: nil))
-                        }
-                        return
-                    }
-                    
                     switch response.result {
                     case .success(let data):
                         Task { @MainActor in
@@ -97,7 +73,37 @@ class NetworkManager {
                         }
                     case .failure(let error):
                         print("NetworkManager - Network error: \(error)")
-                        continuation.resume(throwing: NetworkError.networkError(error))
+                        
+                        if let data = response.data {
+                            Task { @MainActor in
+                                // 1. ApiErrorResponse 형식으로 파싱 시도
+                                if let errorResponse = self.decodeApiErrorResponse(from: data) {
+                                    let statusCode = errorResponse.code ?? response.response?.statusCode ?? -1
+                                    continuation.resume(throwing: NetworkError.serverError(statusCode, message: errorResponse.message))
+                                    return
+                                }
+                                
+                                // 2. APIResponse 형식으로 파싱 시도
+                                if let httpResponse = response.response,
+                                   let apiResponse = self.decodeEmptyApiResponse(from: data) {
+                                    continuation.resume(throwing: NetworkError.serverError(httpResponse.statusCode, message: apiResponse.message))
+                                    return
+                                }
+                                
+                                // 3. HTTP 상태 코드 존재 시 기본 에러
+                                if let httpResponse = response.response {
+                                    continuation.resume(throwing: NetworkError.serverError(httpResponse.statusCode, message: nil))
+                                    return
+                                }
+                                
+                                // 4. 기타 네트워크 에러
+                                continuation.resume(throwing: NetworkError.networkError(error))
+                            }
+                        } else if let httpResponse = response.response {
+                            continuation.resume(throwing: NetworkError.serverError(httpResponse.statusCode, message: nil))
+                        } else {
+                            continuation.resume(throwing: NetworkError.networkError(error))
+                        }
                     }
                 }
             }
@@ -123,40 +129,17 @@ class NetworkManager {
                         parameters: body,
                         encoder: JSONParameterEncoder.default
                     )
+                    .validate(statusCode: 200..<300)
                 } else {
                     dataRequest = session.request(
                         url,
                         method: method,
                         encoding: method == .get ? URLEncoding.default : JSONEncoding.default
                     )
+                    .validate(statusCode: 200..<300)
                 }
                 
                 dataRequest.responseData { response in
-                    // HTTP 상태 코드가 에러 범위(4xx, 5xx)인 경우 응답 body를 파싱 시도
-                    if let httpResponse = response.response,
-                       httpResponse.statusCode >= 400,
-                       let data = response.data {
-                        
-                        Task { @MainActor in
-                            // 1. ApiErrorResponse 형식으로 파싱 시도 (안드로이드와 동일)
-                            if let errorResponse = self.decodeApiErrorResponse(from: data) {
-                                let errorCode = errorResponse.code ?? httpResponse.statusCode
-                                continuation.resume(throwing: NetworkError.serverError(errorCode, message: errorResponse.message))
-                                return
-                            }
-                            
-                            // 2. APIResponse 형식으로 파싱 시도 (기존 방식)
-                            if let apiResponse = self.decodeEmptyApiResponse(from: data) {
-                                continuation.resume(throwing: NetworkError.serverError(httpResponse.statusCode, message: apiResponse.message))
-                                return
-                            }
-                            
-                            // 3. 파싱 실패 시 기본 에러
-                            continuation.resume(throwing: NetworkError.serverError(httpResponse.statusCode, message: nil))
-                        }
-                        return
-                    }
-                    
                     switch response.result {
                     case .success(let data):
                         Task { @MainActor in
@@ -172,7 +155,33 @@ class NetworkManager {
                         }
                     case .failure(let error):
                         print("NetworkManager - Network error: \(error)")
-                        continuation.resume(throwing: NetworkError.networkError(error))
+                        
+                        if let data = response.data {
+                            Task { @MainActor in
+                                if let errorResponse = self.decodeApiErrorResponse(from: data) {
+                                    let statusCode = errorResponse.code ?? response.response?.statusCode ?? -1
+                                    continuation.resume(throwing: NetworkError.serverError(statusCode, message: errorResponse.message))
+                                    return
+                                }
+                                
+                                if let httpResponse = response.response,
+                                   let apiResponse = self.decodeEmptyApiResponse(from: data) {
+                                    continuation.resume(throwing: NetworkError.serverError(httpResponse.statusCode, message: apiResponse.message))
+                                    return
+                                }
+                                
+                                if let httpResponse = response.response {
+                                    continuation.resume(throwing: NetworkError.serverError(httpResponse.statusCode, message: nil))
+                                    return
+                                }
+                                
+                                continuation.resume(throwing: NetworkError.networkError(error))
+                            }
+                        } else if let httpResponse = response.response {
+                            continuation.resume(throwing: NetworkError.serverError(httpResponse.statusCode, message: nil))
+                        } else {
+                            continuation.resume(throwing: NetworkError.networkError(error))
+                        }
                     }
                 }
             }

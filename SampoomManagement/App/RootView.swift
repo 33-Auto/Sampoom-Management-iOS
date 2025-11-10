@@ -77,11 +77,22 @@ struct RootView: View {
             // Toast 컨테이너 (앱 최상단에 배치)
             ToastContainer(globalMessageHandler: globalMessageHandler)
         }
+        .onChange(of: authViewModel.isLoggedIn) { _, isLoggedIn in
+            if !isLoggedIn {
+                // 로그아웃 시 LoginViewModel 상태 리셋
+                loginViewModel.uiState = LoginUiState()
+                showSignUp = false
+            }
+        }
         .onChange(of: authViewModel.shouldNavigateToLogin) { _, shouldNavigate in
             if shouldNavigate {
                 showSignUp = false
                 authViewModel.resetNavigationState()
             }
+        }
+        .onReceive(NotificationCenter.default.publisher(for: .didRequestLogout)) { _ in
+            showSignUp = false
+            Task { await authViewModel.handleTokenExpired() }
         }
     }
 }

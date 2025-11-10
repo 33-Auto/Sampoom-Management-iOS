@@ -111,7 +111,13 @@ struct LoginView: View {
         }
         .onChange(of: viewModel.uiState.success) { _, success in
             if success {
-                onSuccess()
+                Task { @MainActor in
+                    // 상태 업데이트가 완료될 때까지 약간의 딜레이
+                    try? await Task.sleep(nanoseconds: 50_000_000) // 0.05초
+                    onSuccess()
+                    // 다음 로그인을 위해 success 상태 리셋
+                    viewModel.uiState = viewModel.uiState.copy(success: false)
+                }
             }
         }
     }
