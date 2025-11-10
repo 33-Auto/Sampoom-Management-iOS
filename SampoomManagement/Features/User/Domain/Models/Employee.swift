@@ -13,7 +13,6 @@ struct Employee: Equatable, Identifiable {
     let email: String
     let role: String
     let userName: String
-    let workspace: String
     let organizationId: Int
     let branch: String
     let position: UserPosition

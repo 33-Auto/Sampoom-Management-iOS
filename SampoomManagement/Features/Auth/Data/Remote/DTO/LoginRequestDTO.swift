@@ -8,7 +8,7 @@
 import Foundation
 
 struct LoginRequestDTO: Codable {
-    let workspace: String
+    let role: String
     let email: String
     let password: String
 }

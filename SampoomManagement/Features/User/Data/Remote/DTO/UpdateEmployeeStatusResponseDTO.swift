@@ -10,7 +10,7 @@ import Foundation
 struct UpdateEmployeeStatusResponseDTO: Codable {
     let userId: Int
     let userName: String
-    let workspace: String
+    let role: String
     let employeeStatus: String
 }
 

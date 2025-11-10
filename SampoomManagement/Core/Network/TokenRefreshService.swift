@@ -57,7 +57,6 @@ class TokenRefreshService {
             refreshToken: dto.refreshToken,
             expiresIn: dto.expiresIn,
             position: existingUser.position,
-            workspace: existingUser.workspace,
             branch: existingUser.branch,
             agencyId: existingUser.agencyId,
             startedAt: existingUser.startedAt,
