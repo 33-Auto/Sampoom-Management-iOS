@@ -52,24 +52,15 @@ struct OrderInfoCard: View {
                 value: order.orderNumber ?? "-"
             )
             
-            Divider()
-                .padding(.horizontal, 16)
-            
             OrderInfoRow(
                 label: StringResources.Order.detailOrderDate,
                 value: order.createdAt.map { DateFormatterUtil.formatDate($0) } ?? "-"
             )
             
-            Divider()
-                .padding(.horizontal, 16)
-            
             OrderInfoRow(
                 label: StringResources.Order.detailOrderAgency,
                 value: order.agencyName ?? "-"
             )
-            
-            Divider()
-                .padding(.horizontal, 16)
             
             HStack {
                 Text(StringResources.Order.detailOrderStatus)
@@ -81,9 +72,6 @@ struct OrderInfoCard: View {
                 StatusChip(status: order.status)
             }
             .padding(16)
-
-            Divider()
-                .padding(.horizontal, 16)
 
             HStack {
                 Text(StringResources.Order.detailTotalAmount)
@@ -168,8 +156,10 @@ struct OrderPartItem: View {
             }
             .padding(16)
             
-            Divider()
-                .padding(.horizontal, 16)
+            VStack {
+                Divider().background(.textSecondary)
+            }
+            .padding(.horizontal, 16)
             
             HStack {
                 Spacer()

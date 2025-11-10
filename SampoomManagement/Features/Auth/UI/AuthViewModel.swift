@@ -34,7 +34,9 @@ class AuthViewModel: ObservableObject {
     
     // MARK: - Actions
     func updateLoginState() {
-        isLoggedIn = checkLoginStateUseCase.execute()
+        Task { @MainActor in
+            isLoggedIn = checkLoginStateUseCase.execute()
+        }
     }
     
     func signOut() async {

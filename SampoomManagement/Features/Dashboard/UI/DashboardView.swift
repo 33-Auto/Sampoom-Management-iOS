@@ -25,7 +25,7 @@ struct DashboardView: View {
                     .frame(height: 24)
                 Spacer()
                 HStack(spacing: 12) {
-                    if let user = viewModel.user, user.role.isAdmin {
+                    if let user = viewModel.user, isManagerOrAbove(user.position) {
                         Button(action: onEmployeeClick) {
                             Image("employee").renderingMode(.template).foregroundStyle(.text)
                         }
@@ -43,6 +43,7 @@ struct DashboardView: View {
                     titleSection
                     buttonSection
                     orderListSection
+                    Spacer(minLength: 32)
                     weeklySummarySection
                     Spacer(minLength: 100)
                 }
@@ -81,17 +82,17 @@ struct DashboardView: View {
     private var buttonSection: some View {
         let dash = viewModel.uiState.dashboard
         return VStack(spacing: 16) {
-            if let user = viewModel.user, user.role.isAdmin {
+            if let user = viewModel.user, isManagerOrAbove(user.position) {
                 let employeeValueText = viewModel.uiState.employeeCount
                     .map { String($0) } ?? StringResources.Common.slash
                 buttonCard(iconName: "employee", valueText: employeeValueText, subText: StringResources.Dashboard.employee, bordered: true, onClick: onEmployeeClick)
             }
             HStack(spacing: 16) {
-                buttonCard(iconName: "car", valueText: String(dash?.totalParts ?? 0), subText: StringResources.Dashboard.partsOnHand)
-                buttonCard(iconName: "block", valueText: String(dash?.outOfStockParts ?? 0), subText: StringResources.Dashboard.shortageOfParts)
+                buttonCard(iconName: "car", valueText: String(dash?.totalParts ?? 0), subText: StringResources.Dashboard.partsAll)
+                buttonCard(iconName: "block", valueText: String(dash?.outOfStockParts ?? 0), subText: StringResources.Dashboard.partsOutOfStock)
             }
             HStack(spacing: 16) {
-                buttonCard(iconName: "warning", valueText: String(dash?.lowStockParts ?? 0), subText: StringResources.Dashboard.shortageOfParts)
+                buttonCard(iconName: "warning", valueText: String(dash?.lowStockParts ?? 0), subText: StringResources.Dashboard.partLowStock)
                 buttonCard(iconName: "parts", valueText: String(dash?.totalQuantity ?? 0), subText: StringResources.Dashboard.partsOnHand)
             }
         }
@@ -109,6 +110,7 @@ struct DashboardView: View {
                     .clipShape(Circle())
                 Text(valueText)
                     .font(.gmarketTitle2)
+                    .fontWeight(.bold)
                     .foregroundColor(.text)
                 Text(subText)
                     .font(.gmarketBody)
@@ -190,6 +192,15 @@ struct DashboardView: View {
         .padding(16)
         .background(Color.backgroundCard)
         .clipShape(RoundedRectangle(cornerRadius: 16))
+    }
+    
+    private func isManagerOrAbove(_ position: UserPosition) -> Bool {
+        switch position {
+        case .manager, .deputyGeneralManager, .generalManager, .director, .vicePresident, .president, .chairman:
+            return true
+        default:
+            return false
+        }
     }
 }
 

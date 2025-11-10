@@ -51,7 +51,7 @@ class LoginViewModel: ObservableObject {
                 // 로그인 성공 후 프로필 조회
                 do {
                     _ = try await getProfileUseCase.execute(workspace: "AGENCY")
-                    uiState = uiState.copy(loading: false, success: true)
+                uiState = uiState.copy(loading: false, success: true)
                 } catch {
                     uiState = uiState.copy(loading: false)
                     showError(error.localizedDescription)

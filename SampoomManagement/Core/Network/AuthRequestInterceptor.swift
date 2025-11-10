@@ -8,6 +8,10 @@
 import Foundation
 import Alamofire
 
+extension Notification.Name {
+    static let didRequestLogout = Notification.Name("didRequestLogout")
+}
+
 // 비동기-세이프 토큰 갱신 조정자
 actor RefreshCoordinator {
     private var inFlight: Task<User, Error>?
@@ -39,6 +43,13 @@ final class AuthRequestInterceptor: RequestInterceptor, @unchecked Sendable {
     func adapt(_ urlRequest: URLRequest, for session: Session, completion: @escaping (Result<URLRequest, Error>) -> Void) {
         var adaptedRequest = urlRequest
         
+        if let urlString = adaptedRequest.url?.absoluteString,
+           urlString.contains("/auth/refresh") {
+            adaptedRequest.setValue(nil, forHTTPHeaderField: "Authorization")
+            completion(.success(adaptedRequest))
+            return
+        }
+        
         do {
             if let accessToken = try authPreferences.getAccessToken() {
                 adaptedRequest.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
@@ -54,12 +65,6 @@ final class AuthRequestInterceptor: RequestInterceptor, @unchecked Sendable {
     
     // 401 응답 시 토큰 재발급 및 재시도
     func retry(_ request: Request, for session: Session, dueTo error: Error, completion: @escaping (RetryResult) -> Void) {
-        // 재시도 한도 (예: 1회)
-        if request.retryCount >= 1 {
-            completion(.doNotRetry)
-            return
-        }
-        
         guard let response = request.task?.response as? HTTPURLResponse,
               response.statusCode == 401 else {
             completion(.doNotRetry)
@@ -69,11 +74,24 @@ final class AuthRequestInterceptor: RequestInterceptor, @unchecked Sendable {
         Task {
             do {
                 _ = try await refreshCoordinator.refresh(using: tokenRefreshService)
+                
+                if request.retryCount >= 1 {
+                    await authPreferences.clear()
+                    DispatchQueue.main.async {
+                        NotificationCenter.default.post(name: .didRequestLogout, object: nil)
+                    }
+                    completion(.doNotRetry)
+                    return
+                }
+                
                 completion(.retryWithDelay(0.1))
             } catch {
                 print("AuthRequestInterceptor - 토큰 재발급 실패: \(error)")
                 // 토큰 재발급 실패 시 로그아웃 처리
                 await authPreferences.clear()
+                DispatchQueue.main.async {
+                    NotificationCenter.default.post(name: .didRequestLogout, object: nil)
+                }
                 completion(.doNotRetry)
             }
         }
