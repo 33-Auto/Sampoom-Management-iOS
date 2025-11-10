@@ -53,6 +53,7 @@ class OrderRepositoryImpl: OrderRepository {
             )
         }
         let request = OrderRequestDto(
+            agencyId: user.agencyId,
             agencyName: user.branch,
             items: items
         )
