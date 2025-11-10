@@ -13,7 +13,6 @@ struct GetProfileResponseDTO: Codable {
     let email: String
     let role: String
     let position: String
-    let workspace: String
     let branch: String
     let organizationId: Int
     let startedAt: String

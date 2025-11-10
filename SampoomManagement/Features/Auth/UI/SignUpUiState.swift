@@ -9,7 +9,7 @@ import Foundation
 
 struct SignUpUiState: UIState {
     let name: String
-    let workspace: String
+    let role: String
     let branch: String
     let position: String
     let email: String
@@ -35,7 +35,7 @@ struct SignUpUiState: UIState {
     
     init(
         name: String = "",
-        workspace: String = "AGENCY",
+        role: String = "AGENCY",
         branch: String = "",
         position: String = "",
         email: String = "",
@@ -55,7 +55,7 @@ struct SignUpUiState: UIState {
         success: Bool = false
     ) {
         self.name = name
-        self.workspace = workspace
+        self.role = role
         self.branch = branch
         self.position = position
         self.email = email
@@ -92,7 +92,7 @@ struct SignUpUiState: UIState {
     
     func copy(
         name: String? = nil,
-        workspace: String? = nil,
+        role: String? = nil,
         branch: String? = nil,
         position: String? = nil,
         email: String? = nil,
@@ -113,7 +113,7 @@ struct SignUpUiState: UIState {
     ) -> SignUpUiState {
         return SignUpUiState(
             name: name ?? self.name,
-            workspace: workspace ?? self.workspace,
+            role: role ?? self.role,
             branch: branch ?? self.branch,
             position: position ?? self.position,
             email: email ?? self.email,

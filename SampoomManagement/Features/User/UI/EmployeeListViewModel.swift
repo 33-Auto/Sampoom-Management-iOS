@@ -88,7 +88,7 @@ class EmployeeListViewModel: ObservableObject {
         
         do {
             let result = try await getEmployeeUseCase.execute(
-                workspace: "AGENCY",
+                role: "AGENCY",
                 organizationId: user.agencyId,
                 page: page,
                 size: 20

@@ -9,7 +9,7 @@ import Foundation
 
 struct SignupRequestDTO: Codable {
     let userName: String
-    let workspace: String
+    let role: String
     let branch: String
     let position: String
     let email: String
