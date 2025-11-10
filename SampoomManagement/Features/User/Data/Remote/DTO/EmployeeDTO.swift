@@ -15,8 +15,8 @@ struct EmployeeDTO: Codable {
     let workspace: String
     let organizationId: Int
     let branch: String
-    let position: UserPosition
-    let status: EmployeeStatus?
+    let position: String
+    let status: String?
     let createdAt: String?
     let startedAt: String?
     let endedAt: String?
