@@ -16,7 +16,6 @@ class AuthPreferences {
         static let userId = "auth.userId"
         static let userName = "auth.userName"
         static let userEmail = "auth.userEmail"
-        static let userRole = "auth.userRole"
         static let expiresIn = "auth.expiresIn"
         static let position = "auth.position"
         static let workspace = "auth.workspace"
@@ -33,7 +32,6 @@ class AuthPreferences {
             try keychain.save(String(user.id), for: Keys.userId)
             try keychain.save(user.name, for: Keys.userName)
             try keychain.save(user.email, for: Keys.userEmail)
-            try keychain.save(user.role.rawValue, for: Keys.userRole)
             try keychain.save(String(user.expiresIn), for: Keys.expiresIn)
             try keychain.save(user.position.rawValue, for: Keys.position)
             try keychain.save(user.workspace, for: Keys.workspace)
@@ -48,7 +46,6 @@ class AuthPreferences {
             try? keychain.delete(Keys.userId)
             try? keychain.delete(Keys.userName)
             try? keychain.delete(Keys.userEmail)
-            try? keychain.delete(Keys.userRole)
             try? keychain.delete(Keys.expiresIn)
             try? keychain.delete(Keys.position)
             try? keychain.delete(Keys.workspace)
@@ -78,7 +75,6 @@ class AuthPreferences {
             guard let userIdString = try keychain.get(Keys.userId),
                   let userId = Int(userIdString),
                   let userName = try keychain.get(Keys.userName),
-                  let userRole = try keychain.get(Keys.userRole),
                   let accessToken = try keychain.get(Keys.accessToken),
                   let refreshToken = try keychain.get(Keys.refreshToken),
                   let expiresInString = try keychain.get(Keys.expiresIn),
@@ -98,7 +94,6 @@ class AuthPreferences {
                 id: userId,
                 name: userName,
                 email: userEmail,
-                role: UserRole(rawValue: userRole) ?? .user,
                 accessToken: accessToken,
                 refreshToken: refreshToken,
                 expiresIn: expiresIn,
@@ -149,7 +144,6 @@ class AuthPreferences {
             try keychain.delete(Keys.userId)
             try keychain.delete(Keys.userName)
             try keychain.delete(Keys.userEmail)
-            try keychain.delete(Keys.userRole)
             try keychain.delete(Keys.expiresIn)
             try keychain.delete(Keys.position)
             try keychain.delete(Keys.workspace)

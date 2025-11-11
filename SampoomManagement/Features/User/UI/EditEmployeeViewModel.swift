@@ -56,7 +56,6 @@ class EditEmployeeViewModel: ObservableObject {
                 id: currentEmployee.userId,
                 userId: currentEmployee.userId,
                 email: currentEmployee.email,
-                role: currentEmployee.role,
                 userName: currentEmployee.userName,
                 workspace: currentEmployee.workspace,
                 organizationId: currentEmployee.organizationId,

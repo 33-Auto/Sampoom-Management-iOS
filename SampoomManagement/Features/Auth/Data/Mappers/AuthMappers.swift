@@ -13,7 +13,6 @@ extension LoginResponseDTO {
             id: self.userId,
             name: "",
             email: "",
-            role: .user,
             accessToken: self.accessToken,
             refreshToken: self.refreshToken,
             expiresIn: self.expiresIn,

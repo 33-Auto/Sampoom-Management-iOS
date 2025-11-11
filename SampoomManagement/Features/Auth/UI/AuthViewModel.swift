@@ -40,11 +40,11 @@ class AuthViewModel: ObservableObject {
     }
     
     func signOut() async {
-        do {
-            try await signOutUseCase.execute()
-        } catch {
-            print("AuthViewModel - 로그아웃 실패: \(error)")
-        }
+//        do {
+//            try await signOutUseCase.execute()
+//        } catch {
+//            print("AuthViewModel - 로그아웃 실패: \(error)")
+//        }
         
         // 로그아웃 성공/실패 관계없이 로컬 상태 업데이트
         handleSignedOutState()

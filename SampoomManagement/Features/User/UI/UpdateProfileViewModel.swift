@@ -56,7 +56,6 @@ class UpdateProfileViewModel: ObservableObject {
                 id: currentUser.id,
                 name: userName,
                 email: currentUser.email,
-                role: currentUser.role,
                 accessToken: currentUser.accessToken,
                 refreshToken: currentUser.refreshToken,
                 expiresIn: currentUser.expiresIn,

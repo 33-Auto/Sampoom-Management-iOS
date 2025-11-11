@@ -99,7 +99,6 @@ class AuthRepositoryImpl: AuthRepository {
             id: existingUser.id,
             name: existingUser.name,
             email: existingUser.email,
-            role: existingUser.role,
             accessToken: dto.accessToken,
             refreshToken: dto.refreshToken,
             expiresIn: dto.expiresIn,

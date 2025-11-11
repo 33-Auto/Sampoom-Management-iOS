@@ -63,7 +63,6 @@ class UpdateEmployeeStatusViewModel: ObservableObject {
                 id: currentEmployee.id,
                 userId: currentEmployee.userId,
                 email: currentEmployee.email,
-                role: currentEmployee.role,
                 userName: currentEmployee.userName,
                 workspace: currentEmployee.workspace,
                 organizationId: currentEmployee.organizationId,
