@@ -10,8 +10,8 @@ import Foundation
 struct EmployeeDTO: Codable {
     let userId: Int
     let email: String
-    let role: String
     let userName: String
+    let workspace: String
     let organizationId: Int
     let branch: String
     let position: String

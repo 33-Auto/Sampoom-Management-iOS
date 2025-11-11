@@ -56,8 +56,8 @@ class EditEmployeeViewModel: ObservableObject {
                 id: currentEmployee.userId,
                 userId: currentEmployee.userId,
                 email: currentEmployee.email,
-                role: currentEmployee.role,
                 userName: currentEmployee.userName,
+                workspace: currentEmployee.workspace,
                 organizationId: currentEmployee.organizationId,
                 branch: currentEmployee.branch,
                 position: position,
@@ -69,7 +69,7 @@ class EditEmployeeViewModel: ObservableObject {
             )
             
             do {
-                let result = try await editEmployeeUseCase.execute(employee: updatedEmployee, role: "AGENCY")
+                let result = try await editEmployeeUseCase.execute(employee: updatedEmployee, workspace: "AGENCY")
                 uiState = uiState.copy(
                     employee: result,
                     isLoading: false,

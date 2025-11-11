@@ -14,8 +14,8 @@ class EditEmployeeUseCase {
         self.repository = repository
     }
     
-    func execute(employee: Employee, role: String) async throws -> Employee {
-        return try await repository.editEmployee(employee: employee, role: role)
+    func execute(employee: Employee, workspace: String) async throws -> Employee {
+        return try await repository.editEmployee(employee: employee, workspace: workspace)
     }
 }
 

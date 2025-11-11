@@ -129,10 +129,10 @@ class DashboardViewModel: ObservableObject {
                 )
                 return
             }
-            let role = storedUser.role.isEmpty ? "AGENCY" : storedUser.role
+            let workspace = storedUser.workspace.isEmpty ? "AGENCY" : storedUser.workspace
             
             let count = try await getEmployeeCountUseCase.execute(
-                role: role,
+                workspace: workspace,
                 organizationId: storedUser.agencyId
             )
             

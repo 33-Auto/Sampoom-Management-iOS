@@ -14,8 +14,8 @@ class GetEmployeeCountUseCase {
         self.repository = repository
     }
     
-    func execute(role: String, organizationId: Int) async throws -> Int {
-        return try await repository.getEmployeeCount(role: role, organizationId: organizationId)
+    func execute(workspace: String, organizationId: Int) async throws -> Int {
+        return try await repository.getEmployeeCount(workspace: workspace, organizationId: organizationId)
     }
 }
 

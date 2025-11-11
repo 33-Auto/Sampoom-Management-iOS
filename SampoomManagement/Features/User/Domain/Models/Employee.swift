@@ -11,8 +11,8 @@ struct Employee: Equatable, Identifiable {
     let id: Int
     let userId: Int
     let email: String
-    let role: String
     let userName: String
+    let workspace: String
     let organizationId: Int
     let branch: String
     let position: UserPosition

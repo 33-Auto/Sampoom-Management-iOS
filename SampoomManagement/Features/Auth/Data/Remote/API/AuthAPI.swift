@@ -17,10 +17,10 @@ class AuthAPI {
     
     // 로그인
     func login(email: String, password: String) async throws -> APIResponse<LoginResponseDTO> {
-        let requestDTO = LoginRequestDTO(role: "AGENCY", email: email, password: password)
+        let requestDTO = LoginRequestDTO(workspace: "AGENCY", email: email, password: password)
         
         let parameters: [String: Any] = [
-            "role": requestDTO.role,
+            "workspace": requestDTO.workspace,
             "email": requestDTO.email,
             "password": requestDTO.password
         ]
@@ -37,14 +37,14 @@ class AuthAPI {
     func signup(
         email: String,
         password: String,
-        role: String,
+        workspace: String,
         branch: String,
         userName: String,
         position: String
     ) async throws -> APIResponse<SignupResponseDTO> {
         let requestDTO = SignupRequestDTO(
             userName: userName,
-            role: role,
+            workspace: workspace,
             branch: branch,
             position: position,
             email: email,
@@ -54,7 +54,7 @@ class AuthAPI {
         let parameters: [String: Any] = [
             "email": requestDTO.email,
             "password": requestDTO.password,
-            "role": requestDTO.role,
+            "workspace": requestDTO.workspace,
             "branch": requestDTO.branch,
             "userName": requestDTO.userName,
             "position": requestDTO.position

@@ -11,11 +11,11 @@ struct User: Equatable {
     let id: Int
     let name: String
     let email: String
-    let role: String
     let accessToken: String
     let refreshToken: String
     let expiresIn: Int
     let position: UserPosition
+    let workspace: String
     let branch: String
     let agencyId: Int
     let startedAt: String?

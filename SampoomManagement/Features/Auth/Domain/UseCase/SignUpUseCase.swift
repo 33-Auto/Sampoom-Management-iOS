@@ -16,7 +16,7 @@ class SignUpUseCase {
     
     func execute(
         userName: String,
-        role: String,
+        workspace: String,
         branch: String,
         position: String,
         email: String,
@@ -24,7 +24,7 @@ class SignUpUseCase {
     ) async throws -> User {
         return try await repository.signUp(
             userName: userName,
-            role: role,
+            workspace: workspace,
             branch: branch,
             position: position,
             email: email,

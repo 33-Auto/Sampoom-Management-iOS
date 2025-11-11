@@ -82,7 +82,7 @@ class SignUpViewModel: ObservableObject {
             guard uiState.isValid else { return }
             
             let name = uiState.name
-            let role = uiState.role
+            let workspace = uiState.workspace
             let branch = uiState.branch
             let position = uiState.position
             let email = uiState.email
@@ -93,14 +93,14 @@ class SignUpViewModel: ObservableObject {
             do {
                 _ = try await signUpUseCase.execute(
                     userName: name,
-                    role: role,
+                    workspace: workspace,
                     branch: branch,
                     position: position,
                     email: email,
                     password: password
                 )
                 // 회원가입 성공 후 프로필 조회
-                _ = try await getProfileUseCase.execute(role: "AGENCY")
+                _ = try await getProfileUseCase.execute(workspace: "AGENCY")
                 uiState = uiState.copy(loading: false, success: true)
             } catch {
                 uiState = uiState.copy(loading: false)

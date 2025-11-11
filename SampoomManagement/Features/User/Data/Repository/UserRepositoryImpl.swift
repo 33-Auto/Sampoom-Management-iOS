@@ -20,10 +20,10 @@ class UserRepositoryImpl: UserRepository {
         return try preferences.getStoredUser()
     }
     
-    func getProfile(role: String) async throws -> User {
+    func getProfile(workspace: String) async throws -> User {
         // 프로필 조회 (서버 반영 지연 고려하여 재시도)
         let profileUser = try await retry(times: 5, initialDelayMs: 300, maxDelayMs: 1500, factor: 1.8) {
-            let profileResponse = try await self.api.getProfile(role: role)
+            let profileResponse = try await self.api.getProfile(workspace: workspace)
             guard let profileDto = profileResponse.data else {
                 throw NetworkError.serverError(profileResponse.status, message: profileResponse.message)
             }
@@ -40,11 +40,11 @@ class UserRepositoryImpl: UserRepository {
             id: profileUser.id,
             name: profileUser.name,
             email: profileUser.email,
-            role: profileUser.role,
             accessToken: loginUser.accessToken,
             refreshToken: loginUser.refreshToken,
             expiresIn: loginUser.expiresIn,
             position: profileUser.position,
+            workspace: profileUser.workspace,
             branch: profileUser.branch,
             agencyId: profileUser.agencyId,
             startedAt: profileUser.startedAt,
@@ -75,11 +75,11 @@ class UserRepositoryImpl: UserRepository {
             id: updatedProfile.id,
             name: updatedProfile.name,
             email: user.email,
-            role: user.role,
             accessToken: storedUser.accessToken,
             refreshToken: storedUser.refreshToken,
             expiresIn: storedUser.expiresIn,
             position: user.position,
+            workspace: user.workspace,
             branch: user.branch,
             agencyId: user.agencyId,
             startedAt: user.startedAt,
@@ -92,8 +92,8 @@ class UserRepositoryImpl: UserRepository {
         return completeUser
     }
     
-    func getEmployeeList(role: String, organizationId: Int, page: Int, size: Int) async throws -> (employees: [Employee], hasNext: Bool) {
-        let response = try await api.getEmployeeList(role: role, organizationId: organizationId, page: page, size: size)
+    func getEmployeeList(workspace: String, organizationId: Int, page: Int, size: Int) async throws -> (employees: [Employee], hasNext: Bool) {
+        let response = try await api.getEmployeeList(workspace: workspace, organizationId: organizationId, page: page, size: size)
         guard let dto = response.data else {
             throw NetworkError.serverError(response.status, message: response.message)
         }
@@ -102,8 +102,8 @@ class UserRepositoryImpl: UserRepository {
         return (employees: employees, hasNext: dto.meta.hasNext)
     }
     
-    func editEmployee(employee: Employee, role: String) async throws -> Employee {
-        let response = try await api.editEmployee(userId: employee.userId, role: role, position: employee.position.rawValue)
+    func editEmployee(employee: Employee, workspace: String) async throws -> Employee {
+        let response = try await api.editEmployee(userId: employee.userId, workspace: workspace, position: employee.position.rawValue)
         guard let dto = response.data else {
             throw NetworkError.serverError(response.status, message: response.message)
         }
@@ -115,8 +115,8 @@ class UserRepositoryImpl: UserRepository {
             id: updatedEmployee.userId,
             userId: updatedEmployee.userId,
             email: employee.email,
-            role: updatedEmployee.role.isEmpty ? employee.role : updatedEmployee.role,
             userName: updatedEmployee.userName.isEmpty ? employee.userName : updatedEmployee.userName,
+            workspace: updatedEmployee.workspace.isEmpty ? employee.workspace : updatedEmployee.workspace,
             organizationId: employee.organizationId,
             branch: employee.branch,
             position: updatedEmployee.position,
@@ -130,10 +130,10 @@ class UserRepositoryImpl: UserRepository {
         return completeEmployee
     }
     
-    func updateEmployeeStatus(employee: Employee, role: String) async throws -> Employee {
+    func updateEmployeeStatus(employee: Employee, workspace: String) async throws -> Employee {
         let response = try await api.updateEmployeeStatus(
             userId: employee.userId,
-            role: role,
+            workspace: workspace,
             employeeStatus: employee.status.rawValue
         )
         
@@ -145,8 +145,8 @@ class UserRepositoryImpl: UserRepository {
         return updatedEmployee
     }
 
-    func getEmployeeCount(role: String, organizationId: Int) async throws -> Int {
-        let response = try await api.getEmployeeList(role: role, organizationId: organizationId, page: 0, size: 1)
+    func getEmployeeCount(workspace: String, organizationId: Int) async throws -> Int {
+        let response = try await api.getEmployeeList(workspace: workspace, organizationId: organizationId, page: 0, size: 1)
         guard let dto = response.data else {
             throw NetworkError.serverError(response.status, message: response.message)
         }

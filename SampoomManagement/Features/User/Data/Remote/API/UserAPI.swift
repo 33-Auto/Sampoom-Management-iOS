@@ -16,9 +16,9 @@ class UserAPI {
     }
     
     // 프로필 조회
-    func getProfile(role: String = "AGENCY") async throws -> APIResponse<GetProfileResponseDTO> {
+    func getProfile(workspace: String = "AGENCY") async throws -> APIResponse<GetProfileResponseDTO> {
         return try await networkManager.request(
-            endpoint: "user/profile?role=\(role)",
+            endpoint: "user/profile?workspace=\(workspace)",
             method: .get,
             parameters: nil,
             responseType: GetProfileResponseDTO.self
@@ -42,9 +42,9 @@ class UserAPI {
     }
     
     // 직원 목록 조회
-    func getEmployeeList(role: String, organizationId: Int, page: Int = 0, size: Int = 20) async throws -> APIResponse<EmployeeListDTO> {
+    func getEmployeeList(workspace: String, organizationId: Int, page: Int = 0, size: Int = 20) async throws -> APIResponse<EmployeeListDTO> {
         return try await networkManager.request(
-            endpoint: "user/info?role=\(role)&organizationId=\(organizationId)&page=\(page)&size=\(size)",
+            endpoint: "user/info?workspace=\(workspace)&organizationId=\(organizationId)&page=\(page)&size=\(size)",
             method: .get,
             parameters: nil,
             responseType: EmployeeListDTO.self
@@ -52,7 +52,7 @@ class UserAPI {
     }
     
     // 직원 수정
-    func editEmployee(userId: Int, role: String, position: String) async throws -> APIResponse<EditEmployeeResponseDTO> {
+    func editEmployee(userId: Int, workspace: String, position: String) async throws -> APIResponse<EditEmployeeResponseDTO> {
         let requestDTO = EditEmployeeRequestDTO(position: position)
         
         let parameters: [String: Any] = [
@@ -60,7 +60,7 @@ class UserAPI {
         ]
         
         return try await networkManager.request(
-            endpoint: "user/profile/\(userId)?role=\(role)",
+            endpoint: "user/profile/\(userId)?workspace=\(workspace)",
             method: .patch,
             parameters: parameters,
             responseType: EditEmployeeResponseDTO.self
@@ -68,7 +68,7 @@ class UserAPI {
     }
     
     // 직원 상태 수정
-    func updateEmployeeStatus(userId: Int, role: String, employeeStatus: String) async throws -> APIResponse<UpdateEmployeeStatusResponseDTO> {
+    func updateEmployeeStatus(userId: Int, workspace: String, employeeStatus: String) async throws -> APIResponse<UpdateEmployeeStatusResponseDTO> {
         let requestDTO = UpdateEmployeeStatusRequestDTO(employeeStatus: employeeStatus)
         
         let parameters: [String: Any] = [
@@ -76,7 +76,7 @@ class UserAPI {
         ]
         
         return try await networkManager.request(
-            endpoint: "user/status/\(userId)?role=\(role)",
+            endpoint: "user/status/\(userId)?workspace=\(workspace)",
             method: .patch,
             parameters: parameters,
             responseType: UpdateEmployeeStatusResponseDTO.self

@@ -50,7 +50,7 @@ class LoginViewModel: ObservableObject {
                 _ = try await loginUseCase.execute(email: email, password: password)
                 // 로그인 성공 후 프로필 조회
                 do {
-                    _ = try await getProfileUseCase.execute(role: "AGENCY")
+                    _ = try await getProfileUseCase.execute(workspace: "AGENCY")
                 uiState = uiState.copy(loading: false, success: true)
                 } catch {
                     uiState = uiState.copy(loading: false)

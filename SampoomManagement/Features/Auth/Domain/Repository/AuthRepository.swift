@@ -10,7 +10,7 @@ import Foundation
 protocol AuthRepository {
     func signUp(
         userName: String,
-        role: String,
+        workspace: String,
         branch: String,
         position: String,
         email: String,

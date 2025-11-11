@@ -14,8 +14,8 @@ class GetProfileUseCase {
         self.repository = repository
     }
     
-    func execute(role: String) async throws -> User {
-        return try await repository.getProfile(role: role)
+    func execute(workspace: String) async throws -> User {
+        return try await repository.getProfile(workspace: workspace)
     }
 }
 
