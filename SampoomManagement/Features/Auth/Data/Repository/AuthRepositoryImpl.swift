@@ -19,7 +19,7 @@ class AuthRepositoryImpl: AuthRepository {
     // 회원가입
     func signUp(
         userName: String,
-        role: String,
+        workspace: String,
         branch: String,
         position: String,
         email: String,
@@ -28,7 +28,7 @@ class AuthRepositoryImpl: AuthRepository {
         _ = try await api.signup(
             email: email,
             password: password,
-            role: role,
+            workspace: workspace,
             branch: branch,
             userName: userName,
             position: position
@@ -104,6 +104,7 @@ class AuthRepositoryImpl: AuthRepository {
             refreshToken: dto.refreshToken,
             expiresIn: dto.expiresIn,
             position: existingUser.position,
+            workspace: existingUser.workspace,
             branch: existingUser.branch,
             agencyId: existingUser.agencyId,
             startedAt: existingUser.startedAt,

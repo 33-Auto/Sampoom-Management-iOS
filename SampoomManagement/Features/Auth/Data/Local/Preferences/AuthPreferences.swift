@@ -19,6 +19,7 @@ class AuthPreferences {
         static let userRole = "auth.userRole"
         static let expiresIn = "auth.expiresIn"
         static let position = "auth.position"
+        static let workspace = "auth.workspace"
         static let branch = "auth.branch"
         static let agencyId = "auth.agencyId"
         static let startedAt = "auth.startedAt"
@@ -32,9 +33,10 @@ class AuthPreferences {
             try keychain.save(String(user.id), for: Keys.userId)
             try keychain.save(user.name, for: Keys.userName)
             try keychain.save(user.email, for: Keys.userEmail)
-            try keychain.save(user.role, for: Keys.userRole)
+            try keychain.save(user.role.rawValue, for: Keys.userRole)
             try keychain.save(String(user.expiresIn), for: Keys.expiresIn)
             try keychain.save(user.position.rawValue, for: Keys.position)
+            try keychain.save(user.workspace, for: Keys.workspace)
             try keychain.save(user.branch, for: Keys.branch)
             try keychain.save(String(user.agencyId), for: Keys.agencyId)
             try keychain.save(user.startedAt ?? "", for: Keys.startedAt)
@@ -49,6 +51,7 @@ class AuthPreferences {
             try? keychain.delete(Keys.userRole)
             try? keychain.delete(Keys.expiresIn)
             try? keychain.delete(Keys.position)
+            try? keychain.delete(Keys.workspace)
             try? keychain.delete(Keys.branch)
             try? keychain.delete(Keys.agencyId)
             try? keychain.delete(Keys.startedAt)
@@ -84,6 +87,7 @@ class AuthPreferences {
             }
             // Tolerate missing profile keys by defaulting to safe values
             let positionRaw = (try? keychain.get(Keys.position)) ?? ""
+            let workspace = (try? keychain.get(Keys.workspace)) ?? ""
             let branch = (try? keychain.get(Keys.branch)) ?? ""
             let userEmail = (try? keychain.get(Keys.userEmail)) ?? ""
             let agencyId = Int((try? keychain.get(Keys.agencyId)) ?? "0") ?? 0
@@ -94,11 +98,12 @@ class AuthPreferences {
                 id: userId,
                 name: userName,
                 email: userEmail,
-                role: userRole,
+                role: UserRole(rawValue: userRole) ?? .user,
                 accessToken: accessToken,
                 refreshToken: refreshToken,
                 expiresIn: expiresIn,
                 position: UserPosition(rawValue: positionRaw) ?? .staff,
+                workspace: workspace,
                 branch: branch,
                 agencyId: agencyId,
                 startedAt: startedAt?.isEmpty == false ? startedAt : nil,
@@ -147,6 +152,7 @@ class AuthPreferences {
             try keychain.delete(Keys.userRole)
             try keychain.delete(Keys.expiresIn)
             try keychain.delete(Keys.position)
+            try keychain.delete(Keys.workspace)
             try keychain.delete(Keys.branch)
             try keychain.delete(Keys.agencyId)
             try keychain.delete(Keys.startedAt)

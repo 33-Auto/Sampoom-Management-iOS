@@ -61,6 +61,7 @@ class UpdateProfileViewModel: ObservableObject {
                 refreshToken: currentUser.refreshToken,
                 expiresIn: currentUser.expiresIn,
                 position: currentUser.position,
+                workspace: currentUser.workspace,
                 branch: currentUser.branch,
                 agencyId: currentUser.agencyId,
                 startedAt: currentUser.startedAt,

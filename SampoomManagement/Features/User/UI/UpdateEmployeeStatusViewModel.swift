@@ -65,6 +65,7 @@ class UpdateEmployeeStatusViewModel: ObservableObject {
                 email: currentEmployee.email,
                 role: currentEmployee.role,
                 userName: currentEmployee.userName,
+                workspace: currentEmployee.workspace,
                 organizationId: currentEmployee.organizationId,
                 branch: currentEmployee.branch,
                 position: currentEmployee.position,
@@ -76,7 +77,7 @@ class UpdateEmployeeStatusViewModel: ObservableObject {
             )
             
             do {
-                let result = try await updateEmployeeStatusUseCase.execute(employee: updatedEmployee, role: "AGENCY")
+                let result = try await updateEmployeeStatusUseCase.execute(employee: updatedEmployee, workspace: "AGENCY")
                 uiState = uiState.copy(
                     employee: result,
                     isLoading: false,
